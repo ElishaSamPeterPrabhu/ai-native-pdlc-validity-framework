@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "rules_dir": ".cursor/rules",
+  "hooks_path": ".cursor/hooks.json",
+  "mcp_config_path": ".cursor/mcp.json",
+  "mcp_server_dir": "mcp",
+  "workflows_dir": ".github/workflows",
+  "framework_dir": "framework",
+  "harness_dir": "harness",
+  "tasks_dir": "harness/tasks",
+  "theory_dir": "theory",
+  "analysis_dir": "analysis",
+  "data_dir": "data",
+  "metrics_path": "data/metrics.jsonl",
+  "setup_manifest_path": "data/setup-manifest.json",
+  "validity_report_path": "data/validity-report.json",
+  "fit_results_path": "data/fit_results.json",
+  "source": "template",
+  "layout_file": "validity.layout.json",
+  "notes": [
+    "Copy to repo root or run: python -m framework init --repo .",
+    "Edit any path that does not match this product repository."
+  ]
+}

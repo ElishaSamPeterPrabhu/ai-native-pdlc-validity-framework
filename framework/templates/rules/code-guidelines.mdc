@@ -1,0 +1,13 @@
+---
+description: Validity-aware coding guidelines for AI agents
+alwaysApply: true
+---
+
+# Code guidelines (validity harness)
+
+- Prefer small, reviewable diffs; commit when a verifier-relevant unit is done.
+- Do not mark work complete unless acceptance criteria, targeted tests, and QA
+  evidence are present (completion boundary).
+- Use repository MCP/tools before inventing APIs or component contracts.
+- On failure, capture the failing check and repair within the iteration budget.
+- Human PR review remains required; prepare a concise PR summary of risks.

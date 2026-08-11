@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "repo": { "owner": "trimble-oss", "name": "modus-wc-2.0", "default_branch": "main" },
+  "automations": [
+    { "name": "Dev Agent", "role": "dev", "trigger": "/approve", "stop_rule": "open PR when tests pass", "enabled": true },
+    { "name": "QA Agent", "role": "qa", "trigger": "PR opened", "stop_rule": "QA PASS/FAIL", "enabled": true },
+    { "name": "Fix Agent", "role": "fix", "trigger": "qa-failed", "stop_rule": "re-QA", "repair_cap": 3, "enabled": true }
+  ],
+  "setup_declared": {
+    "has_rules": true,
+    "has_mcp": true,
+    "has_hooks": false,
+    "has_ci_gate": true,
+    "label_handoff": true,
+    "human_review_always": true
+  },
+  "prs": [
+    {
+      "url_or_number": "#120",
+      "title": "feat: autocomplete escape focus + a11y",
+      "stratum_guess": "medium",
+      "acceptance_criteria": [
+        "Filter on typeahead",
+        "Enter selects",
+        "Escape closes and restores focus"
+      ],
+      "ci_status": "pass",
+      "qa_comments_summary": "QA FAIL Escape; Fix Agent repaired after one round",
+      "fix_iterations": 1,
+      "files_changed": 8,
+      "lines_changed": 240,
+      "agent_claimed_done": true,
+      "human_review_notes": "Needed deep review; false completion before QA",
+      "what_failed_or_surprised": "Agent said done while Escape still broken; long a11y debug loop then late regression",
+      "formula_signals": {
+        "entropy_notes": "noisy debug loop; many failed attempts on screen-reader wiring",
+        "opacity_notes": "multi-file component change",
+        "blast_radius_notes": "shared autocomplete used across app",
+        "spec_ambiguity_notes": "AC pinned but stop-boundary missing",
+        "recovery_seen": ["ci_gate", "agentic_qa", "fix_loop"]
+      }
+    }
+  ],
+  "goals": ["recover trust after false completion"]
+}

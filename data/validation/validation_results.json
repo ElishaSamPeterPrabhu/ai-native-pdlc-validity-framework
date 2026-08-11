@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "ok": true,
+    "n_records_total": 18,
+    "n_synthetic": 18,
+    "n_real": 0,
+    "rmses": {
+      "equilibrium_hybrid": 0.08349593511396568,
+      "ci_only": 0.21695137988629595,
+      "static_risk": 0.4914390559153926,
+      "constant_mean": 0.026189140043946214
+    },
+    "contract_checks": {
+      "formula_version_is_v1_1": true,
+      "default_decay_hybrid": true,
+      "completion_guard_simulation_only": true,
+      "fit_results_marked_synthetic": true,
+      "schemas_present": true
+    },
+    "baseline_comparison_ok": true,
+    "pilot_ready": false,
+    "live_modus_status": "blocked_or_pending",
+    "phase_e_status": "not_run",
+    "success_criteria": {
+      "pilot": {
+        "terminal_runs_min": 6,
+        "require_v_obs_variation": true,
+        "require_stage_transitions": true,
+        "synthetic_allowed": false
+      },
+      "campaign": {
+        "primary_estimand": "arm_contrasts",
+        "combine_qa_fix_unless_separated": true,
+        "report_null_effects": true,
+        "confidence_intervals": true
+      },
+      "phase_e": {
+        "protocol": "analysis/GENERICITY-PROTOCOL.md",
+        "require_decay_form_match": true,
+        "require_arm_contrast_sign_order": true,
+        "forbid_constant_transfer_claim": true
+      },
+      "local_baselines": {
+        "description": "On available trajectories, hybrid equilibrium RMSE should beat or match a constant-mean baseline and a CI-only heuristic.",
+        "metric": "rmse_v_end"
+      }
+    },
+    "diagnosis_smoke": {
+      "weakest_layer": "unknown",
+      "rationale": "insufficient evidence to attribute weakness to a layer",
+      "recommended_controls": [
+        "instrument Level 1 collectors",
+        "run baseline tasks"
+      ]
+    },
+    "claim_warnings": [
+      "formula v1.1 evidence_status=simulation-calibrated",
+      "placeholder weights are not Modus-fitted factory calibration",
+      "human review is never removed; lanes scale depth only",
+      "completion_guard_hook effects are simulation-only until live telemetry"
+    ]
+  },
+  "report_excerpt": {
+    "by_stratum": {
+      "low": {
+        "n": 6,
+        "mean_v_obs": 1.0,
+        "v_obs_ci": [
+          1.0,
+          1.0
+        ],
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "provisional_v_star": 1.0,
+        "review_lane": "minimal"
+      },
+      "medium": {
+        "n": 6,
+        "mean_v_obs": 1.0,
+        "v_obs_ci": [
+          1.0,
+          1.0
+        ],
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "provisional_v_star": 1.0,
+        "review_lane": "minimal"
+      },
+      "high": {
+        "n": 6,
+        "mean_v_obs": 0.9722,
+        "v_obs_ci": [
+          0.9444,
+          1.0
+        ],
+        "pass_at_1": 0.8333,
+        "pass_hat_k": 0.3349,
+        "provisional_v_star": 0.9722,
+        "review_lane": "minimal"
+      }
+    },
+    "layer_diagnosis": {
+      "weakest_layer": "unknown",
+      "rationale": "insufficient evidence to attribute weakness to a layer",
+      "recommended_controls": [
+        "instrument Level 1 collectors",
+        "run baseline tasks"
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "high-search-combo",
+  "stratum": "high",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1266",
+  "human_time_estimate_h": 12.0,
+  "components": ["modus-wc-text-input", "modus-wc-autocomplete", "modus-wc-menu"],
+  "spec_raw": "Search input + search combo component",
+  "spec_refined": {
+    "title": "New composite: search input with combo results dropdown",
+    "description": "Add a search combo pattern: a search-styled text input that opens a results menu as the user types, supporting keyboard navigation, an empty-results state, and a loading state. Built by composing existing text-input, menu and icon components; exposed as a new component modus-wc-search-combo.",
+    "acceptance_criteria": [
+      "Typing >= minChars opens the results menu; clearing closes it",
+      "Results menu supports ArrowUp/ArrowDown navigation and Enter selection",
+      "Escape closes the menu and returns focus to the input",
+      "Empty state renders a configurable no-results message",
+      "loading prop renders a spinner in the menu instead of items",
+      "Selection emits itemSelect with the selected item's value",
+      "Component follows library conventions: tailwind.ts, stories, spec tests, readme",
+      "a11y: combobox ARIA pattern (role=combobox, aria-expanded, aria-activedescendant)"
+    ],
+    "technical_notes": "Greenfield composite touching multiple existing components' APIs; conventions matter (this is where MCP/rules context should show value)."
+  },
+  "verifier": {
+    "dir": "verifiers/high-search-combo",
+    "checks": 8,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

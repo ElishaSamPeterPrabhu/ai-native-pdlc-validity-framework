@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0.0",
+  "interventions": [
+    {
+      "id": "rules_context",
+      "layer": "harness",
+      "stage": "dev",
+      "prerequisites": ["Cursor project supports .cursor/rules"],
+      "recipe": "Add .cursor/rules/*.mdc with code guidelines and acceptance-check reminders. Template: framework/templates/rules/code-guidelines.mdc",
+      "measurement_signal": "rules_context activity=1 during dev; fewer convention regressions",
+      "expected_mechanism": "Raises R via repository context; can lower Hc-driven decay",
+      "retest": "Rerun same medium/high tasks baseline vs no_rules",
+      "evidence_status": "operational"
+    },
+    {
+      "id": "mcp_context",
+      "layer": "harness",
+      "stage": "dev",
+      "prerequisites": ["MCP server or .cursor/mcp.json available to cloud agents"],
+      "recipe": "Enable repo MCP / design-system MCP on experiment base branch; keep nomcp branch for ablation",
+      "measurement_signal": "mcp_context activity during dev; arm contrast no_mcp",
+      "expected_mechanism": "Raises R by grounding tool use in repo truth",
+      "retest": "baseline vs no_mcp on medium+high strata",
+      "evidence_status": "operational"
+    },
+    {
+      "id": "ci_gate",
+      "layer": "loop",
+      "stage": "qa",
+      "prerequisites": ["Test workflow exists"],
+      "recipe": "Make deterministic tests a required branch-protection check. Template: framework/templates/workflows/ci-gate.yml",
+      "measurement_signal": "ci_gate activity=1; fewer false-green merges",
+      "expected_mechanism": "Raises R by deterministic rejection of invalid work",
+      "retest": "baseline vs no_ci_gate",
+      "evidence_status": "operational"
+    },
+    {
+      "id": "agentic_qa_fix_loop",
+      "layer": "loop",
+      "stage": "qa",
+      "prerequisites": ["Cursor Cloud Automations or equivalent orchestration"],
+      "recipe": "Enable QA Agent + Fix Agent with label handoffs; cap repair rounds (default 3). See harness/AUTOMATION-PROMPTS.md",
+      "measurement_signal": "qa-failed/needs-fix events; repair_iterations; combined arm no_recovery_loop",
+      "expected_mechanism": "Raises R through detect+repair; report QA+fix together unless separated",
+      "retest": "baseline vs no_recovery_loop first (variance)",
+      "evidence_status": "operational"
+    },
+    {
+      "id": "completion_guard_hook",
+      "layer": "loop",
+      "stage": "review",
+      "prerequisites": ["Cursor hooks support on the agent path"],
+      "recipe": "Install framework/templates/hooks/hooks.json completion guard: block done until acceptance criteria, tests, and QA evidence exist; force one repair",
+      "measurement_signal": "hook challenge events; stop-boundary false completions",
+      "expected_mechanism": "Raises R at completion boundary",
+      "retest": "hook-on vs hook-off; do not claim live Modus fit until telemetry exists",
+      "evidence_status": "simulation-only"
+    },
+    {
+      "id": "spec_refinement",
+      "layer": "graph",
+      "stage": "ticket",
+      "prerequisites": ["Issue scaffolding automation or equivalent"],
+      "recipe": "Require development-ready issues with pinned acceptance criteria before /approve",
+      "measurement_signal": "spec:refined vs spec:raw; lower σspec proxy",
+      "expected_mechanism": "Lowers D via reduced specification ambiguity",
+      "retest": "baseline vs no_spec_refinement",
+      "evidence_status": "operational"
+    },
+    {
+      "id": "review_bot",
+      "layer": "graph",
+      "stage": "review",
+      "prerequisites": ["Bugbot/CodeRabbit/Greptile installable on repo"],
+      "recipe": "Enable one review bot as ablatable factor; disable conflicting review workflows in baseline",
+      "measurement_signal": "review_bot activity; comment/finding counts",
+      "expected_mechanism": "Raises R before human review; does not replace human review",
+      "retest": "with_review_bot vs baseline",
+      "evidence_status": "operational"
+    }
+  ]
+}

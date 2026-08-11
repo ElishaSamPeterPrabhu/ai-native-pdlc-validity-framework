@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/factor-registry.schema.json",
+  "title": "FactorRegistry",
+  "type": "object",
+  "required": ["schema_version", "formula_version", "factors"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "formula_version": { "type": "string" },
+    "default_decay_form": {
+      "enum": ["hybrid", "additive", "multiplicative"]
+    },
+    "core_fitted_factors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "simulation_only_factors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "factors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "stage",
+          "layer",
+          "construct",
+          "telemetry",
+          "normalization",
+          "missing_behavior",
+          "confidence_rule"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "stage": { "enum": ["ticket", "dev", "qa", "repair", "review"] },
+          "layer": { "enum": ["harness", "loop", "graph"] },
+          "construct": { "type": "string" },
+          "telemetry": { "type": "string" },
+          "normalization": { "type": "string" },
+          "missing_behavior": { "type": "string" },
+          "confidence_rule": { "type": "string" },
+          "toggle": { "type": "string" },
+          "evidence_status": {
+            "enum": ["operational", "simulation-only", "deferred"]
+          },
+          "placeholder_weight": { "type": "number" }
+        }
+      }
+    }
+  }
+}

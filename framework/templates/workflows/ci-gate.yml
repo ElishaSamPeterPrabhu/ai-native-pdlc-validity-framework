@@ -1,0 +1,18 @@
+# Deterministic CI gate factor (ci_gate). Adapt commands to the target repo.
+name: Validity CI Gate
+on:
+  pull_request:
+    branches: [main, master, experiment-base]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          if [ -f package.json ]; then npm ci; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test
+        run: |
+          if [ -f package.json ]; then npm test; fi
+          if [ -f pyproject.toml ] || [ -f pytest.ini ]; then pytest -q; fi

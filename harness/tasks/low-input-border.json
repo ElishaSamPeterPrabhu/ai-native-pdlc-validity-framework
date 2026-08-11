@@ -1,0 +1,26 @@
+{
+  "id": "low-input-border",
+  "stratum": "low",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1241",
+  "human_time_estimate_h": 1.0,
+  "components": ["modus-wc-text-input"],
+  "spec_raw": "In classic theme when size is lg the border is not visible for input",
+  "spec_refined": {
+    "title": "Text input: lg size loses its border in classic theme",
+    "description": "When a modus-wc-text-input has size='lg' under the classic theme, the input border is not rendered. sm and md sizes show the border correctly; lg must match.",
+    "acceptance_criteria": [
+      "size='lg' text input renders a visible border in classic light theme",
+      "size='lg' text input renders a visible border in classic dark theme",
+      "Border styling for sm and md sizes is unchanged",
+      "Modern and connect themes are unchanged; existing tests pass"
+    ],
+    "technical_notes": "Check the size-conditional classes in modus-wc-text-input.tailwind.ts and classic theme overrides."
+  },
+  "verifier": {
+    "dir": "verifiers/low-input-border",
+    "checks": 4,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

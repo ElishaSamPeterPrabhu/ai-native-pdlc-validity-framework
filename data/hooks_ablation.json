@@ -1,0 +1,1426 @@
+{
+  "seed": 20260727,
+  "n_tasks": 20,
+  "k": 3,
+  "detect_prob_grid": [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    0.95
+  ],
+  "arms": [
+    "full_pipeline",
+    "fix_cap_1",
+    "no_agentic_qa"
+  ],
+  "strata": [
+    "medium",
+    "high"
+  ],
+  "total_runs": 2160,
+  "predictions_path": "data/hooks_predictions.json",
+  "cells": [
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "hook_detect_prob": 0.5,
+      "seed": 426599981,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.02
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "hook_detect_prob": 0.5,
+      "seed": 1119706896,
+      "hook_off": {
+        "mean_v_obs": 0.9972222222222221,
+        "sd_v_obs": 0.014958791130929181,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.36666666666666664,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9972222222222221,
+        "sd_v_obs": 0.014958791130929181,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.36666666666666664,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "hook_detect_prob": 0.5,
+      "seed": 2142768673,
+      "hook_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393768,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296298,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393768,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296298,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "hook_detect_prob": 0.5,
+      "seed": 370403581,
+      "hook_off": {
+        "mean_v_obs": 0.9874999999999999,
+        "sd_v_obs": 0.029755951785595224,
+        "pass_at_1": 0.85,
+        "pass_hat_k": 0.7277777777777777,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.36666666666666664,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9916666666666667,
+        "sd_v_obs": 0.02500000000000001,
+        "pass_at_1": 0.9,
+        "pass_hat_k": 0.8111111111111111,
+        "mean_hook_interventions": 0.08333333333333333,
+        "mean_fix_iterations": 0.36666666666666664,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.004166666666666763,
+      "delta_pass_at_1": 0.050000000000000044,
+      "delta_pass_hat_k": 0.08333333333333337,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "hook_detect_prob": 0.5,
+      "seed": 477584649,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "hook_detect_prob": 0.5,
+      "seed": 270007881,
+      "hook_off": {
+        "mean_v_obs": 0.9847222222222223,
+        "sd_v_obs": 0.035654160147204,
+        "pass_at_1": 0.8333333333333334,
+        "pass_hat_k": 0.6925925925925925,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9875,
+        "sd_v_obs": 0.029755951785595224,
+        "pass_at_1": 0.85,
+        "pass_hat_k": 0.7055555555555555,
+        "mean_hook_interventions": 0.08333333333333333,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777768,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.012962962962962954,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "hook_detect_prob": 0.6,
+      "seed": 995482678,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.02
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "hook_detect_prob": 0.6,
+      "seed": 1416300001,
+      "hook_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.02369266959615553,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.45,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9972222222222222,
+        "sd_v_obs": 0.02133651596630168,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.45,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.001388888888888884,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.03518518518518532,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "hook_detect_prob": 0.6,
+      "seed": 1355547070,
+      "hook_off": {
+        "mean_v_obs": 0.99375,
+        "sd_v_obs": 0.027243118397129208,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444443,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.004166666666666652,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.07037037037037064,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "hook_detect_prob": 0.6,
+      "seed": 153199291,
+      "hook_off": {
+        "mean_v_obs": 0.9916666666666667,
+        "sd_v_obs": 0.02926570486903539,
+        "pass_at_1": 0.9166666666666666,
+        "pass_hat_k": 0.8240740740740741,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.15,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9944444444444446,
+        "sd_v_obs": 0.025760051376376956,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444443,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.15,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777879,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.0703703703703702,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "hook_detect_prob": 0.6,
+      "seed": 1016660249,
+      "hook_off": {
+        "mean_v_obs": 0.99375,
+        "sd_v_obs": 0.027243118397129208,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444445,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.016002386974726272,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.004166666666666652,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.07037037037037042,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "hook_detect_prob": 0.6,
+      "seed": 563192699,
+      "hook_off": {
+        "mean_v_obs": 0.9694444444444446,
+        "sd_v_obs": 0.05886005583449192,
+        "pass_at_1": 0.7333333333333333,
+        "pass_hat_k": 0.5259259259259259,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9805555555555556,
+        "sd_v_obs": 0.038389652669681265,
+        "pass_at_1": 0.7833333333333333,
+        "pass_hat_k": 0.587037037037037,
+        "mean_hook_interventions": 0.15,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.011111111111111072,
+      "delta_pass_at_1": 0.050000000000000044,
+      "delta_pass_hat_k": 0.061111111111111116,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "hook_detect_prob": 0.7,
+      "seed": 1217602798,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002083333333333326,
+      "delta_pass_at_1": 0.01666666666666672,
+      "delta_pass_hat_k": 0.0351851851851851,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.02
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "hook_detect_prob": 0.7,
+      "seed": 58328305,
+      "hook_off": {
+        "mean_v_obs": 0.9944444444444446,
+        "sd_v_obs": 0.02078698548207746,
+        "pass_at_1": 0.9333333333333333,
+        "pass_hat_k": 0.8592592592592592,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.36666666666666664,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9972222222222222,
+        "sd_v_obs": 0.014958791130929185,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.36666666666666664,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777657,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.07037037037037042,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "hook_detect_prob": 0.7,
+      "seed": 461956789,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.06666666666666667,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.06666666666666667,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "hook_detect_prob": 0.7,
+      "seed": 559352558,
+      "hook_off": {
+        "mean_v_obs": 0.9902777777777777,
+        "sd_v_obs": 0.026751889283691987,
+        "pass_at_1": 0.8833333333333333,
+        "pass_hat_k": 0.7537037037037037,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.16666666666666666,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9930555555555555,
+        "sd_v_obs": 0.023032116599690285,
+        "pass_at_1": 0.9166666666666666,
+        "pass_hat_k": 0.8240740740740741,
+        "mean_hook_interventions": 0.06666666666666667,
+        "mean_fix_iterations": 0.16666666666666666,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777768,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.07037037037037042,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "hook_detect_prob": 0.7,
+      "seed": 269481514,
+      "hook_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393764,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002083333333333326,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.03518518518518532,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "hook_detect_prob": 0.7,
+      "seed": 935651745,
+      "hook_off": {
+        "mean_v_obs": 0.9680555555555554,
+        "sd_v_obs": 0.05290554709650252,
+        "pass_at_1": 0.7,
+        "pass_hat_k": 0.45555555555555544,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9791666666666665,
+        "sd_v_obs": 0.04201245406181715,
+        "pass_at_1": 0.7833333333333333,
+        "pass_hat_k": 0.6092592592592593,
+        "mean_hook_interventions": 0.18333333333333332,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.011111111111111072,
+      "delta_pass_at_1": 0.08333333333333337,
+      "delta_pass_hat_k": 0.15370370370370384,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "hook_detect_prob": 0.8,
+      "seed": 1194800679,
+      "hook_off": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.06666666666666667,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.06666666666666667,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.02
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "hook_detect_prob": 0.8,
+      "seed": 592179448,
+      "hook_off": {
+        "mean_v_obs": 0.9972222222222221,
+        "sd_v_obs": 0.014958791130929183,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.25,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9986111111111111,
+        "sd_v_obs": 0.010668257983150848,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.25,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.001388888888888995,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.03518518518518532,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "hook_detect_prob": 0.8,
+      "seed": 2138372527,
+      "hook_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393764,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002083333333333326,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.03518518518518532,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "hook_detect_prob": 0.8,
+      "seed": 1123419703,
+      "hook_off": {
+        "mean_v_obs": 0.9888888888888888,
+        "sd_v_obs": 0.03215510250775063,
+        "pass_at_1": 0.8833333333333333,
+        "pass_hat_k": 0.7537037037037038,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.16666666666666666,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9972222222222221,
+        "sd_v_obs": 0.014958791130929181,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.11666666666666667,
+        "mean_fix_iterations": 0.16666666666666666,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.008333333333333304,
+      "delta_pass_at_1": 0.08333333333333337,
+      "delta_pass_hat_k": 0.17592592592592582,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "hook_detect_prob": 0.8,
+      "seed": 1935047155,
+      "hook_off": {
+        "mean_v_obs": 0.99375,
+        "sd_v_obs": 0.0355390043942333,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296298,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.004166666666666652,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.0351851851851851,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "hook_detect_prob": 0.8,
+      "seed": 23262951,
+      "hook_off": {
+        "mean_v_obs": 0.976388888888889,
+        "sd_v_obs": 0.052905547096502525,
+        "pass_at_1": 0.8,
+        "pass_hat_k": 0.6444444444444444,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.986111111111111,
+        "sd_v_obs": 0.03778186252426512,
+        "pass_at_1": 0.8666666666666667,
+        "pass_hat_k": 0.7629629629629628,
+        "mean_hook_interventions": 0.18333333333333332,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.009722222222222077,
+      "delta_pass_at_1": 0.06666666666666665,
+      "delta_pass_hat_k": 0.11851851851851847,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "hook_detect_prob": 0.9,
+      "seed": 283041777,
+      "hook_off": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.05,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.02
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "hook_detect_prob": 0.9,
+      "seed": 299318710,
+      "hook_off": {
+        "mean_v_obs": 0.9930555555555555,
+        "sd_v_obs": 0.023032116599690285,
+        "pass_at_1": 0.9166666666666666,
+        "pass_hat_k": 0.8462962962962963,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.26666666666666666,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9986111111111111,
+        "sd_v_obs": 0.010668257983150848,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.08333333333333333,
+        "mean_fix_iterations": 0.26666666666666666,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.005555555555555647,
+      "delta_pass_at_1": 0.06666666666666665,
+      "delta_pass_hat_k": 0.11851851851851858,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "hook_detect_prob": 0.9,
+      "seed": 2104822913,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.016002386974726272,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002083333333333326,
+      "delta_pass_at_1": 0.01666666666666672,
+      "delta_pass_hat_k": 0.0351851851851851,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "hook_detect_prob": 0.9,
+      "seed": 1156028761,
+      "hook_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.01816207893141948,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444445,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.23333333333333334,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9986111111111112,
+        "sd_v_obs": 0.01066825798315085,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.05,
+        "mean_fix_iterations": 0.23333333333333334,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777879,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.07037037037037042,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "hook_detect_prob": 0.9,
+      "seed": 1877815879,
+      "hook_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393764,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.016002386974726272,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002083333333333326,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.03518518518518532,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "hook_detect_prob": 0.9,
+      "seed": 1791092239,
+      "hook_off": {
+        "mean_v_obs": 0.9777777777777779,
+        "sd_v_obs": 0.045304184528611374,
+        "pass_at_1": 0.7666666666666667,
+        "pass_hat_k": 0.5518518518518518,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9944444444444444,
+        "sd_v_obs": 0.020786985482077462,
+        "pass_at_1": 0.9333333333333333,
+        "pass_hat_k": 0.8592592592592594,
+        "mean_hook_interventions": 0.2,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.016666666666666496,
+      "delta_pass_at_1": 0.16666666666666663,
+      "delta_pass_hat_k": 0.3074074074074076,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "hook_detect_prob": 0.95,
+      "seed": 1719351273,
+      "hook_off": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.06666666666666667,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.016666666666666666,
+        "mean_fix_iterations": 0.06666666666666667,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.02
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "hook_detect_prob": 0.95,
+      "seed": 1419686001,
+      "hook_off": {
+        "mean_v_obs": 0.9972222222222221,
+        "sd_v_obs": 0.014958791130929183,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.21666666666666667,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9986111111111111,
+        "sd_v_obs": 0.010668257983150848,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.03333333333333333,
+        "mean_fix_iterations": 0.21666666666666667,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.001388888888888995,
+      "delta_pass_at_1": 0.016666666666666607,
+      "delta_pass_hat_k": 0.03518518518518532,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "hook_detect_prob": 0.95,
+      "seed": 1578866899,
+      "hook_off": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "hook_detect_prob": 0.95,
+      "seed": 1661339913,
+      "hook_off": {
+        "mean_v_obs": 0.986111111111111,
+        "sd_v_obs": 0.03105649968749709,
+        "pass_at_1": 0.8333333333333334,
+        "pass_hat_k": 0.6703703703703703,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.2833333333333333,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9930555555555555,
+        "sd_v_obs": 0.02303211659969029,
+        "pass_at_1": 0.9166666666666666,
+        "pass_hat_k": 0.8240740740740742,
+        "mean_hook_interventions": 0.15,
+        "mean_fix_iterations": 0.2833333333333333,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.00694444444444442,
+      "delta_pass_at_1": 0.08333333333333326,
+      "delta_pass_hat_k": 0.1537037037037039,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "hook_detect_prob": 0.95,
+      "seed": 563822072,
+      "hook_off": {
+        "mean_v_obs": 0.9895833333333334,
+        "sd_v_obs": 0.03454817489953542,
+        "pass_at_1": 0.9166666666666666,
+        "pass_hat_k": 0.8462962962962962,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "mean_hook_interventions": 0.08333333333333333,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.008333333333333304,
+      "delta_pass_at_1": 0.06666666666666665,
+      "delta_pass_hat_k": 0.11851851851851869,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "hook_detect_prob": 0.95,
+      "seed": 1695516751,
+      "hook_off": {
+        "mean_v_obs": 0.9694444444444444,
+        "sd_v_obs": 0.06079463507844248,
+        "pass_at_1": 0.75,
+        "pass_hat_k": 0.5166666666666666,
+        "mean_hook_interventions": 0.0,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "hook_on": {
+        "mean_v_obs": 0.9916666666666667,
+        "sd_v_obs": 0.029265704869035385,
+        "pass_at_1": 0.9166666666666666,
+        "pass_hat_k": 0.8462962962962962,
+        "mean_hook_interventions": 0.23333333333333334,
+        "mean_fix_iterations": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.022222222222222254,
+      "delta_pass_at_1": 0.16666666666666663,
+      "delta_pass_hat_k": 0.3296296296296296,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    }
+  ],
+  "aggregates": [
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "delta_v_obs_min": 0.0,
+      "delta_v_obs_max": 0.002083333333333326,
+      "delta_v_obs_mean": 0.000347222222222221,
+      "delta_pass_at_1_min": 0.0,
+      "delta_pass_at_1_max": 0.01666666666666672,
+      "delta_pass_at_1_mean": 0.0027777777777777866,
+      "delta_pass_hat_k_min": 0.0,
+      "delta_pass_hat_k_max": 0.0351851851851851,
+      "delta_pass_hat_k_mean": 0.005864197530864183,
+      "prediction_match_counts": {
+        "agree": 6,
+        "below_predicted_range": 0,
+        "above_predicted_range": 0
+      },
+      "expected_delta_v_obs_range": [
+        0.0,
+        0.02
+      ],
+      "direction_correct": true
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "delta_v_obs_min": 0.0,
+      "delta_v_obs_max": 0.005555555555555647,
+      "delta_v_obs_mean": 0.002083333333333363,
+      "delta_pass_at_1_min": 0.0,
+      "delta_pass_at_1_max": 0.06666666666666665,
+      "delta_pass_at_1_mean": 0.024999999999999967,
+      "delta_pass_hat_k_min": 0.0,
+      "delta_pass_hat_k_max": 0.11851851851851858,
+      "delta_pass_hat_k_mean": 0.04907407407407416,
+      "prediction_match_counts": {
+        "agree": 6,
+        "below_predicted_range": 0,
+        "above_predicted_range": 0
+      },
+      "expected_delta_v_obs_range": [
+        0.0,
+        0.05
+      ],
+      "direction_correct": true
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "delta_v_obs_min": 0.0,
+      "delta_v_obs_max": 0.004166666666666652,
+      "delta_v_obs_mean": 0.001388888888888884,
+      "delta_pass_at_1_min": 0.0,
+      "delta_pass_at_1_max": 0.033333333333333326,
+      "delta_pass_at_1_mean": 0.011111111111111108,
+      "delta_pass_hat_k_min": 0.0,
+      "delta_pass_hat_k_max": 0.07037037037037064,
+      "delta_pass_hat_k_mean": 0.023456790123456844,
+      "prediction_match_counts": {
+        "agree": 0,
+        "below_predicted_range": 6,
+        "above_predicted_range": 0
+      },
+      "expected_delta_v_obs_range": [
+        0.02,
+        0.12
+      ],
+      "direction_correct": true
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "delta_v_obs_min": 0.002777777777777768,
+      "delta_v_obs_max": 0.008333333333333304,
+      "delta_v_obs_mean": 0.004629629629629668,
+      "delta_pass_at_1_min": 0.033333333333333326,
+      "delta_pass_at_1_max": 0.08333333333333337,
+      "delta_pass_at_1_mean": 0.05277777777777778,
+      "delta_pass_hat_k_min": 0.0703703703703702,
+      "delta_pass_hat_k_max": 0.17592592592592582,
+      "delta_pass_hat_k_mean": 0.10401234567901235,
+      "prediction_match_counts": {
+        "agree": 0,
+        "below_predicted_range": 6,
+        "above_predicted_range": 0
+      },
+      "expected_delta_v_obs_range": [
+        0.03,
+        0.18
+      ],
+      "direction_correct": true
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "delta_v_obs_min": 0.0,
+      "delta_v_obs_max": 0.008333333333333304,
+      "delta_v_obs_mean": 0.00347222222222221,
+      "delta_pass_at_1_min": 0.0,
+      "delta_pass_at_1_max": 0.06666666666666665,
+      "delta_pass_at_1_mean": 0.024999999999999967,
+      "delta_pass_hat_k_min": 0.0,
+      "delta_pass_hat_k_max": 0.11851851851851869,
+      "delta_pass_hat_k_mean": 0.04907407407407414,
+      "prediction_match_counts": {
+        "agree": 0,
+        "below_predicted_range": 6,
+        "above_predicted_range": 0
+      },
+      "expected_delta_v_obs_range": [
+        0.03,
+        0.15
+      ],
+      "direction_correct": true
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "delta_v_obs_min": 0.002777777777777768,
+      "delta_v_obs_max": 0.022222222222222254,
+      "delta_v_obs_mean": 0.012268518518518456,
+      "delta_pass_at_1_min": 0.016666666666666607,
+      "delta_pass_at_1_max": 0.16666666666666663,
+      "delta_pass_at_1_mean": 0.09166666666666666,
+      "delta_pass_hat_k_min": 0.012962962962962954,
+      "delta_pass_hat_k_max": 0.3296296296296296,
+      "delta_pass_hat_k_mean": 0.16388888888888892,
+      "prediction_match_counts": {
+        "agree": 0,
+        "below_predicted_range": 6,
+        "above_predicted_range": 0
+      },
+      "expected_delta_v_obs_range": [
+        0.05,
+        0.25
+      ],
+      "direction_correct": true
+    }
+  ]
+}

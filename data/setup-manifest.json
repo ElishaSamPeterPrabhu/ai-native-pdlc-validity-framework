@@ -1,0 +1,204 @@
+{
+  "schema_version": "1.0.0",
+  "repo": {
+    "owner": "Projects",
+    "name": "Autonomous-Agent(Research)",
+    "default_branch": "main",
+    "url": ""
+  },
+  "formula_version": "v1.1",
+  "evidence_status": "observed",
+  "layout": {
+    "source": "file",
+    "layout_file": "validity.layout.json",
+    "paths": {
+      "rules_dir": ".cursor/rules",
+      "hooks_path": ".cursor/hooks.json",
+      "mcp_config_path": ".cursor/mcp.json",
+      "mcp_server_dir": "mcp",
+      "workflows_dir": ".github/workflows",
+      "framework_dir": "framework",
+      "harness_dir": "harness",
+      "tasks_dir": "harness/tasks",
+      "data_dir": "data",
+      "metrics_path": "data/metrics.jsonl",
+      "setup_manifest_path": "data/setup-manifest.json",
+      "validity_report_path": "data/validity-report.json"
+    },
+    "notes": [
+      "hooks_path not found; default .cursor/hooks.json"
+    ]
+  },
+  "layers": {
+    "harness": {
+      "present": true,
+      "controls": [
+        "rules_context"
+      ],
+      "notes": "rules/MCP from layout (file)"
+    },
+    "loop": {
+      "present": false,
+      "controls": [],
+      "notes": "CI/hooks from layout; agentic QA/repair need automation config"
+    },
+    "graph": {
+      "present": false,
+      "controls": [],
+      "notes": "label-handoff graph not confirmed from files alone"
+    }
+  },
+  "factors": [
+    {
+      "name": "rules_context",
+      "enabled": true,
+      "layer": "harness",
+      "stage": "dev",
+      "evidence": "declared",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ".cursor/rules"
+    },
+    {
+      "name": "mcp_context",
+      "enabled": false,
+      "layer": "harness",
+      "stage": "dev",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ".cursor/mcp.json or mcp"
+    },
+    {
+      "name": "ci_gate",
+      "enabled": false,
+      "layer": "loop",
+      "stage": "qa",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ".github/workflows"
+    },
+    {
+      "name": "completion_guard_hook",
+      "enabled": false,
+      "layer": "loop",
+      "stage": "review",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ".cursor/hooks.json"
+    },
+    {
+      "name": "qa_a11y",
+      "enabled": false,
+      "layer": "loop",
+      "stage": "qa",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ""
+    },
+    {
+      "name": "checkpointing",
+      "enabled": false,
+      "layer": "harness",
+      "stage": "dev",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ""
+    },
+    {
+      "name": "agentic_qa",
+      "enabled": false,
+      "layer": "loop",
+      "stage": "qa",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ""
+    },
+    {
+      "name": "fix_loop",
+      "enabled": false,
+      "layer": "loop",
+      "stage": "repair",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ""
+    },
+    {
+      "name": "spec_refinement",
+      "enabled": false,
+      "layer": "graph",
+      "stage": "ticket",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ""
+    },
+    {
+      "name": "review_bot",
+      "enabled": false,
+      "layer": "graph",
+      "stage": "review",
+      "evidence": "missing",
+      "toggle": "see intervention catalog; paths from validity.layout.json",
+      "activity_signal": "unobserved until Level 1 collectors run",
+      "path_ref": ""
+    }
+  ],
+  "evidence_adapters": [
+    {
+      "name": "github_events",
+      "status": "partial",
+      "notes": "requires GitHub API / label conventions at Level 1"
+    },
+    {
+      "name": "github_diff",
+      "status": "available",
+      "notes": "PR diff stats via GitHub API or local git"
+    },
+    {
+      "name": "ci_checks",
+      "status": "partial",
+      "notes": "workflows_dir=.github/workflows; files: none found"
+    },
+    {
+      "name": "cursor_automations",
+      "status": "partial",
+      "notes": "console-configured; not discoverable from repo files alone"
+    },
+    {
+      "name": "dependency_graph",
+      "status": "partial",
+      "notes": "run madge/jscpd/etc. to enable blast-radius confidence"
+    },
+    {
+      "name": "qa_repair",
+      "status": "partial",
+      "notes": "needs label/event telemetry from Dev/QA/Fix path"
+    },
+    {
+      "name": "verifier_checkpoints",
+      "status": "partial",
+      "notes": "tasks_dir=harness/tasks"
+    },
+    {
+      "name": "cloud_agent_tokens",
+      "status": "partial",
+      "notes": "Cloud Agents API; entropy often imputed at Level 0"
+    }
+  ],
+  "measurement_gaps": [
+    "completion_guard_hook not present (.cursor/hooks.json missing)",
+    "agentic_qa not detectable from repo files (configure automations)",
+    "fix_loop not detectable from repo files (configure automations)",
+    "spec_refinement not detectable from repo files (configure automations)",
+    "harness: MCP absent (.cursor/mcp.json / mcp)",
+    "loop: no obvious CI/test workflow gate under .github/workflows",
+    "layout-note: hooks_path not found; default .cursor/hooks.json"
+  ]
+}

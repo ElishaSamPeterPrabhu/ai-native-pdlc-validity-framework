@@ -1,0 +1,69 @@
+{
+  "arm_stats": {
+    "full": {
+      "pass_at_1": 1.0,
+      "final_v_mean": 0.999074074074074,
+      "n_runs": 90
+    },
+    "no_mcp": {
+      "pass_at_1": 0.9666666666666667,
+      "final_v_mean": 0.9935185185185186,
+      "n_runs": 90
+    },
+    "no_qa_fix": {
+      "pass_at_1": 0.8888888888888888,
+      "final_v_mean": 0.9888888888888889,
+      "n_runs": 90
+    },
+    "no_spec_refinement": {
+      "pass_at_1": 0.9888888888888889,
+      "final_v_mean": 0.9972222222222222,
+      "n_runs": 90
+    },
+    "no_ci": {
+      "pass_at_1": 0.9444444444444444,
+      "final_v_mean": 0.9944444444444445,
+      "n_runs": 90
+    },
+    "bare": {
+      "pass_at_1": 0.6111111111111112,
+      "final_v_mean": 0.9152777777777777,
+      "n_runs": 90
+    }
+  },
+  "fit": {
+    "rmse": 0.05410634105424549,
+    "factor_weights": {
+      "spec_refinement": 0.0,
+      "agentic_qa": 0.0,
+      "fix_loop": 0.0,
+      "ci_gate": 6.1819,
+      "mcp_context": 5.4914,
+      "rules_context": 0.0,
+      "checkpointing": 0.0
+    },
+    "decay_weights": {
+      "baseline": 0.0,
+      "entropy": 0.0,
+      "opacity": 0.0,
+      "blast_radius": 0.1261,
+      "spec_ambiguity": 0.0,
+      "interaction_cs": 0.7697
+    }
+  },
+  "n_trajectories": 540,
+  "verdict_notes": [
+    {
+      "check": "full > bare (observed)",
+      "ok": true
+    },
+    {
+      "check": "full > no_qa_fix (observed)",
+      "ok": true
+    },
+    {
+      "check": "fit RMSE < 0.15",
+      "ok": true
+    }
+  ]
+}

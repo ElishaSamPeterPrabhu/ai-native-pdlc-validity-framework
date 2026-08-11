@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/validity-report.schema.json",
+  "title": "ValidityReport",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "formula_version",
+    "evidence_status",
+    "generated_at",
+    "by_stratum",
+    "layer_diagnosis",
+    "review_policy"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "formula_version": { "type": "string" },
+    "evidence_status": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "repo": { "type": "string" },
+    "n_runs": { "type": "integer" },
+    "synthetic_runs_excluded": { "type": "boolean" },
+    "evidence_coverage": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "observed_fraction": { "type": "number" },
+          "imputed_fraction": { "type": "number" },
+          "missing_fraction": { "type": "number" }
+        }
+      }
+    },
+    "by_stratum": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "n": { "type": "integer" },
+          "mean_v_obs": { "type": ["number", "null"] },
+          "v_obs_ci": {
+            "type": "array",
+            "items": { "type": ["number", "null"] },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "pass_at_1": { "type": ["number", "null"] },
+          "pass_hat_k": { "type": ["number", "null"] },
+          "provisional_v_star": {
+            "type": "object",
+            "required": ["value", "source", "confidence", "method"],
+            "properties": {
+              "value": { "type": ["number", "null"] },
+              "source": {
+                "enum": ["observed", "imputed", "declared", "heuristic", "missing"]
+              },
+              "confidence": {
+                "enum": ["high", "medium", "low", "none"]
+              },
+              "method": { "type": "string" },
+              "weight_source": {
+                "enum": ["none", "placeholder", "repo-fitted"]
+              },
+              "notes": { "type": "string" }
+            }
+          },
+          "review_lane": {
+            "enum": ["deep", "high-level", "minimal", "insufficient-evidence"]
+          }
+        }
+      }
+    },
+    "layer_diagnosis": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": { "const": "deferred_to_ai" },
+            "instruction": { "type": "string" },
+            "optional_heuristic": { "type": "object" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["weakest_layer", "rationale", "recommended_controls"],
+          "properties": {
+            "weakest_layer": { "enum": ["harness", "loop", "graph", "unknown"] },
+            "rationale": { "type": "string" },
+            "recommended_controls": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      ]
+    },
+    "review_policy": {
+      "type": "object",
+      "required": ["human_review_never_removed", "lanes"],
+      "properties": {
+        "human_review_never_removed": { "const": true },
+        "status": { "type": "string" },
+        "lanes": {
+          "type": "object",
+          "properties": {
+            "deep": { "type": "string" },
+            "high_level": { "type": "string" },
+            "minimal": { "type": "string" }
+          }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "claim_warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

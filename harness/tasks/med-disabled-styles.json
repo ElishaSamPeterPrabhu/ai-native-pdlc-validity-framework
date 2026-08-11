@@ -1,0 +1,27 @@
+{
+  "id": "med-disabled-styles",
+  "stratum": "medium",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1251",
+  "human_time_estimate_h": 3.5,
+  "components": ["modus-wc-checkbox", "modus-wc-radio", "modus-wc-switch"],
+  "spec_raw": "Disabled styles for checkbox/radio/switch are inconsistent",
+  "spec_refined": {
+    "title": "Consistent disabled styles for checkbox, radio and switch",
+    "description": "Disabled checkbox, radio and switch components render with inconsistent opacity/colors across themes. Define one disabled treatment (reduced opacity on the control and label, not-allowed cursor) and apply it consistently to all three components in all themes.",
+    "acceptance_criteria": [
+      "Disabled checkbox, radio and switch use the same opacity value on control and label",
+      "Disabled controls show cursor: not-allowed on hover",
+      "Disabled controls do not respond to click or keyboard activation",
+      "Checked+disabled state renders the checked visual at disabled opacity for all three components",
+      "All existing tests for the three components pass"
+    ],
+    "technical_notes": "Cross-component change: three tailwind.ts files plus shared scss; a shared utility/token is the clean solution."
+  },
+  "verifier": {
+    "dir": "verifiers/med-disabled-styles",
+    "checks": 5,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

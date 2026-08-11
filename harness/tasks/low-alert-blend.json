@@ -1,0 +1,26 @@
+{
+  "id": "low-alert-blend",
+  "stratum": "low",
+  "source": "rebroken-fix",
+  "source_ref": "trimble-oss/modus-wc-2.0#1227",
+  "human_time_estimate_h": 0.5,
+  "components": ["modus-wc-alert"],
+  "spec_raw": "Alert background color looks wrong (blended/washed out) for success, warning and error variants",
+  "spec_refined": {
+    "title": "Alert: fix background color blend for success, warning and error variants",
+    "description": "The success, warning and error alert variants render with a blended/translucent background that does not match the design tokens. The background must be the correct solid token color per variant and theme.",
+    "acceptance_criteria": [
+      "Success alert background matches the success token color (no blend) in all themes",
+      "Warning alert background matches the warning token color in all themes",
+      "Error alert background matches the error token color in all themes",
+      "Info variant is unchanged and all existing alert tests pass"
+    ],
+    "technical_notes": "Upstream fix was commit 87b26a41b (PR #1227); the rebreak reverts that commit on the experiment branch."
+  },
+  "verifier": {
+    "dir": "verifiers/low-alert-blend",
+    "checks": 4,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": { "revert_commit": "87b26a41b" }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "low-sidenav-menu-style",
+  "stratum": "low",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#987",
+  "fork_issue": "ElishaSamPeterPrabhu/modus-wc-2.0#29",
+  "human_time_estimate_h": 1.5,
+  "components": ["modus-wc-side-navigation"],
+  "qa_route_expected": "qa-skip",
+  "spec_raw": "Menu styling within the Side Navigation component is different from standalone menus",
+  "spec_refined": {
+    "title": "Side Navigation: menus should have consistent styling with standalone menus",
+    "description": "When menus are placed inside modus-wc-side-navigation, they render with different styles than identical menus used standalone. Both should use the same token-based styling.",
+    "acceptance_criteria": [
+      "Menu items inside side-nav and standalone use the same background/hover token",
+      "No hardcoded color values in menu selectors within the side-nav stylesheet",
+      "Side-nav uses modus-wc-menu component base classes for menu styling",
+      "Visual styling is consistent between slotted menus and standalone menus"
+    ],
+    "technical_notes": "Style-only change in modus-wc-side-navigation.scss or tailwind.ts. Check how menus are styled differently inside the side-nav shadow DOM."
+  },
+  "verifier": {
+    "dir": "verifiers/low-sidenav-menu-style",
+    "checks": 4,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

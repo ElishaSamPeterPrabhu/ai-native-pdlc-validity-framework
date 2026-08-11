@@ -1,0 +1,34 @@
+---
+description: Validity Framework layout contract — resolve all paths from validity.layout.json
+alwaysApply: true
+---
+
+# Validity layout (init / main rule)
+
+Do **not** assume this repository uses the research-repo folder names
+(`framework/`, `harness/`, `data/`, `theory/`). Paths differ per product repo.
+
+## Role split
+
+- **AI (`validity-diagnose`)** reasons about harness/loop/graph and review policy.
+- **CLI** emits facts and applies approved writes; it does not own diagnosis.
+- **Automations** run Dev/QA/Fix; they are not the trust reasoner.
+
+## Before inspect, evidence, collect, calibrate, or report
+
+1. Read **`validity.layout.json`** at the repo root (fallback:
+   `.cursor/validity.layout.json`).
+2. If the file is missing, run:
+   ```bash
+   python -m framework init --repo .
+   ```
+   then ask the human to confirm paths before writing other files.
+3. Use **only** the paths in that file for rules, hooks, MCP, workflows,
+   metrics, manifests, reports, and optional harness/theory/analysis dirs.
+
+## Hard rules
+
+- Never invent a folder because the research repo has it.
+- Prefer adapting the layout file over forcing the adopter into our tree.
+- Require human approval before creating missing directories or installing hooks/rules.
+- Mark absent optional paths as measurement gaps, not errors.

@@ -1,0 +1,24 @@
+{
+  "pilot": {
+    "terminal_runs_min": 6,
+    "require_v_obs_variation": true,
+    "require_stage_transitions": true,
+    "synthetic_allowed": false
+  },
+  "campaign": {
+    "primary_estimand": "arm_contrasts",
+    "combine_qa_fix_unless_separated": true,
+    "report_null_effects": true,
+    "confidence_intervals": true
+  },
+  "phase_e": {
+    "protocol": "analysis/GENERICITY-PROTOCOL.md",
+    "require_decay_form_match": true,
+    "require_arm_contrast_sign_order": true,
+    "forbid_constant_transfer_claim": true
+  },
+  "local_baselines": {
+    "description": "On available trajectories, hybrid equilibrium RMSE should beat or match a constant-mean baseline and a CI-only heuristic.",
+    "metric": "rmse_v_end"
+  }
+}

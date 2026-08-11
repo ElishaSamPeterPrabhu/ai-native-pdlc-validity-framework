@@ -1,0 +1,23 @@
+# Research-preview observe workflow: posts a setup-signal comment using
+# provisional (non-fitted) weights. Do not treat output as factory calibration.
+name: Validity Observe (research preview)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Inspect setup
+        run: python -m framework inspect --repo . --out data/setup-manifest.json
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-manifest
+          path: data/setup-manifest.json

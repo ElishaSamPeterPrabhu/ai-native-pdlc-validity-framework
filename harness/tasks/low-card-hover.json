@@ -1,0 +1,26 @@
+{
+  "id": "low-card-hover",
+  "stratum": "low",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1244",
+  "human_time_estimate_h": 0.75,
+  "components": ["modus-wc-card"],
+  "spec_raw": "Remove hover effects on cards for classic and connect themes",
+  "spec_refined": {
+    "title": "Card: remove hover effects in classic and connect themes",
+    "description": "Cards currently show a hover effect (elevation/background change) in the classic and connect themes. Per updated design guidance, cards are not interactive surfaces in these themes and must not respond to hover.",
+    "acceptance_criteria": [
+      "In classic light/dark themes, hovering a modus-wc-card produces no visual change (no shadow, background, or border change)",
+      "In connect light/dark themes, hovering a modus-wc-card produces no visual change",
+      "The modern theme hover behavior is unchanged",
+      "Existing card unit tests and snapshots pass (updated snapshots only where hover styles were removed)"
+    ],
+    "technical_notes": "Hover styles originate in modus-wc-card.scss / modus-wc-card.tailwind.ts; themes are selected via data-theme attributes."
+  },
+  "verifier": {
+    "dir": "verifiers/low-card-hover",
+    "checks": 4,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

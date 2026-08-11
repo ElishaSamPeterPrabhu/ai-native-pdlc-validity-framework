@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hooks": [
+    {
+      "name": "completion_guard",
+      "event": "beforeSubmitPrompt",
+      "description": "Block done/complete claims without acceptance, test, and QA evidence. Simulation-validated; enable live telemetry before claiming effect sizes.",
+      "matcher": "(?i)\\b(done|complete|ready for review|finished)\\b",
+      "action": {
+        "type": "challenge",
+        "require_any": [
+          "acceptance_criteria_checked",
+          "targeted_tests_passed",
+          "qa_evidence_present"
+        ],
+        "on_fail": {
+          "message": "Completion rejected: missing acceptance criteria, tests, or QA evidence. Run one bounded repair.",
+          "force_repair": true,
+          "max_extra_repairs": 1
+        }
+      }
+    }
+  ]
+}

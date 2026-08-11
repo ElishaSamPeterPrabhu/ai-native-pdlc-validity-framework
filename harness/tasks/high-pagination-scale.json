@@ -1,0 +1,29 @@
+{
+  "id": "high-pagination-scale",
+  "stratum": "high",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1249 + #1254",
+  "human_time_estimate_h": 8.0,
+  "components": ["modus-wc-pagination"],
+  "spec_raw": "Pagination numbers overlap when there are many pages, and pagination should follow the component sizing scale",
+  "spec_refined": {
+    "title": "Pagination: sizing-scale compliance and overflow handling",
+    "description": "Two coupled defects: (1) pagination does not follow the library sizing scale (sm/md/lg heights and paddings); (2) with many pages the page numbers overlap instead of truncating with ellipses. Implement the sizing scale and a windowed page display (first, last, current +/- neighbors, ellipsis separators).",
+    "acceptance_criteria": [
+      "size='sm'|'md'|'lg' produce heights matching the library sizing scale tokens",
+      "With more pages than the display window, ellipsis items appear and no overlap occurs",
+      "First and last pages are always reachable",
+      "Current page +/- 1 neighbors are always visible",
+      "Keyboard navigation works across truncated layouts (ellipsis items are skipped)",
+      "pageChange events fire with correct page numbers after truncation",
+      "Existing pagination tests pass; new behavior covered"
+    ],
+    "technical_notes": "Windowing algorithm + sizing refactor across the same component: layered change with regression risk on events."
+  },
+  "verifier": {
+    "dir": "verifiers/high-pagination-scale",
+    "checks": 7,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

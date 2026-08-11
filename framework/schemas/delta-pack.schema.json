@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/delta-pack.schema.json",
+  "title": "DeltaPack",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "delta_kind",
+    "scoring",
+    "worsened",
+    "improve_instructions",
+    "claim_warnings"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "generated_at": { "type": "string" },
+    "delta_kind": {
+      "enum": ["intake_heuristic", "validity_report"]
+    },
+    "before_label": { "type": "string" },
+    "after_label": { "type": "string" },
+    "scoring": {
+      "type": "object",
+      "required": ["scoring_method", "evidence_status", "formula_used"],
+      "properties": {
+        "scoring_method": { "type": "string" },
+        "evidence_status": { "type": "string" },
+        "formula_used": { "type": "boolean" },
+        "weight_source": {
+          "enum": ["none", "placeholder", "repo-fitted"]
+        }
+      }
+    },
+    "intake_heuristic_scores_before": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "intake_heuristic_scores_after": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "worsened": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": { "type": "string" },
+          "before": { "type": "number" },
+          "after": { "type": "number" },
+          "delta": { "type": "number" },
+          "stratum": { "type": "string" }
+        }
+      }
+    },
+    "improved": { "type": "array" },
+    "dominant_worsened_metric": { "type": ["string", "null"] },
+    "failure_notes": { "type": "array" },
+    "matched_failure_hints": { "type": "array" },
+    "improve_instructions": { "type": "string" },
+    "claim_warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "next_user_steps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

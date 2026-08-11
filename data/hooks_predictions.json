@@ -1,0 +1,56 @@
+{
+  "registered_before_run": true,
+  "protocol": "Predictions recorded before any hook-ablation code executes. Results must be compared against these expectations; agreement and disagreement are both reportable.",
+  "mechanism": {
+    "name": "completion_guard_hook",
+    "description": "Deterministic completion guard at the stop boundary. Checks that acceptance criteria, targeted-test results, and QA evidence exist; if missing, blocks completion once and routes caught broken checks through one bounded repair pass using the existing fix_success_prob. Blind to semantic misreads that leave checks green.",
+    "enters_formula_as": "recovery factor in R(t); does not alter D(t) directly",
+    "detect_prob_sweep": [0.5, 0.6, 0.7, 0.8, 0.9, 0.95],
+    "max_interventions": 1
+  },
+  "predictions": [
+    {
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "expected_direction": "near_zero",
+      "expected_delta_v_obs_range": [0.0, 0.02],
+      "rationale": "Phase-B ceiling effect: full pipeline saturates final validity, leaving little residual breakage for a terminal guard to catch."
+    },
+    {
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.0, 0.05],
+      "rationale": "High stratum has more residual failure than medium under full pipeline, so a small positive delta is possible but still limited by upstream recovery."
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.02, 0.12],
+      "rationale": "A single fix iteration leaves more broken checks at stop time; the hook's one extra repair pass should raise final validity."
+    },
+    {
+      "arm": "fix_cap_1",
+      "stratum": "high",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.03, 0.18],
+      "rationale": "Highest residual terminal breakage among the three arms; largest expected absolute gain from the completion guard."
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.03, 0.15],
+      "rationale": "Without agentic QA, the fix loop never runs; the hook is the only terminal recovery and should produce a clear positive delta."
+    },
+    {
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.05, 0.25],
+      "rationale": "No QA recovery plus high decay pressure maximizes the number of broken checks at stop; the hook should show its largest effect here across the detect-prob sweep."
+    }
+  ],
+  "claim_rule": "Cite measured deltas from data/hooks_ablation.json only. If a measured delta is negligible or negative, report that result and do not claim improvement for that cell."
+}

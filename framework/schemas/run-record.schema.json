@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/run-record.schema.json",
+  "title": "RunRecord",
+  "type": "object",
+  "required": ["schema_version", "run_id", "task", "arm", "stratum", "timestamps"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "run_id": { "type": "string" },
+    "task": { "type": "string" },
+    "arm": { "type": "string" },
+    "stratum": { "enum": ["low", "medium", "high"] },
+    "synthetic": { "type": "boolean" },
+    "timestamps": {
+      "type": "object",
+      "required": ["started_at"],
+      "properties": {
+        "started_at": { "type": "string" },
+        "ended_at": { "type": ["string", "null"] }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "at"],
+        "properties": {
+          "name": { "type": "string" },
+          "at": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    },
+    "decay_proxies": {
+      "type": "object",
+      "properties": {
+        "entropy": { "$ref": "#/$defs/measuredValue" },
+        "opacity": { "$ref": "#/$defs/measuredValue" },
+        "blast_radius": { "$ref": "#/$defs/measuredValue" },
+        "spec_ambiguity": { "$ref": "#/$defs/measuredValue" }
+      }
+    },
+    "factor_activity": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/measuredValue" }
+    },
+    "checkpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["t", "v_obs"],
+        "properties": {
+          "t": { "type": "number" },
+          "v_obs": { "type": "number", "minimum": 0, "maximum": 1 },
+          "commit": { "type": "string" },
+          "checks_passed": { "type": "integer" },
+          "checks_total": { "type": "integer" }
+        }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "properties": {
+        "final_v_obs": { "type": ["number", "null"] },
+        "final_pass": { "type": ["boolean", "null"] },
+        "repair_iterations": { "type": "integer" },
+        "terminal_state": { "type": "string" }
+      }
+    },
+    "missing_fields": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "measuredValue": {
+      "type": "object",
+      "required": ["value", "source", "confidence"],
+      "properties": {
+        "value": { "type": ["number", "null"] },
+        "source": { "enum": ["observed", "imputed", "declared", "missing"] },
+        "confidence": { "enum": ["high", "medium", "low", "none"] },
+        "raw": {},
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

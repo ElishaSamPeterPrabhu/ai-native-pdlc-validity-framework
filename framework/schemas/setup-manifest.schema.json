@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/setup-manifest.schema.json",
+  "title": "SetupManifest",
+  "type": "object",
+  "required": ["schema_version", "repo", "layers", "factors", "evidence_adapters"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "repo": {
+      "type": "object",
+      "required": ["owner", "name", "default_branch"],
+      "properties": {
+        "owner": { "type": "string" },
+        "name": { "type": "string" },
+        "default_branch": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "formula_version": { "type": "string" },
+    "evidence_status": {
+      "type": "string",
+      "enum": ["unmeasured", "observed", "instrumented", "simulation-calibrated", "repo-fitted", "multi-repo"]
+    },
+    "layout": {
+      "type": "object",
+      "description": "Resolved paths from validity.layout.json (or discovery)",
+      "properties": {
+        "source": { "type": "string" },
+        "layout_file": { "type": "string" },
+        "paths": { "type": "object" },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "layers": {
+      "type": "object",
+      "required": ["harness", "loop", "graph"],
+      "properties": {
+        "harness": { "$ref": "#/$defs/layerStatus" },
+        "loop": { "$ref": "#/$defs/layerStatus" },
+        "graph": { "$ref": "#/$defs/layerStatus" }
+      }
+    },
+    "factors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/factorPresence" }
+    },
+    "evidence_adapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "github_events",
+              "github_diff",
+              "ci_checks",
+              "cursor_automations",
+              "dependency_graph",
+              "qa_repair",
+              "verifier_checkpoints",
+              "cloud_agent_tokens"
+            ]
+          },
+          "status": { "enum": ["available", "partial", "missing"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "measurement_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "layerStatus": {
+      "type": "object",
+      "required": ["present", "controls"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "controls": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "factorPresence": {
+      "type": "object",
+      "required": ["name", "enabled", "layer", "evidence"],
+      "properties": {
+        "name": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "layer": { "enum": ["harness", "loop", "graph"] },
+        "stage": { "enum": ["ticket", "dev", "qa", "repair", "review"] },
+        "evidence": { "enum": ["observed", "declared", "missing", "simulation-only"] },
+        "toggle": { "type": "string" },
+        "activity_signal": { "type": "string" }
+      }
+    }
+  }
+}

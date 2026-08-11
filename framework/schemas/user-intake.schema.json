@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/user-intake.schema.json",
+  "title": "UserIntake",
+  "description": "User-provided automation setup + PR evidence when console automations are not API-readable",
+  "type": "object",
+  "required": ["schema_version", "repo"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "repo": {
+      "type": "object",
+      "required": ["owner", "name"],
+      "properties": {
+        "owner": { "type": "string" },
+        "name": { "type": "string" },
+        "default_branch": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "automations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "role"],
+        "properties": {
+          "name": { "type": "string" },
+          "role": {
+            "enum": ["dev", "qa", "fix", "scaffold", "review", "other"]
+          },
+          "trigger": { "type": "string" },
+          "repo_scope": { "type": "string" },
+          "tools_mcp": { "type": "array", "items": { "type": "string" } },
+          "stop_rule": { "type": "string" },
+          "repair_cap": { "type": ["integer", "null"] },
+          "instructions_summary": { "type": "string" },
+          "instructions_excerpt": { "type": "string" },
+          "console_url": { "type": "string" },
+          "enabled": { "type": "boolean" }
+        }
+      }
+    },
+    "setup_declared": {
+      "type": "object",
+      "properties": {
+        "has_rules": { "type": "boolean" },
+        "has_mcp": { "type": "boolean" },
+        "has_hooks": { "type": "boolean" },
+        "has_ci_gate": { "type": "boolean" },
+        "has_review_bot": { "type": "boolean" },
+        "label_handoff": { "type": "boolean" },
+        "human_review_always": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    },
+    "prs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["url_or_number"],
+        "properties": {
+          "url_or_number": { "type": "string" },
+          "title": { "type": "string" },
+          "stratum_guess": { "enum": ["low", "medium", "high", "unknown"] },
+          "linked_issue": { "type": "string" },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "body_excerpt": { "type": "string" },
+          "labels": { "type": "array", "items": { "type": "string" } },
+          "ci_status": { "enum": ["pass", "fail", "mixed", "unknown"] },
+          "qa_comments_summary": { "type": "string" },
+          "fix_iterations": { "type": ["integer", "null"] },
+          "files_changed": { "type": ["integer", "null"] },
+          "lines_changed": { "type": ["integer", "null"] },
+          "agent_claimed_done": { "type": ["boolean", "null"] },
+          "human_review_notes": { "type": "string" },
+          "what_failed_or_surprised": { "type": "string" },
+          "formula_signals": {
+            "type": "object",
+            "properties": {
+              "entropy_notes": { "type": "string" },
+              "opacity_notes": { "type": "string" },
+              "blast_radius_notes": { "type": "string" },
+              "spec_ambiguity_notes": { "type": "string" },
+              "recovery_seen": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "goals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What the team wants help improving"
+    }
+  }
+}

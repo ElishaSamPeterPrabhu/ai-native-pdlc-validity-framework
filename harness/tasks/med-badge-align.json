@@ -1,0 +1,27 @@
+{
+  "id": "med-badge-align",
+  "stratum": "medium",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1268",
+  "human_time_estimate_h": 2.5,
+  "components": ["modus-wc-badge", "modus-wc-tabs"],
+  "spec_raw": "Badge is not aligned with the UX prototype",
+  "spec_refined": {
+    "title": "Badge: align sizing and placement with the UX prototype",
+    "description": "Badge rendering deviates from the UX prototype: vertical centering inside tab labels is off, counter badges are not sized per the sizing scale, and spacing between badge and adjacent text is inconsistent across sizes.",
+    "acceptance_criteria": [
+      "Badge is vertically centered relative to adjacent label text in all three sizes",
+      "Counter badge respects the component sizing scale (sm/md/lg) for height and min-width",
+      "Badge-to-text gap is consistent across sizes and matches the spacing token",
+      "Badge inside modus-wc-tabs custom content renders without clipping",
+      "All existing badge and tabs tests pass"
+    ],
+    "technical_notes": "Touches badge tailwind classes and the tabs story that embeds badges (see issue #1242 for the tab case)."
+  },
+  "verifier": {
+    "dir": "verifiers/med-badge-align",
+    "checks": 5,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

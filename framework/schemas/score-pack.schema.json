@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/score-pack.schema.json",
+  "title": "ScorePack",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "formula_version",
+    "scoring",
+    "claim_warnings"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "generated_at": { "type": "string" },
+    "formula_version": { "type": "string" },
+    "repo": { "type": "string" },
+    "scoring": {
+      "type": "object",
+      "required": ["scoring_method", "evidence_status", "formula_used", "weight_source"],
+      "properties": {
+        "scoring_method": { "const": "formula_equilibrium" },
+        "evidence_status": { "type": "string" },
+        "formula_used": { "const": true },
+        "weight_source": {
+          "enum": ["placeholder", "repo-fitted"]
+        }
+      }
+    },
+    "runs": { "type": "array" },
+    "intake_prs": { "type": "array" },
+    "aggregate": { "type": "object" },
+    "claim_warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

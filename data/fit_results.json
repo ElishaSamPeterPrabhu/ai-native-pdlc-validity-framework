@@ -1,0 +1,130 @@
+{
+  "data": "SYNTHETIC (pipeline validation only)",
+  "n_records": 18,
+  "arm_contrasts": {
+    "baseline": {
+      "n": 9,
+      "v_end_mean": 0.9907,
+      "v_end_ci": [
+        0.9722,
+        1.0
+      ],
+      "pass_at_1": 0.8889,
+      "pass_hat_k": 0.7654
+    },
+    "contrasts": {
+      "no_mcp": {
+        "arm": {
+          "n": 9,
+          "v_end_mean": 0.9907,
+          "v_end_ci": [
+            0.9722,
+            1.0
+          ],
+          "pass_at_1": 1.0,
+          "pass_hat_k": 1.0
+        },
+        "delta_v_end": 0.0,
+        "delta_pass_at_1": -0.1111,
+        "delta_pass_hat_k": -0.2346
+      }
+    }
+  },
+  "model_comparison": {
+    "exponential_baseline": {
+      "decay": 0.00368,
+      "rmse": 0.05272,
+      "aic": -653.24,
+      "bic": -649.87
+    },
+    "multiplicative": {
+      "n_trajectories": 18,
+      "n_obs": 215,
+      "rmse": 0.05339,
+      "aic": -621.82,
+      "bic": -574.63,
+      "factor_weights": {
+        "spec_refinement": 0.6551,
+        "agentic_qa": 0.3063,
+        "fix_loop": 0.0889,
+        "ci_gate": 0.0657,
+        "mcp_context": 0.8226,
+        "rules_context": 0.9171,
+        "checkpointing": 0.6263,
+        "review_bot": 0.743
+      },
+      "decay_weights": {
+        "baseline": 0.5664,
+        "entropy": 0.9383,
+        "opacity": 0.8251,
+        "blast_radius": 0.0526,
+        "spec_ambiguity": 0.8645,
+        "interaction_cs": 0.0819
+      }
+    },
+    "additive": {
+      "n_trajectories": 18,
+      "n_obs": 215,
+      "rmse": 0.04785,
+      "aic": -668.92,
+      "bic": -621.73,
+      "factor_weights": {
+        "spec_refinement": 10.0,
+        "agentic_qa": 10.0,
+        "fix_loop": 10.0,
+        "ci_gate": 10.0,
+        "mcp_context": 3.7295,
+        "rules_context": 10.0,
+        "checkpointing": 10.0,
+        "review_bot": 7.4785
+      },
+      "decay_weights": {
+        "baseline": 0.0,
+        "entropy": 10.0,
+        "opacity": 0.0,
+        "blast_radius": 3.3149,
+        "spec_ambiguity": 0.0,
+        "interaction_cs": 0.3558
+      }
+    },
+    "hybrid": {
+      "n_trajectories": 18,
+      "n_obs": 215,
+      "rmse": 0.04785,
+      "aic": -668.92,
+      "bic": -621.73,
+      "factor_weights": {
+        "spec_refinement": 10.0,
+        "agentic_qa": 10.0,
+        "fix_loop": 10.0,
+        "ci_gate": 10.0,
+        "mcp_context": 3.7299,
+        "rules_context": 10.0,
+        "checkpointing": 10.0,
+        "review_bot": 2.7389
+      },
+      "decay_weights": {
+        "baseline": 0.0,
+        "entropy": 5.3271,
+        "opacity": 0.0,
+        "blast_radius": 2.4808,
+        "spec_ambiguity": 0.0,
+        "interaction_cs": 4.1703
+      }
+    }
+  },
+  "hypotheses": {
+    "opacity_predicts_failure": {
+      "r": 0.23,
+      "p": 0.3593
+    },
+    "blast_radius_vs_fix_iterations": {
+      "rho": 0.432,
+      "p": 0.0732
+    },
+    "complexity_vs_pass": {
+      "rho": -0.297,
+      "p": 0.2313
+    }
+  }
+}

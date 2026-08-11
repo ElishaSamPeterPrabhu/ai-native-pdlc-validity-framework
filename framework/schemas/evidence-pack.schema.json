@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/evidence-pack.schema.json",
+  "title": "EvidencePack",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "diagnosis_instructions",
+    "claim_warnings"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "generated_at": { "type": "string" },
+    "role_split": { "type": "object" },
+    "layout": { "type": "object" },
+    "setup_manifest": { "type": ["object", "null"] },
+    "measurement_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "run_summary": { "type": "object" },
+    "intake": { "type": "object" },
+    "intake_pr_records": { "type": "array" },
+    "optional_heuristic_hint": { "type": "object" },
+    "diagnosis_instructions": { "type": "string" },
+    "claim_warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

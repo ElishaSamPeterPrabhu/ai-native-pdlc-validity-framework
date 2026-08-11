@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0.0",
+  "repo": {
+    "owner": "my-org",
+    "name": "my-product",
+    "default_branch": "main",
+    "url": "https://github.com/my-org/my-product"
+  },
+  "automations": [
+    {
+      "name": "Dev Agent",
+      "role": "dev",
+      "trigger": "issue comment /approve OR label approved",
+      "repo_scope": "my-org/my-product",
+      "tools_mcp": ["github", "repo-mcp"],
+      "stop_rule": "opens PR when acceptance criteria believed met",
+      "repair_cap": null,
+      "instructions_summary": "Implement from issue AC; commit often; open PR for human review",
+      "instructions_excerpt": "Paste key stop/done rules here…",
+      "console_url": "https://cursor.com/t/<team>/automations",
+      "enabled": true
+    },
+    {
+      "name": "QA Agent",
+      "role": "qa",
+      "trigger": "PR opened / labeled qa-full",
+      "repo_scope": "my-org/my-product",
+      "tools_mcp": ["github"],
+      "stop_rule": "comment QA PASS/FAIL; label qa-failed on fail",
+      "repair_cap": null,
+      "instructions_summary": "Verify AC against PR; post QA report",
+      "enabled": true
+    },
+    {
+      "name": "Fix Agent",
+      "role": "fix",
+      "trigger": "label qa-failed",
+      "repo_scope": "my-org/my-product",
+      "tools_mcp": ["github"],
+      "stop_rule": "repair then re-request QA; max 3 rounds",
+      "repair_cap": 3,
+      "instructions_summary": "Repair from QA report; do not claim done without evidence",
+      "enabled": true
+    }
+  ],
+  "setup_declared": {
+    "has_rules": true,
+    "has_mcp": true,
+    "has_hooks": false,
+    "has_ci_gate": true,
+    "has_review_bot": false,
+    "label_handoff": true,
+    "human_review_always": true,
+    "notes": "Automations live in Cursor console; not in git"
+  },
+  "prs": [
+    {
+      "url_or_number": "https://github.com/my-org/my-product/pull/123",
+      "title": "feat: autocomplete escape focus",
+      "stratum_guess": "medium",
+      "linked_issue": "#120",
+      "acceptance_criteria": [
+        "Filter results on typeahead",
+        "Enter selects item",
+        "Escape closes and restores focus"
+      ],
+      "body_excerpt": "Implements #120. AC checklist…",
+      "labels": ["qa-full", "approved"],
+      "ci_status": "pass",
+      "qa_comments_summary": "QA failed Escape once; Fix Agent repaired; QA pass",
+      "fix_iterations": 1,
+      "files_changed": 8,
+      "lines_changed": 240,
+      "agent_claimed_done": true,
+      "human_review_notes": "Needed deep review on focus management",
+      "what_failed_or_surprised": "Agent said done while Escape still broken until QA",
+      "formula_signals": {
+        "entropy_notes": "Long debug loop on a11y; many failed attempts in agent log",
+        "opacity_notes": "Multi-file component change",
+        "blast_radius_notes": "Shared autocomplete used across app",
+        "spec_ambiguity_notes": "AC pinned; Escape criterion was clear",
+        "recovery_seen": ["ci_gate", "agentic_qa", "fix_loop"]
+      }
+    }
+  ],
+  "goals": [
+    "Know how deep to review AI PRs",
+    "Find whether QA/fix stop rules are weak",
+    "Improve PR template so humans get formula-useful signals"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "medium": {
+    "S1": {
+      "refinement_ambiguity_cut": 0.0112,
+      "mcp_error_mult": -0.1573,
+      "rules_error_mult": -0.0552,
+      "entropy_error_gain": -0.0359,
+      "ambiguity_error_gain": 0.0637,
+      "ci_catch_prob": -0.1022,
+      "qa_catch_prob": -0.083,
+      "fix_success_prob": 0.0662,
+      "steps_per_commit": 0.0387
+    },
+    "ST": {
+      "refinement_ambiguity_cut": 0.8075,
+      "mcp_error_mult": 0.6874,
+      "rules_error_mult": 0.6211,
+      "entropy_error_gain": 0.7909,
+      "ambiguity_error_gain": 0.7453,
+      "ci_catch_prob": 0.7329,
+      "qa_catch_prob": 0.882,
+      "fix_success_prob": 0.6832,
+      "steps_per_commit": 0.8654
+    },
+    "ST_conf": {
+      "refinement_ambiguity_cut": 0.2229,
+      "mcp_error_mult": 0.1793,
+      "rules_error_mult": 0.1779,
+      "entropy_error_gain": 0.1875,
+      "ambiguity_error_gain": 0.2081,
+      "ci_catch_prob": 0.2007,
+      "qa_catch_prob": 0.2896,
+      "fix_success_prob": 0.2129,
+      "steps_per_commit": 0.2589
+    },
+    "y_mean": 0.9965117483428031,
+    "y_std": 0.0067178585837796775
+  },
+  "high": {
+    "S1": {
+      "refinement_ambiguity_cut": -0.0083,
+      "mcp_error_mult": 0.0137,
+      "rules_error_mult": -0.0666,
+      "entropy_error_gain": -0.0642,
+      "ambiguity_error_gain": -0.0458,
+      "ci_catch_prob": 0.0103,
+      "qa_catch_prob": 0.0873,
+      "fix_success_prob": 0.0847,
+      "steps_per_commit": 0.3201
+    },
+    "ST": {
+      "refinement_ambiguity_cut": 0.5518,
+      "mcp_error_mult": 0.4824,
+      "rules_error_mult": 0.5049,
+      "entropy_error_gain": 0.3699,
+      "ambiguity_error_gain": 0.4838,
+      "ci_catch_prob": 0.5427,
+      "qa_catch_prob": 0.4489,
+      "fix_success_prob": 0.6077,
+      "steps_per_commit": 0.9088
+    },
+    "ST_conf": {
+      "refinement_ambiguity_cut": 0.1231,
+      "mcp_error_mult": 0.121,
+      "rules_error_mult": 0.1322,
+      "entropy_error_gain": 0.0773,
+      "ambiguity_error_gain": 0.1291,
+      "ci_catch_prob": 0.1762,
+      "qa_catch_prob": 0.1161,
+      "fix_success_prob": 0.1506,
+      "steps_per_commit": 0.3541
+    },
+    "y_mean": 0.9877362492108586,
+    "y_std": 0.014013349051118397
+  }
+}

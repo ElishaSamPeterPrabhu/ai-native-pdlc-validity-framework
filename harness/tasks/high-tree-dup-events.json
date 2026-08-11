@@ -1,0 +1,28 @@
+{
+  "id": "high-tree-dup-events",
+  "stratum": "high",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1231",
+  "human_time_estimate_h": 8.0,
+  "components": ["modus-wc-tree-menu"],
+  "spec_raw": "Tree Menu emits duplicate itemClick events for keyboard interactions in collapsed state",
+  "spec_refined": {
+    "title": "Tree menu: duplicate itemClick emission on keyboard interaction",
+    "description": "When the tree menu is in a collapsed state and an item is activated via keyboard (Enter/Space), itemClick fires twice (keydown handler and synthesized click both emit). Exactly one itemClick per activation must be emitted, for both mouse and keyboard, in expanded and collapsed states.",
+    "acceptance_criteria": [
+      "Keyboard Enter on a tree item emits exactly one itemClick (collapsed state)",
+      "Keyboard Space on a tree item emits exactly one itemClick (collapsed state)",
+      "Mouse click emits exactly one itemClick in both states",
+      "Expand/collapse toggling via keyboard emits the correct expand/collapse events exactly once",
+      "Event payloads (item id, expanded state) are unchanged in shape",
+      "No regression in focus management: focus stays on the activated item"
+    ],
+    "technical_notes": "Requires understanding the event flow across keydown handlers and native click synthesis in the Stencil component; risk of breaking ARIA interaction patterns. High coupling: tree-menu is composed with app-menu."
+  },
+  "verifier": {
+    "dir": "verifiers/high-tree-dup-events",
+    "checks": 6,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

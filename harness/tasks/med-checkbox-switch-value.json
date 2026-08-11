@@ -1,0 +1,30 @@
+{
+  "id": "med-checkbox-switch-value",
+  "stratum": "medium",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#861",
+  "fork_issue": "ElishaSamPeterPrabhu/modus-wc-2.0#28",
+  "human_time_estimate_h": 4.0,
+  "components": ["modus-wc-checkbox", "modus-wc-switch"],
+  "qa_route_expected": "qa-full",
+  "spec_raw": "Checkbox and Switch components don't update their internal state, causing inconsistent behavior. They emit the change event but the value prop doesn't reflect.",
+  "spec_refined": {
+    "title": "Checkbox and Switch: fix internal state not updating after change",
+    "description": "When a user checks/unchecks modus-wc-checkbox or toggles modus-wc-switch, the component emits the inputChange event but its `value` prop (and the reflected attribute) does not update. This causes testing frameworks to see stale state.",
+    "acceptance_criteria": [
+      "Checking a checkbox updates its value prop to true",
+      "The inputChange event is emitted with the updated value as payload",
+      "The switch value prop updates after toggle",
+      "Programmatic assignment of value = true shows checked input",
+      "Checked+disabled state still works correctly",
+      "All existing checkbox and switch spec tests pass"
+    ],
+    "technical_notes": "The `value` prop must be mutable (has @Prop({ mutable: true })). Check the inputChange handler: it emits but may not update this.value. Both components have the same pattern."
+  },
+  "verifier": {
+    "dir": "verifiers/med-checkbox-switch-value",
+    "checks": 6,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

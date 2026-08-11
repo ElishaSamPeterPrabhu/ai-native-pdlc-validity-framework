@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0.0",
+  "report_kind": "pilot_intake_report",
+  "generated_at": "2026-08-10T08:55:00+00:00",
+  "repo": {
+    "owner": "ElishaSamPeterPrabhu",
+    "name": "modus-wc-2.0",
+    "url": "https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0",
+    "upstream": "https://github.com/trimble-oss/modus-wc-2.0",
+    "pilot_branch": "framework-test"
+  },
+  "evidence_status": "intake_pseudo",
+  "weight_source": "placeholder",
+  "formula_version": "v1.1",
+  "cli_report_note": "python -m framework report requires metrics.jsonl; this pilot report is scored from intake via score-pack (n_runs=0).",
+  "decision": {
+    "repair_pr34": false,
+    "reason": "PR #34 is the intentional pre-intervention baseline (QA FAILED, fix_iterations=0). Repairing it would destroy the before/after contrast.",
+    "form_report": true,
+    "continue_next": "optional second medium qa-full retest for sustained-recovery claim; do not block report on that"
+  },
+  "rounds": [
+    {
+      "label": "pre_intervention_baseline",
+      "pr": "https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/pull/34",
+      "issue": "#30",
+      "outcome": "qa_failed_no_fix",
+      "stop_boundary": false,
+      "fix_iterations": 0,
+      "qa_final": "FAILED",
+      "R": 0.2,
+      "D": 0.1562,
+      "V_star": 0.5615
+    },
+    {
+      "label": "post_intervention_retest",
+      "pr": "https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/pull/42",
+      "issue": "#28",
+      "outcome": "loop_closed_qa_passed",
+      "stop_boundary": true,
+      "fix_iterations": 1,
+      "qa_rounds": 2,
+      "qa_final": "PASSED",
+      "manual_qa_rerun_toggle": true,
+      "R": 0.3,
+      "D": 0.1066,
+      "V_star": 0.7377
+    }
+  ],
+  "aggregate": {
+    "V_star": 0.6496,
+    "n_scored": 2,
+    "delta_R": 0.1,
+    "delta_D": -0.0496,
+    "delta_V_star": 0.1762
+  },
+  "weakest_layer": "loop",
+  "interventions_applied": [
+    "dev_preflight_stop_boundary",
+    "fix_agent_qa_header_alignment",
+    "fix_agent_qa_rerun_toggle",
+    "qa_agent_github_connect",
+    "qa_agent_qa_full_trigger",
+    "completion_guard_hook"
+  ],
+  "proven": [
+    "Dev PRE-OPEN PR GATE / stop-boundary observed on PR #42",
+    "QA Agent fires and can FAIL then PASS",
+    "Fix Agent parses ## QA FAILED and pushes a repair (1 iteration)",
+    "R and V* improved vs PR #34 baseline under placeholder weights"
+  ],
+  "not_proven": [
+    "Fix Agent qa-rerun remove-then-add without manual intervention",
+    "Second consecutive medium qa-full pass (sustained recovery)",
+    "Repo-fitted weights / calibrate (needs ≥6 real metrics.jsonl runs)",
+    "completion_guard_hook live telemetry (simulation-only)",
+    "Blazor Story deploy CI green on fork"
+  ],
+  "claim_warnings": [
+    "research preview — weight_source=placeholder",
+    "intake_pseudo — not live harness telemetry",
+    "human review never removed",
+    "completion_guard_hook simulation-only",
+    "one medium retest passed — not yet sustained recovery"
+  ],
+  "artifacts": [
+    "data/score-pack.json",
+    "data/delta-pack.json",
+    "data/evidence-pack.json",
+    "data/diagnosis.json",
+    "data/improvement-plan.json",
+    "data/user-intake.json",
+    "data/validity-analysis.md",
+    "data/setup-manifest.json"
+  ],
+  "review_policy": {
+    "low": "high-level",
+    "medium": "deep",
+    "high": "deep",
+    "until": "Two consecutive medium tasks pass OR fix loop repairs within cap without manual handoff"
+  }
+}

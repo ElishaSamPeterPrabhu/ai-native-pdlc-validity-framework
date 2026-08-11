@@ -1,0 +1,274 @@
+{
+  "schema_version": "1.1.0",
+  "scope": "domain-agnostic",
+  "applies_to": "any AI-assisted workflow with issue/task → agent work → checks → human review (frontend, backend, data, infra, docs, mixed)",
+  "formula": "dV/dt = (1-V)*R - V*D ; V* = R/(R+D)",
+  "ai_mapping_rule": {
+    "duty": "Map whatever evidence the team has onto the nearest top-level metric. Do not invent domain-specific metrics.",
+    "method": [
+      "Read the failure/success evidence in the team's own words (logs, PR, ticket, CI, QA, human notes).",
+      "Choose the closest metric id from top_level_metrics.",
+      "Cite the evidence snippet that justifies the mapping.",
+      "If two metrics fit, pick the dominant one for this round; mention the secondary.",
+      "Propose ONE improvement that raises R or lowers D for that metric, using the team's available controls (or a generic control class)."
+    ],
+    "non_goals": [
+      "Do not assume UI, API, DB, or infra — use only what the evidence shows.",
+      "Do not create per-stack metric names (a11y, schema, terraform, …); map those signals into Hc/O/Cb/σspec/R/V_obs."
+    ]
+  },
+  "loop": [
+    "Measure round (inspect / intake / evidence)",
+    "AI maps observed failures to nearest top-level metrics",
+    "Pick ONE intervention targeting the dominant worsened metric",
+    "Human approves; apply via improve skill / automations / CLI",
+    "Retest comparable difficulty; compare delta",
+    "If a new failure mode repeats with no catalog fit, trial-and-error a candidate control"
+  ],
+  "top_level_metrics": [
+    {
+      "id": "V_obs",
+      "side": "outcome",
+      "name": "Observed validity",
+      "means": "Fraction of stated requirements / checks satisfied at the latest workflow checkpoint",
+      "how_applied": "Whatever the team uses as ground truth: acceptance criteria, tests, QA checklist, policy checks, or human verification — graded per run, rolled up by difficulty",
+      "generic_signals": [
+        "required checks failed at end of run",
+        "agent claimed done while requirements unmet",
+        "same difficulty band worse than prior round"
+      ],
+      "map_examples": [
+        "failing unit/integration tests → V_obs",
+        "unchecked acceptance criteria → V_obs",
+        "failed compliance/security gate → V_obs",
+        "human rejects deliverable as incomplete → V_obs"
+      ],
+      "improve_by_lowering_D": ["Hc", "O", "Cb", "sigma_spec"],
+      "improve_by_raising_R": ["context", "deterministic_gate", "review_repair_loop", "stop_boundary", "spec_clarity"],
+      "ai_prompt": "Name which requirements/checks failed; map each to a decay or recovery metric; propose one change."
+    },
+    {
+      "id": "V_star",
+      "side": "equilibrium",
+      "name": "Equilibrium trust",
+      "means": "R/(R+D) — expected trust if current recovery and decay levels persist",
+      "how_applied": "Directional from enabled controls vs pressures; fitted per setup after calibration",
+      "generic_signals": [
+        "work looks productive but trust stays low",
+        "harder tasks systematically need more recovery than the setup provides"
+      ],
+      "map_examples": [
+        "many successful-looking agent runs but frequent human rework → V_star low",
+        "recovery added but decay pressures also rose → V_star flat"
+      ],
+      "improve_by_lowering_D": ["Hc", "O", "Cb", "sigma_spec"],
+      "improve_by_raising_R": ["deterministic_gate", "review_repair_loop", "stop_boundary", "context", "spec_clarity"]
+    },
+    {
+      "id": "Hc",
+      "side": "decay",
+      "name": "Contextual entropy",
+      "layer": "harness",
+      "means": "Confusion and error accumulation in the agent’s working context (failed tools, thrash, saturated history) that corrupts later steps",
+      "how_applied": "Token/context use and tool-failure rate when available; otherwise qualitative thrash in logs/transcripts",
+      "generic_signals": [
+        "long failed attempt loops",
+        "repeated tool/command errors",
+        "late break after earlier steps looked fine"
+      ],
+      "map_examples": [
+        "agent retries same wrong API/command many times → Hc",
+        "context flooded with failed experiments then wrong conclusion → Hc",
+        "chat/tool trace shows thrash then silent regression → Hc"
+      ],
+      "control_classes": ["context", "checkpointing", "stop_boundary", "review_repair_loop", "spec_clarity"],
+      "how_to_improve": [
+        "Give grounded context (docs, schemas, runbooks, MCP/tools) so the agent stops guessing",
+        "Bound work into smaller checkpoints",
+        "Enforce stop-boundary: done only with evidence",
+        "Narrow task scope when thrash dominates"
+      ],
+      "retest": "Comparable difficulty task; expect less thrash and higher V_obs"
+    },
+    {
+      "id": "O",
+      "side": "decay",
+      "name": "Change opacity",
+      "layer": "graph",
+      "means": "How hard the deliverable is for a human (or gate) to review — size, spread, mixed concerns",
+      "how_applied": "Diff/patch stats, files/systems touched, or qualitative review burden",
+      "generic_signals": [
+        "very large or sprawling change set",
+        "review time dominates",
+        "reviewers skim and miss defects"
+      ],
+      "map_examples": [
+        "huge multi-file PR → O",
+        "one ticket changing many services/modules → O",
+        "mixed refactor + feature in one delivery → O"
+      ],
+      "control_classes": ["spec_clarity", "checkpointing", "assisted_review"],
+      "how_to_improve": [
+        "Split into smaller development-ready units",
+        "Require smaller deliveries / clearer commit cadence",
+        "Add assisted review for first pass; keep human on high-risk parts",
+        "Deepen human review while opacity is high"
+      ],
+      "retest": "Same outcome as smaller units; opacity and review burden should fall"
+    },
+    {
+      "id": "Cb",
+      "side": "decay",
+      "name": "Blast radius",
+      "layer": "harness",
+      "means": "How widely a mistake can propagate (dependents, shared contracts, production blast)",
+      "how_applied": "Dependency/impact reach when available; otherwise declared blast (shared module, public contract, prod path)",
+      "generic_signals": [
+        "change in a widely reused surface",
+        "breakage outside the edited area",
+        "high-cost failure if wrong"
+      ],
+      "map_examples": [
+        "shared library/module change → Cb",
+        "public API / schema / event contract → Cb",
+        "auth, billing, migration, or prod infra touch → Cb",
+        "cross-cutting workflow step used by many jobs → Cb"
+      ],
+      "control_classes": ["deterministic_gate", "review_repair_loop", "stop_boundary", "context", "assisted_review"],
+      "how_to_improve": [
+        "Pin acceptance checks for cross-cutting behaviors",
+        "Add regression checks aimed at dependents/callers",
+        "Require deeper human review on high blast work even when automated gates are green",
+        "Ground agents in authoritative contracts/context for that surface"
+      ],
+      "retest": "Same high-blast task class; defects caught by gates/repair earlier, not only by humans late"
+    },
+    {
+      "id": "sigma_spec",
+      "side": "decay",
+      "name": "Specification ambiguity",
+      "layer": "graph",
+      "means": "Unclear or contested requirements — agents invent scope; humans disagree on done",
+      "how_applied": "Raw vs refined task specs; missing acceptance criteria; conflicting interpretations",
+      "generic_signals": [
+        "vague ticket/prompt",
+        "acceptance criteria missing or written after the fact",
+        "agent and human disagree on completion"
+      ],
+      "map_examples": [
+        "one-line ask with no acceptance tests → sigma_spec",
+        "scope expands during the run → sigma_spec",
+        "multiple stakeholders redefine done mid-flight → sigma_spec"
+      ],
+      "control_classes": ["spec_clarity"],
+      "how_to_improve": [
+        "Require development-ready tasks with pinned acceptance criteria before agent start",
+        "Add a spec-refinement / scaffolding step",
+        "Block start on high-difficulty work that is still raw/ambiguous"
+      ],
+      "retest": "Same task with refined acceptance only; first-pass success should rise"
+    },
+    {
+      "id": "R_recovery",
+      "side": "recovery",
+      "name": "Recovery strength",
+      "means": "Strength of safeguards that detect and repair invalid work before (or instead of) relying on hope",
+      "how_applied": "Which recovery controls actually ran: deterministic gates, review/QA agents, repair loops, stop-boundary, context, assisted review",
+      "generic_signals": [
+        "false completion reaches a human",
+        "no detect/repair trail on a bad delivery",
+        "done claimed without evidence"
+      ],
+      "map_examples": [
+        "no automated check failed though deliverable was wrong → R_recovery weak",
+        "no repair attempt after a known failure → R_recovery weak",
+        "gates exist but were skipped/disabled → R_recovery weak"
+      ],
+      "control_classes": ["deterministic_gate", "review_repair_loop", "stop_boundary", "context", "spec_clarity", "assisted_review"],
+      "how_to_improve": [
+        "Turn on missing detect+repair loop controls first",
+        "Add stop-boundary so done requires evidence",
+        "Then strengthen harness context",
+        "Keep human review; deepen it until recovery catches up"
+      ],
+      "retest": "Known-bad case should be caught by a gate/repair step before or at first review"
+    },
+    {
+      "id": "pass_at_1",
+      "side": "outcome",
+      "name": "First-pass success",
+      "means": "Fully correct on first delivery, before repair rounds",
+      "how_applied": "Success on first attempt; track separately from success-after-repair",
+      "generic_signals": [
+        "needs multiple repair rounds",
+        "only becomes acceptable after human or repair agent intervention"
+      ],
+      "map_examples": [
+        "QA/repair loop fixed it on attempt 2+ → pass_at_1 failed even if final V_obs recovered",
+        "human had to redirect the agent once → pass_at_1 weak"
+      ],
+      "improve_by_lowering_D": ["Hc", "sigma_spec", "Cb"],
+      "improve_by_raising_R": ["context", "spec_clarity", "stop_boundary"],
+      "ai_prompt": "If pass_at_1 fell but final V_obs recovered, prevention/stop-boundary is weak while repair may be working."
+    }
+  ],
+  "control_classes": {
+    "spec_clarity": "Make the task contract machine-clear before work starts",
+    "context": "Ground the agent with authoritative project/domain tools and instructions",
+    "checkpointing": "Smaller bounded steps/commits to limit damage",
+    "deterministic_gate": "Non-agent checks that must pass (tests, lint, policy, build)",
+    "review_repair_loop": "Detect failures and repair within a capped loop",
+    "stop_boundary": "Block done/complete without required evidence",
+    "assisted_review": "Extra automated review aid; never replaces human review"
+  },
+  "failure_to_metric_hints": [
+    {
+      "pattern": "claimed done while requirements still failing",
+      "primary_metrics": ["R_recovery", "Hc", "V_obs"],
+      "first_control_class": "stop_boundary"
+    },
+    {
+      "pattern": "widely shared surface broke something else",
+      "primary_metrics": ["Cb", "V_obs"],
+      "first_control_class": "review_repair_loop"
+    },
+    {
+      "pattern": "change set too large or hard to review",
+      "primary_metrics": ["O"],
+      "first_control_class": "spec_clarity"
+    },
+    {
+      "pattern": "unclear requirements or scope fight",
+      "primary_metrics": ["sigma_spec"],
+      "first_control_class": "spec_clarity"
+    },
+    {
+      "pattern": "long thrash then late break",
+      "primary_metrics": ["Hc"],
+      "first_control_class": "context"
+    },
+    {
+      "pattern": "automated green but later review finds defect",
+      "primary_metrics": ["R_recovery", "V_obs"],
+      "first_control_class": "review_repair_loop"
+    }
+  ],
+  "trial_and_error": {
+    "rule": "Change one control per round; keep difficulty band fixed; log delta",
+    "promote_new_control_when": [
+      "Failure mode repeats and no control class fits cleanly",
+      "Human names a missing gate that would have caught it",
+      "Later contrast shows positive ΔV_obs / Δpass_at_1"
+    ],
+    "record_template": {
+      "round": "N+1",
+      "mapped_metrics": ["…"],
+      "evidence_snippet": "…",
+      "intervention_tried": "…",
+      "control_class": "…",
+      "delta": { "V_obs": null, "pass_at_1": null },
+      "new_candidate_control": null,
+      "keep": false
+    }
+  }
+}

@@ -1,0 +1,624 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-04T09:24:56.614973+00:00",
+  "role_split": {
+    "ai": "diagnose layers, explain gaps, propose interventions and review policy",
+    "cli": "init/inspect/collect/calibrate/report/evidence; apply approved file changes",
+    "automations": "Dev/QA/Fix execution path; not the trust reasoner"
+  },
+  "layout": {
+    "schema_version": "1.0.0",
+    "rules_dir": ".cursor/rules",
+    "hooks_path": ".cursor/hooks.json",
+    "mcp_config_path": ".cursor/mcp.json",
+    "mcp_server_dir": "mcp",
+    "workflows_dir": ".github/workflows",
+    "framework_dir": "framework",
+    "harness_dir": "harness",
+    "tasks_dir": "harness/tasks",
+    "theory_dir": "theory",
+    "analysis_dir": "analysis",
+    "data_dir": "data",
+    "metrics_path": "data/metrics.jsonl",
+    "setup_manifest_path": "data/setup-manifest.json",
+    "validity_report_path": "data/validity-report.json",
+    "fit_results_path": "data/fit_results.json",
+    "source": "file",
+    "layout_file": "validity.layout.json",
+    "notes": [
+      "hooks_path not found; default .cursor/hooks.json"
+    ]
+  },
+  "setup_manifest": {
+    "schema_version": "1.0.0",
+    "repo": {
+      "owner": "Projects",
+      "name": "Autonomous-Agent(Research)",
+      "default_branch": "main",
+      "url": ""
+    },
+    "formula_version": "v1.1",
+    "evidence_status": "observed",
+    "layout": {
+      "source": "file",
+      "layout_file": "validity.layout.json",
+      "paths": {
+        "rules_dir": ".cursor/rules",
+        "hooks_path": ".cursor/hooks.json",
+        "mcp_config_path": ".cursor/mcp.json",
+        "mcp_server_dir": "mcp",
+        "workflows_dir": ".github/workflows",
+        "framework_dir": "framework",
+        "harness_dir": "harness",
+        "tasks_dir": "harness/tasks",
+        "data_dir": "data",
+        "metrics_path": "data/metrics.jsonl",
+        "setup_manifest_path": "data/setup-manifest.json",
+        "validity_report_path": "data/validity-report.json"
+      },
+      "notes": [
+        "hooks_path not found; default .cursor/hooks.json"
+      ]
+    },
+    "layers": {
+      "harness": {
+        "present": true,
+        "controls": [
+          "rules_context"
+        ],
+        "notes": "rules/MCP from layout (file)"
+      },
+      "loop": {
+        "present": false,
+        "controls": [],
+        "notes": "CI/hooks from layout; agentic QA/repair need automation config"
+      },
+      "graph": {
+        "present": false,
+        "controls": [],
+        "notes": "label-handoff graph not confirmed from files alone"
+      }
+    },
+    "factors": [
+      {
+        "name": "rules_context",
+        "enabled": true,
+        "layer": "harness",
+        "stage": "dev",
+        "evidence": "declared",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ".cursor/rules"
+      },
+      {
+        "name": "mcp_context",
+        "enabled": false,
+        "layer": "harness",
+        "stage": "dev",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ".cursor/mcp.json or mcp"
+      },
+      {
+        "name": "ci_gate",
+        "enabled": false,
+        "layer": "loop",
+        "stage": "qa",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ".github/workflows"
+      },
+      {
+        "name": "completion_guard_hook",
+        "enabled": false,
+        "layer": "loop",
+        "stage": "review",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ".cursor/hooks.json"
+      },
+      {
+        "name": "qa_a11y",
+        "enabled": false,
+        "layer": "loop",
+        "stage": "qa",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ""
+      },
+      {
+        "name": "checkpointing",
+        "enabled": false,
+        "layer": "harness",
+        "stage": "dev",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ""
+      },
+      {
+        "name": "agentic_qa",
+        "enabled": false,
+        "layer": "loop",
+        "stage": "qa",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ""
+      },
+      {
+        "name": "fix_loop",
+        "enabled": false,
+        "layer": "loop",
+        "stage": "repair",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ""
+      },
+      {
+        "name": "spec_refinement",
+        "enabled": false,
+        "layer": "graph",
+        "stage": "ticket",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ""
+      },
+      {
+        "name": "review_bot",
+        "enabled": false,
+        "layer": "graph",
+        "stage": "review",
+        "evidence": "missing",
+        "toggle": "see intervention catalog; paths from validity.layout.json",
+        "activity_signal": "unobserved until Level 1 collectors run",
+        "path_ref": ""
+      }
+    ],
+    "evidence_adapters": [
+      {
+        "name": "github_events",
+        "status": "partial",
+        "notes": "requires GitHub API / label conventions at Level 1"
+      },
+      {
+        "name": "github_diff",
+        "status": "available",
+        "notes": "PR diff stats via GitHub API or local git"
+      },
+      {
+        "name": "ci_checks",
+        "status": "partial",
+        "notes": "workflows_dir=.github/workflows; files: none found"
+      },
+      {
+        "name": "cursor_automations",
+        "status": "partial",
+        "notes": "console-configured; not discoverable from repo files alone"
+      },
+      {
+        "name": "dependency_graph",
+        "status": "partial",
+        "notes": "run madge/jscpd/etc. to enable blast-radius confidence"
+      },
+      {
+        "name": "qa_repair",
+        "status": "partial",
+        "notes": "needs label/event telemetry from Dev/QA/Fix path"
+      },
+      {
+        "name": "verifier_checkpoints",
+        "status": "partial",
+        "notes": "tasks_dir=harness/tasks"
+      },
+      {
+        "name": "cloud_agent_tokens",
+        "status": "partial",
+        "notes": "Cloud Agents API; entropy often imputed at Level 0"
+      }
+    ],
+    "measurement_gaps": [
+      "completion_guard_hook not present (.cursor/hooks.json missing)",
+      "agentic_qa not detectable from repo files (configure automations)",
+      "fix_loop not detectable from repo files (configure automations)",
+      "spec_refinement not detectable from repo files (configure automations)",
+      "harness: MCP absent (.cursor/mcp.json / mcp)",
+      "loop: no obvious CI/test workflow gate under .github/workflows",
+      "layout-note: hooks_path not found; default .cursor/hooks.json"
+    ]
+  },
+  "setup_profile": {
+    "schema_version": "1.0.0",
+    "formula_version": "v1.1",
+    "evidence_status": "simulation-calibrated",
+    "generated_at": "2026-08-04T09:24:56.614670+00:00",
+    "repo": "Autonomous-Agent(Research)",
+    "n_runs": 0,
+    "synthetic_runs_excluded": true,
+    "evidence_coverage": {
+      "final_v_obs": {
+        "observed_fraction": 0.0,
+        "imputed_fraction": 0.0,
+        "missing_fraction": 1.0
+      },
+      "stages": {
+        "observed_fraction": 0.0,
+        "imputed_fraction": 0.0,
+        "missing_fraction": 1.0
+      },
+      "opacity": {
+        "observed_fraction": 0.0,
+        "imputed_fraction": 0.0,
+        "missing_fraction": 1.0
+      }
+    },
+    "by_stratum": {
+      "low": {
+        "n": 0,
+        "mean_v_obs": null,
+        "v_obs_ci": [
+          null,
+          null
+        ],
+        "pass_at_1": null,
+        "pass_hat_k": null,
+        "provisional_v_star": null,
+        "review_lane": "insufficient-evidence"
+      },
+      "medium": {
+        "n": 0,
+        "mean_v_obs": null,
+        "v_obs_ci": [
+          null,
+          null
+        ],
+        "pass_at_1": null,
+        "pass_hat_k": null,
+        "provisional_v_star": null,
+        "review_lane": "insufficient-evidence"
+      },
+      "high": {
+        "n": 0,
+        "mean_v_obs": null,
+        "v_obs_ci": [
+          null,
+          null
+        ],
+        "pass_at_1": null,
+        "pass_hat_k": null,
+        "provisional_v_star": null,
+        "review_lane": "insufficient-evidence"
+      }
+    },
+    "review_policy": {
+      "human_review_never_removed": true,
+      "status": "provisional_thresholds_only",
+      "lanes": {
+        "deep": "major / high-risk / low measured trust",
+        "high_level": "medium trust and medium task risk",
+        "minimal": "small low-risk work with high measured trust (nonzero)"
+      },
+      "notes": "by_stratum.review_lane values are mechanical V_obs thresholds only. AI diagnosis confirms or overrides using task risk and evidence quality.",
+      "note": "Numeric lane hints below are mechanical thresholds on mean V_obs. AI diagnosis should confirm or override using task risk and evidence quality.",
+      "mechanical_lanes_by_stratum": {
+        "low": "insufficient-evidence",
+        "medium": "insufficient-evidence",
+        "high": "insufficient-evidence"
+      }
+    },
+    "claim_warnings": [
+      "formula v1.1 evidence_status=simulation-calibrated",
+      "placeholder weights are not Modus-fitted factory calibration",
+      "human review is never removed; lanes scale depth only",
+      "no non-synthetic run records found; report is structure-only / observe-level",
+      "completion_guard_hook effects are simulation-only until live telemetry",
+      "layer diagnosis and final review policy are AI-owned; run `python -m framework evidence` then validity-diagnose skill"
+    ]
+  },
+  "measurement_gaps": [
+    "completion_guard_hook not present (.cursor/hooks.json missing)",
+    "agentic_qa not detectable from repo files (configure automations)",
+    "fix_loop not detectable from repo files (configure automations)",
+    "spec_refinement not detectable from repo files (configure automations)",
+    "harness: MCP absent (.cursor/mcp.json / mcp)",
+    "loop: no obvious CI/test workflow gate under .github/workflows",
+    "layout-note: hooks_path not found; default .cursor/hooks.json",
+    "loop: completion_guard / hooks not declared (may be simulation-only still)"
+  ],
+  "decay_proxy_definitions": {
+    "entropy": {
+      "construct": "Contextual entropy / context saturation + tool failure",
+      "telemetry": "Cloud agent token use + failed/total tool calls",
+      "normalization": "entropy_proxy(T_cur, T_max, fail, total) \u2192 [0,1]",
+      "missing_behavior": "Impute 0.5 with confidence=low; mark gap",
+      "confidence_rule": "high if tokens+tools observed; low if imputed",
+      "layer": "harness"
+    },
+    "opacity": {
+      "construct": "Diff opacity / structural review burden",
+      "telemetry": "\u0394LOC, \u0394 complexity, files touched from git/GitHub API",
+      "normalization": "opacity_proxy(...) soft-saturated \u2192 [0,1]",
+      "missing_behavior": "Impute from PR file count alone if available",
+      "confidence_rule": "high with full diff stats; medium with LOC only",
+      "layer": "graph"
+    },
+    "blast_radius": {
+      "construct": "Dependency reach of changed files",
+      "telemetry": "Import/dependency graph reach / total",
+      "normalization": "dependents_changed / dependents_total",
+      "missing_behavior": "Declare missing; do not invent coupling",
+      "confidence_rule": "high with cached graph; none if graph absent",
+      "layer": "harness"
+    },
+    "spec_ambiguity": {
+      "construct": "Specification ambiguity across independent plans",
+      "telemetry": "1 - mean pairwise plan similarity, or spec:raw label",
+      "normalization": "clip to [0,1]",
+      "missing_behavior": "Use label proxy (raw=0.7, refined=0.2) at medium confidence",
+      "confidence_rule": "high with embedding plans; medium with label proxy",
+      "layer": "graph"
+    }
+  },
+  "factors_by_layer": {
+    "harness": [
+      {
+        "name": "rules_context",
+        "enabled": true,
+        "evidence": "declared",
+        "path_ref": ".cursor/rules"
+      },
+      {
+        "name": "mcp_context",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ".cursor/mcp.json or mcp"
+      },
+      {
+        "name": "checkpointing",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ""
+      }
+    ],
+    "loop": [
+      {
+        "name": "ci_gate",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ".github/workflows"
+      },
+      {
+        "name": "completion_guard_hook",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ".cursor/hooks.json"
+      },
+      {
+        "name": "qa_a11y",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ""
+      },
+      {
+        "name": "agentic_qa",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ""
+      },
+      {
+        "name": "fix_loop",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ""
+      }
+    ],
+    "graph": [
+      {
+        "name": "spec_refinement",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ""
+      },
+      {
+        "name": "review_bot",
+        "enabled": false,
+        "evidence": "missing",
+        "path_ref": ""
+      }
+    ],
+    "unknown": []
+  },
+  "run_summary": {
+    "n_records": 0,
+    "n_synthetic": 0,
+    "strata_present": [],
+    "arms_present": []
+  },
+  "intervention_catalog_path": "framework/catalog/interventions.json",
+  "diagnosis_instructions": "You are diagnosing an AI-native delivery setup (issue \u2192 implement \u2192 QA \u2192 repair \u2192 human PR review).\n\nUse ONLY the evidence pack JSON. Do not invent telemetry.\n\nProduce:\n1. weakest_layer: harness | loop | graph | unknown (with confidence high|medium|low)\n2. rationale: cite specific gaps, stratum outcomes, and missing evidence\n3. recommended_controls: ordered list from the intervention catalog ids / factor names\n4. review_policy_suggestion: deep / high-level / minimal by stratum (human review never removed)\n5. next_actions: what CLI/automation steps to run after human approval\n6. open_questions: what evidence is still missing\n\nHard rules:\n- Scripts do not own the diagnosis; you do.\n- Prefer instrumentation when evidence is thin.\n- completion_guard_hook is simulation-only until live telemetry exists.\n- Apply fixes only after human approval, using paths from validity.layout.json.\n\n\nIntake mode: automations and PRs may be user-declared. Trust console excerpts when present. Map each PR surprise to a decay pressure or missing recovery control. Teach the team how to improve the next PR body using teaching.how_to_make_prs_better_with_ai.",
+  "claim_warnings": [
+    "formula v1.1 evidence_status=simulation-calibrated",
+    "placeholder weights are not Modus-fitted factory calibration",
+    "human review is never removed; lanes scale depth only",
+    "no non-synthetic run records found; report is structure-only / observe-level",
+    "completion_guard_hook effects are simulation-only until live telemetry",
+    "layer diagnosis and final review policy are AI-owned; run `python -m framework evidence` then validity-diagnose skill"
+  ],
+  "intake": {
+    "schema_version": "1.0.0",
+    "repo": {
+      "owner": "my-org",
+      "name": "my-product",
+      "default_branch": "main",
+      "url": "https://github.com/my-org/my-product"
+    },
+    "automations": [
+      {
+        "name": "Dev Agent",
+        "role": "dev",
+        "trigger": "issue comment /approve OR label approved",
+        "repo_scope": "my-org/my-product",
+        "tools_mcp": [
+          "github",
+          "repo-mcp"
+        ],
+        "stop_rule": "opens PR when acceptance criteria believed met",
+        "repair_cap": null,
+        "instructions_summary": "Implement from issue AC; commit often; open PR for human review",
+        "instructions_excerpt": "Paste key stop/done rules here\u2026",
+        "console_url": "https://cursor.com/t/<team>/automations",
+        "enabled": true
+      },
+      {
+        "name": "QA Agent",
+        "role": "qa",
+        "trigger": "PR opened / labeled qa-full",
+        "repo_scope": "my-org/my-product",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "comment QA PASS/FAIL; label qa-failed on fail",
+        "repair_cap": null,
+        "instructions_summary": "Verify AC against PR; post QA report",
+        "enabled": true
+      },
+      {
+        "name": "Fix Agent",
+        "role": "fix",
+        "trigger": "label qa-failed",
+        "repo_scope": "my-org/my-product",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "repair then re-request QA; max 3 rounds",
+        "repair_cap": 3,
+        "instructions_summary": "Repair from QA report; do not claim done without evidence",
+        "enabled": true
+      }
+    ],
+    "setup_declared": {
+      "has_rules": true,
+      "has_mcp": true,
+      "has_hooks": false,
+      "has_ci_gate": true,
+      "has_review_bot": false,
+      "label_handoff": true,
+      "human_review_always": true,
+      "notes": "Automations live in Cursor console; not in git"
+    },
+    "prs": [
+      {
+        "url_or_number": "https://github.com/my-org/my-product/pull/123",
+        "title": "feat: autocomplete escape focus",
+        "stratum_guess": "medium",
+        "linked_issue": "#120",
+        "acceptance_criteria": [
+          "Filter results on typeahead",
+          "Enter selects item",
+          "Escape closes and restores focus"
+        ],
+        "body_excerpt": "Implements #120. AC checklist\u2026",
+        "labels": [
+          "qa-full",
+          "approved"
+        ],
+        "ci_status": "pass",
+        "qa_comments_summary": "QA failed Escape once; Fix Agent repaired; QA pass",
+        "fix_iterations": 1,
+        "files_changed": 8,
+        "lines_changed": 240,
+        "agent_claimed_done": true,
+        "human_review_notes": "Needed deep review on focus management",
+        "what_failed_or_surprised": "Agent said done while Escape still broken until QA",
+        "formula_signals": {
+          "entropy_notes": "Long debug loop on a11y; many failed attempts in agent log",
+          "opacity_notes": "Multi-file component change",
+          "blast_radius_notes": "Shared autocomplete used across app",
+          "spec_ambiguity_notes": "AC pinned; Escape criterion was clear",
+          "recovery_seen": [
+            "ci_gate",
+            "agentic_qa",
+            "fix_loop"
+          ]
+        }
+      }
+    ],
+    "goals": [
+      "Know how deep to review AI PRs",
+      "Find whether QA/fix stop rules are weak",
+      "Improve PR template so humans get formula-useful signals"
+    ],
+    "mode": "user_provided_online_setup"
+  },
+  "intake_pr_records": [
+    {
+      "run_id": "intake-pr-0",
+      "task": "feat: autocomplete escape focus",
+      "arm": "intake",
+      "stratum": "medium",
+      "synthetic": false,
+      "source": "user_intake",
+      "final_pass": false,
+      "final_v_obs": 0.0,
+      "fix_iterations": 1,
+      "opacity": 0.35,
+      "decay_proxies": {
+        "opacity": {
+          "value": 0.35,
+          "source": "imputed",
+          "confidence": "low"
+        }
+      },
+      "factor_activity": {
+        "ci_gate": 1.0,
+        "agentic_qa": 1.0,
+        "fix_loop": 1.0
+      },
+      "labels": [
+        "qa-full",
+        "approved"
+      ],
+      "pr_url": "https://github.com/my-org/my-product/pull/123"
+    }
+  ],
+  "teaching": {
+    "why_intake": "Cursor Automations are configured in the console and are not fully readable via API for listing definitions. Offline git inspect cannot see triggers/instructions. Paste setup + PR evidence here.",
+    "what_we_need_from_setup": [
+      "Automation names and roles (dev / qa / fix / scaffold / review)",
+      "Triggers (comment, label, PR opened, schedule)",
+      "Repo scope and enabled tools/MCP",
+      "Stop rules and repair caps (when may the agent say done?)",
+      "Whether human review is always required",
+      "Declared rules / hooks / CI / review bot (yes/no is enough)"
+    ],
+    "what_we_need_from_each_pr": [
+      "PR URL/number, title, linked issue",
+      "Acceptance criteria (from issue or PR checklist)",
+      "Labels and CI status",
+      "QA/fix comments summary and repair iteration count",
+      "Diff size (files/lines) and whether agent claimed done early",
+      "What failed or surprised the human reviewer",
+      "Optional formula signals: entropy, opacity, blast radius, spec ambiguity, recovery seen"
+    ],
+    "how_to_make_prs_better_with_ai": [
+      "Ask AI to fill the PR body from the issue AC using the formula PR template",
+      "Require AC checklist + evidence links (tests, QA comment, screenshots)",
+      "State stratum guess (low/medium/high) and blast-radius note",
+      "Never claim done without acceptance + tests + QA evidence",
+      "After human review, ask AI to map review comments to R/D gaps and one intervention"
+    ],
+    "pr_template_path": "framework/templates/intake/pr-body-formula.md",
+    "questionnaire_path": "framework/templates/intake/SETUP-QUESTIONNAIRE.md"
+  },
+  "online_automation_status": {
+    "console_api_list": false,
+    "method": "user_intake_plus_optional_offline_git_inspect",
+    "note": "There is no Automations Management API to list definitions. Use Cloud Agents API only for launching/monitoring runs, not for reading automation config."
+  }
+}

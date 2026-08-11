@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "repo": { "owner": "trimble-oss", "name": "modus-wc-2.0", "default_branch": "main" },
+  "automations": [
+    { "name": "Dev Agent", "role": "dev", "trigger": "/approve", "stop_rule": "open PR", "enabled": true },
+    { "name": "QA Agent", "role": "qa", "trigger": "PR opened", "stop_rule": "QA PASS/FAIL", "enabled": true },
+    { "name": "Fix Agent", "role": "fix", "trigger": "qa-failed", "stop_rule": "re-QA", "repair_cap": 3, "enabled": true }
+  ],
+  "setup_declared": {
+    "has_rules": true,
+    "has_mcp": true,
+    "has_hooks": false,
+    "has_ci_gate": true,
+    "label_handoff": true,
+    "human_review_always": true
+  },
+  "prs": [
+    {
+      "url_or_number": "#101",
+      "title": "fix: button xs pixelation",
+      "stratum_guess": "low",
+      "acceptance_criteria": ["No pixelation at xs", "Storybook story updated"],
+      "ci_status": "pass",
+      "qa_comments_summary": "QA PASS",
+      "fix_iterations": 0,
+      "files_changed": 2,
+      "lines_changed": 40,
+      "agent_claimed_done": true,
+      "what_failed_or_surprised": "",
+      "formula_signals": {
+        "entropy_notes": "quiet",
+        "opacity_notes": "small diff",
+        "blast_radius_notes": "single component",
+        "spec_ambiguity_notes": "AC pinned",
+        "recovery_seen": ["ci_gate", "agentic_qa", "rules_context"]
+      }
+    }
+  ],
+  "goals": ["baseline good rating"]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "med-menu-item-end-icon",
+  "stratum": "medium",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#1128",
+  "fork_issue": "ElishaSamPeterPrabhu/modus-wc-2.0#30",
+  "human_time_estimate_h": 3.0,
+  "components": ["modus-wc-menu-item"],
+  "qa_route_expected": "qa-full",
+  "spec_raw": "The modus menu item includes a start-icon slot but not an end-icon slot. Applications need to place an icon at the end of a menu item.",
+  "spec_refined": {
+    "title": "Menu Item: add end-icon slot to modus-wc-menu-item",
+    "description": "Add a new named slot `end-icon` to modus-wc-menu-item, positioned at the end (right side) of the item, mirroring the existing `start-icon` slot.",
+    "acceptance_criteria": [
+      "A named slot `end-icon` exists in the menu-item shadow DOM",
+      "Content slotted into `end-icon` appears at the end of the menu item",
+      "The existing `start-icon` slot behavior is unchanged",
+      "The default slot still renders label content correctly",
+      "The readme.md documents the new end-icon slot",
+      "All existing menu-item spec tests pass"
+    ],
+    "technical_notes": "Follow the existing start-icon pattern in modus-wc-menu-item.tsx. Add the slot in the render() method and position it using flex/tailwind classes."
+  },
+  "verifier": {
+    "dir": "verifiers/med-menu-item-end-icon",
+    "checks": 5,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

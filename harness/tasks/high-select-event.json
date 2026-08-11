@@ -1,0 +1,30 @@
+{
+  "id": "high-select-event",
+  "stratum": "high",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#677",
+  "fork_issue": "ElishaSamPeterPrabhu/modus-wc-2.0#26",
+  "human_time_estimate_h": 8.0,
+  "components": ["modus-wc-select"],
+  "qa_route_expected": "qa-full",
+  "spec_raw": "Select value updates without triggering event handlers when interacted with via testing frameworks",
+  "spec_refined": {
+    "title": "Select: inputChange event not emitted when value is changed via DOM event",
+    "description": "When testing frameworks (Playwright, Testing Library, WebDriver) dispatch a change event on the inner <select> element, the component's value is updated internally but the `inputChange` custom event is not reliably emitted to the host. This creates a disconnect between the component state and event-driven consumers.",
+    "acceptance_criteria": [
+      "Dispatching a change event on the inner select updates this.value",
+      "inputChange is emitted when value changes via a DOM change event",
+      "The inputChange event payload reflects the new value",
+      "Setting value to the same existing value does not emit inputChange",
+      "Programmatic value prop changes do not trigger inputChange (only DOM events do)",
+      "All existing option items render with correct selected state"
+    ],
+    "technical_notes": "The inputChange handler at line ~121 does `this.value = event.target.value` followed by `this.inputChange.emit(event)`. The issue may be event ordering, or the emit happening before this.value is committed. High complexity: used across many consumer apps, event contract must not break."
+  },
+  "verifier": {
+    "dir": "verifiers/high-select-event",
+    "checks": 6,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

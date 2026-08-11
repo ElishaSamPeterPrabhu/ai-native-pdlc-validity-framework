@@ -1,0 +1,28 @@
+{
+  "id": "low-button-xs-pixelated",
+  "stratum": "low",
+  "source": "upstream-issue",
+  "source_ref": "trimble-oss/modus-wc-2.0#800",
+  "fork_issue": "ElishaSamPeterPrabhu/modus-wc-2.0#27",
+  "human_time_estimate_h": 1.0,
+  "components": ["modus-wc-button"],
+  "qa_route_expected": "qa-skip",
+  "spec_raw": "Button xs small button text gets pixelated after upgrading from 1.0.5 to 1.0.6",
+  "spec_refined": {
+    "title": "Button: fix xs size text rendering (pixelation after upgrade)",
+    "description": "The xs size button renders with pixelated text in 1.0.6+, visible as blurred or aliased fonts at small sizes. This is a CSS/tailwind class regression - no JavaScript logic change required.",
+    "acceptance_criteria": [
+      "xs size button text renders crisply (no subpixel blur visible)",
+      "The xs button applies the correct DaisyUI btn-xs class",
+      "No transform, scale, or skew is applied that would cause font blurring",
+      "All existing button spec tests still pass"
+    ],
+    "technical_notes": "Check modus-wc-button.tailwind.ts for the xs size class mapping and any accidentally introduced CSS transforms."
+  },
+  "verifier": {
+    "dir": "verifiers/low-button-xs-pixelated",
+    "checks": 4,
+    "run": "npx stencil test --spec -- --testPathPattern __verifier__"
+  },
+  "rebreak": null
+}

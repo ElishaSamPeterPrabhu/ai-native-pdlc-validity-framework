@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdlc-validity"
+version = "0.1.0"
+description = "Research-preview CLI for measuring trust in AI-native product delivery workflows"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+  { name = "Elisha Sam Peter Prabhu" },
+  { name = "Preethi Rangamma" },
+]
+keywords = ["ai", "pdlc", "agents", "validity", "software-delivery", "cursor"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+  "numpy>=2.0",
+]
+
+[project.optional-dependencies]
+validate = [
+  "scipy>=1.14",
+  "matplotlib>=3.9",
+  "SALib>=1.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework"
+Documentation = "https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework#quick-start"
+Repository = "https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework"
+Issues = "https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework/issues"
+
+[project.scripts]
+pdlc-validity = "framework.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["framework*", "theory*"]
+
+[tool.setuptools.package-data]
+framework = [
+  "schemas/*.json",
+  "catalog/*.json",
+  "templates/**/*",
+]
