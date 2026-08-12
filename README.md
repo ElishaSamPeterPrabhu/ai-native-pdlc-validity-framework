@@ -6,6 +6,8 @@ issue through implementation, QA, repair, and human PR review—deserves trust.
 **Status:** research preview `0.1.0` · formula `v1.1` · evidence
 `simulation-calibrated` (live Modus pilot documented; repo-fitted weights pending)
 
+**Maintainers:** [Elisha Sam Peter Prabhu](https://github.com/ElishaSamPeterPrabhu) · [Preethi Rangamma](https://github.com/preethi-rangamma-7)
+
 - [Quick start](#quick-start)
 - [Full abstract](paper/ttc-abstract.md)
 - [Framework contract](framework/CONTRACT.md)

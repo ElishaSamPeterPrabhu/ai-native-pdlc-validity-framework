@@ -27,3 +27,23 @@ Or re-run the failed **Publish to PyPI** workflow from the Actions tab.
 ```bash
 pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.1.0
 ```
+
+## Add a co-owner on PyPI
+
+After the first successful upload of `pdlc-validity`:
+
+1. Sign in to PyPI as the publishing account owner.
+2. Open **Your projects → pdlc-validity → Collaborators**.
+3. Invite **Preethi Rangamma** using her PyPI username (create a PyPI account first if needed).
+4. Set role to **Owner** so she can manage releases and trusted publishing.
+
+If you use a PyPI **organization** instead of a personal account, add her as an
+organization owner there before linking the project.
+
+## GitHub access
+
+Repository co-maintainer: **[@preethi-rangamma-7](https://github.com/preethi-rangamma-7)**  
+Invited with **Admin** access (highest level on a personal repository). She must accept the invitation email or the [pending invite](https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework/invitations).
+
+For true shared ownership of the GitHub repository, transfer it to a GitHub
+Organization and add both accounts as org owners.

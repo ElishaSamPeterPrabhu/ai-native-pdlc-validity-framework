@@ -13,6 +13,10 @@ authors = [
   { name = "Elisha Sam Peter Prabhu" },
   { name = "Preethi Rangamma" },
 ]
+maintainers = [
+  { name = "Elisha Sam Peter Prabhu" },
+  { name = "Preethi Rangamma" },
+]
 keywords = ["ai", "pdlc", "agents", "validity", "software-delivery", "cursor"]
 classifiers = [
   "Development Status :: 3 - Alpha",
