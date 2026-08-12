@@ -69,6 +69,13 @@ treat placeholder-weight `V*` values as fitted causal estimates.
 More detail: [`framework/README.md`](framework/README.md) and
 [`framework/AGENT-HANDOFF.md`](framework/AGENT-HANDOFF.md).
 
+PyPI releases use [trusted publishing](docs/PYPI_TRUSTED_PUBLISHING.md). Until that
+one-time setup is complete, install from GitHub:
+
+```bash
+pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.1.0
+```
+
 ## Research evidence
 
 - Structural simulations tested the recovery/decay model before live use.
