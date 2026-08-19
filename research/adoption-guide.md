@@ -57,7 +57,7 @@ rules/MCP/hooks. Missing fields are labeled imputed/missing with confidence.
 ### Level 1 — Instrument
 
 1. Labels: `approved`, `qa-failed`, `needs-human`, `qa-skip`, `qa-full`, `experiment-run`
-2. Automations: adapt `harness/AUTOMATION-PROMPTS.md`
+2. Automations: adapt `harness/AUTOMATION-PROMPTS.md` + `harness/CONSOLE-TRIGGERS.md` (official repo; comment commands **by Me** only)
 3. Collectors: `python harness/collectors.py …` → `data/metrics.jsonl`
 4. Dashboard (optional): `python dashboard/server.py`
 

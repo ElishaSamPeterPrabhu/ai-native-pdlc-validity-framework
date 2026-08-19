@@ -22,11 +22,13 @@ python -m framework intake --repo <target> --intake data/user-intake.json
 python -m framework score --repo <target> --input data/user-intake.json
 python -m framework delta --repo <target> --before <prior> --after <failed>
 python -m framework evidence --repo <target>
-# Cursor skills: validity-diagnose → (human) → validity-improve-from-delta → validity-improve
+# After any Dev/QA/Fix /ask /refine run: Cursor skill validity-score
+# (pdlc-validity score; quote score-pack R/D/V* only)
+# Then: validity-diagnose → (human) → validity-improve-from-delta → validity-improve
 python -m framework calibrate --repo <target>   # when pilot gates pass
 ```
 
-For Modus product repo, prefer `--repo /path/to/modus-wc-2.0` from research (do not copy only `framework/` — needs `theory/`).
+For Modus, `--repo` is the **official** [trimble-oss/modus-wc-2.0](https://github.com/trimble-oss/modus-wc-2.0) checkout (do not copy only `framework/` — needs `theory/`). After an automation finishes, run **validity-score** before diagnose.
 
 ## Modus artifacts already present
 
@@ -57,13 +59,15 @@ Under `modus-wc-2.0/data/`:
 - One intervention per round; retest same stratum
 - Human always reviews PRs (depth scales with trust)
 
-## Next phase (after this hardening)
+## After an automation
 
-1. Apply approved Dev preflight in Cursor Automations (from `improvement-plan.json`)
-2. Retest one medium `qa-full`; new intake + delta
-3. Unblock live pilot — see `harness/PILOT-STATUS.md` (fork, GitHub app, spend)
-4. 6 real runs → `metrics.jsonl` → `calibrate` when gates pass
-5. Campaign ablations → formula v2 fit
+Run **validity-score** (`.cursor/skills/validity-score/SKILL.md`): `pdlc-validity score` or `python -m framework score` against official Modus; quote `score-pack.json` only.
+
+## Next phase
+
+1. Apply official-repo triggers + `/ask` `/refine` + not-feasible stops — [`harness/CONSOLE-TRIGGERS.md`](../harness/CONSOLE-TRIGGERS.md) (human **Save**)
+2. Smoke: `## NEED CLARIFICATION`, `## NOT FEASIBLE`, `/refine` by Me
+3. 6 real runs → `metrics.jsonl` → `calibrate` when gates pass
 
 ## Key paths
 
@@ -73,4 +77,7 @@ Under `modus-wc-2.0/data/`:
 | `framework/catalog/metric-playbooks.json` | Top-level metrics + AI mapping |
 | `framework/catalog/interventions.json` | Control implementations |
 | `harness/PILOT-STATUS.md` | Live pilot unblock |
+| `.cursor/skills/validity-score` | Post-automation formula standings |
 | `.cursor/skills/validity-*` | AI workflows |
+| `harness/AUTOMATION-PROMPTS.md` | Official-repo paste blocks (by Me only) |
+| `harness/CONSOLE-TRIGGERS.md` | Console trigger table — human Save |
