@@ -36,7 +36,7 @@ Under that operating model, we automate the issue-to-PR path while retaining hum
 review on every finished PR.
 
 A development-ready issue is one whose requirements and acceptance criteria are ready
-for implementation. Our reference implementation uses Cursor Cloud Automations (cloud
+for implementation. For our automations, we use Cursor Cloud Automations (cloud
 agents on GitHub) [[5](#sources)]. A developer starts from a development-ready GitHub
 issue, or on an existing issue adds a comment such as `/approve`. Cursor Cloud
 Automations pick up that signal, implement the solution, hand the result to a QA
@@ -93,16 +93,16 @@ complete delivery setup so a team can see which layer owns a reliability weaknes
 The dynamical validity model separates the forces that restore trust from those that
 erode it during an autonomous run:
 
-    dV/dt = (1 - V) * R(t) - V * D(t)
+![Validity ODE](figures/formula/eq-ode.png)
 
 System validity `V(t)` is the verified proportion of task requirements satisfied at
 a lifecycle checkpoint. There is one aggregate decay rate `D(t)` and one aggregate
 recovery rate `R(t)`. Many measured inputs collapse into those two rates at each
 checkpoint:
 
-    D(t) = d0 + dh*Hc + do*O + dc*Cb + ds*σspec + dcs*(Cb * σspec)
+![Hybrid decay rate](figures/formula/eq-decay.png)
 
-    R(t) = sum over enabled factors of (w_f * f_f(t))
+![Recovery rate](figures/formula/eq-recovery.png)
 
 `D(t)` is assembled from multiple measurable causes: contextual entropy `Hc` from
 context saturation and failed tool calls; diff opacity `O` from changed lines,
@@ -130,17 +130,20 @@ lifecycle safeguards produces the equation above.
 At equilibrium, validity settles at the steady value when recovery and decay
 balance:
 
-    V* = R / (R + D)
+![Equilibrium validity](figures/formula/eq-vstar.png)
 
 The **AI-Native PDLC Validity Framework** turns this measurement into periodic
 diagnosis: locate the weak operating environment, repair cycle, or handoff; change
-one control; measure again; then set review depth from evidence and task risk.
+one control; measure again; then set review depth from evidence and task risk. Full
+factor definitions and the derivation story are in
+[formula-explained.md](formula-explained.md).
 
-With the metric now defined, the pilot's provisional research score, calculated with
-placeholder rather than repository-fitted weights, moved R 0.20→0.30,
-D 0.1562→0.1066, and V\* 0.5615→0.7377. The framework maps the missing
-stop-boundary and broken handoff to the **loop** layer; Level 2 harness calibration
-and factory weights remain future work.
+With the metric now defined, simulations set a provisional trust threshold of
+`V* = 0.65`. The pilot's provisional research score, calculated with placeholder
+rather than repository-fitted weights, moved R 0.20→0.30, D 0.1562→0.1066, and
+V\* 0.5615→0.7377 (below then above that threshold). The framework maps the skipped
+acceptance criterion to the weak recovery sub-factor `completion_guard_hook` in the
+**loop** layer; Level 2 harness calibration and factory weights remain future work.
 
 Here, R is recovery strength and D is task decay pressure. The implication is
 practical: to maintain a target level of trust, the strictness of the surrounding
@@ -170,11 +173,12 @@ medium, and high complexity. Low-complexity work passed reliably; harder work ex
 weak controls. In a medium autocomplete task, the agent implemented filtering and
 selection, then regressed Escape-and-focus behavior while debugging screen-reader
 wiring and still reported completion. Browser QA caught the pinned criterion late.
-The first console run then failed QA and never entered repair. After adding a pre-open
-evidence check and repairing the QA-to-repair handoff, a comparable run failed QA,
-entered repair, and passed the next QA round. The provisional `V*` change above is
-directional; the stronger live result is this observed change from an open cycle to a
-completed recovery cycle. Inspect the path at
+The first console run skipped an acceptance criterion and claimed done without the
+required evidence checks. The framework located the weak recovery sub-factor as
+`completion_guard_hook`. After adding the completion-guard hook, a comparable run
+enforced acceptance checks, failed QA once, entered repair, and passed the next QA
+round. Provisional `V*` moved from below the 0.65 threshold to above it; the stronger
+live result is this observed recovery. Inspect the path at
 [Trimble Cursor Automations](https://cursor.com/t/trimble/automations).
 
 **Intervention.** Applying the formula to the Issue above showed recovery was too late
@@ -185,14 +189,14 @@ skills for how agents run): block "done" until that evidence is present, then fo
 one repair.
 
 Before testing the hook, we wrote down predictions: near-zero gain on the full
-pipeline, positive gain where automated QA is absent. Here, pass@1 means the share of
-tasks that are fully correct on the first delivery. Measured on high-complexity tasks
-without automated QA, pass@1 rose by about +2 to +17 percentage points and mean
-validity by about +0.003 to +0.022 across a detection-rate sweep; on the full
-pipeline the gain was near zero, matching the ceiling prediction. Direction matched
-the forecast, validity gains were smaller than predicted, and pass@1 carried the
-clearer signal. Measured in hook-on versus hook-off simulations. Matching the
-predictions is evidence the model describes the setup correctly.
+pipeline, positive gain where automated QA is absent. Measured on high-complexity
+tasks without automated QA, the share of tasks correct on the first delivery rose by
+about +2 to +17 percentage points and mean validity by about +0.003 to +0.022 across
+a detection-rate sweep; on the full pipeline the gain was near zero, matching the
+ceiling prediction. Direction matched the forecast, validity gains were smaller than
+predicted, and first-delivery correctness carried the clearer signal. Measured in
+hook-on versus hook-off simulations. Matching the predictions is evidence the model
+describes the setup correctly.
 
 **Live console retest.** Separately from the hook simulations, the Modus run above
 tested the diagnose / one-intervention / retest sequence in operation. Simulation and
@@ -223,8 +227,10 @@ provisional setup signal from existing CI, diff, and event data. **Level 1,
 Instrument:** capture lifecycle handoffs, verifier outcomes, repair attempts, and
 review burden. **Level 2, Calibrate and improve:** run representative baseline and
 factor-off tasks, fit repository-specific contributions, identify weak factors, change
-the setup, and remeasure. The research-preview package ships schemas, a CLI
-(`python -m framework`), Cursor skills, and intervention templates so teams can
+the setup, and remeasure. Install the research-preview CLI with
+`pip install pdlc-validity` (https://pypi.org/project/pdlc-validity/). Schemas,
+Cursor skills, and intervention templates live at
+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework so teams can
 inspect measurement gaps and apply approved rules, hooks, or workflows; it does
 not ship Modus-fitted factory weights until the live campaign completes.
 
@@ -233,18 +239,16 @@ not ship Modus-fitted factory weights until the live campaign completes.
 1. **Part 1: Automate issue-to-PR work so attention can focus on review.** Agents run
    implement, QA, and repair through harness, loop, and graph controls; humans review
    finished PRs before merge. The purpose is a stronger PDLC with higher merge metrics.
-   Cursor Cloud Automations are our reference implementation; teams can use Cursor
+   Cursor Cloud Automations power our automations; teams can use Cursor
    APIs, custom orchestration, or other agent tooling.
 2. **Part 2: Measure trust and fix the exact gaps.** Experiments on the
    recovery-versus-decay model produced the Validity Framework, which supplies the
    trust metric for AI-authored delivery and points at which layer is weak. It ships
    as packaged guides, skills, and rules. Everything measurable collapses into one
    recovery rate `R(t)` and one decay rate `D(t)`; trust holds when recovery outweighs
-   decay. The Modus medium-complexity false-completion case shows it working: context
-   loss raised decay, the formula exposed a missing stop-boundary control, and a
-   completion-guard hook (simulation-validated) closed that gap in the model. Applying
-   the framework on live Modus Automations then closed the implement→QA→repair loop on
-   a second medium PR after adding a Dev pre-open stop-boundary.
+   decay. Simulations set the trust threshold; applying the framework on live Modus
+   Automations then closed the implement–QA–repair loop on a second medium PR after
+   adding the completion-guard hook for skipped acceptance criteria.
 3. **Scale review depth with measured trust and risk.** Testing by task difficulty
    (low, medium, and high complexity) shows where the setup already earns confidence.
    Keep deep human review on major or high-risk work, use high-level review where
@@ -282,3 +286,7 @@ not ship Modus-fitted factory weights until the live campaign completes.
    https://openai.github.io/openai-agents-python/multi_agent/ and
    https://openai.github.io/openai-agents-python/guardrails/. Official documentation
    for handoffs, execution flow, and validation boundaries.
+10. AI-Native PDLC Validity Framework,
+    https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework and
+    https://pypi.org/project/pdlc-validity/. Research-preview CLI, schemas, and full
+    abstract.

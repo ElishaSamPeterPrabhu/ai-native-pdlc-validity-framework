@@ -24,7 +24,7 @@ repository-specific calibration exists (Level 2 / Phase D).
 
 | Layer | Responsibility |
 | --- | --- |
-| **AI skills** (`validity-intake` → `validity-diagnose` → `validity-improve`) | Metric judgments (which metrics moved, dominant metric); layer diagnosis; intervention choice; review policy |
+| **AI skills** (`validity-score` → `validity-diagnose` → `validity-improve`) | Post-run formula quote (`score`); metric judgments; layer diagnosis; intervention choice; review policy |
 | **CLI** (`init`, `inspect`, `evidence`, `intake`, `score`, `collect`, `calibrate`, `report`) | Mechanical facts, labeled heuristics, R/D/V* formula eval (placeholder weights), apply **approved** writes |
 | **Automations** (Dev/QA/Fix) | Execute the delivery path; definitions often console-only (not API-listed) |
 | **Human** | Provides automation/PR intake when needed; approves **apply**; always reviews PRs |

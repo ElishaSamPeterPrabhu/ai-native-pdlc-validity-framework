@@ -6,40 +6,41 @@ Elisha Sam Peter Prabhu · Preethi Rangamma · [Full abstract](https://github.co
 
 ### Background and Problem
 
-Trimble's [AI PDLC](https://trimble-ai-pdlc.web.app/) [[3](#sources)] uses AI agents across discovery, planning, implementation, testing, and delivery to move work from an approved problem toward release. It can accelerate production, but faster output does not guarantee faster delivery: human review still gates merge, and comparable AI-authored PRs take about 20% longer from first review to merge [[1](#sources)]. That bottleneck suggested a different operating model: let agents implement, test, and repair while developers focus on approval and merge decisions.
+Trimble's [AI PDLC](https://trimble-ai-pdlc.web.app/) [[3](#sources)] is an operating model for AI-assisted delivery that organizes work through Discovery (T0), Viability (T1), and Build & Test (T2) and accelerates production. That faster production does not guarantee faster delivery: human review still gates merge, and comparable AI-authored PRs take about 20% longer from first review to merge [[1](#sources)]. That bottleneck suggested automating the development process so people can focus on review and merging, turning faster production into faster delivery.
 
 ### Solution Part 1: Automate the Workflow
 
-Our reference implementation uses **Cursor Cloud Automations** to take a development-ready issue through implementation, QA, and bounded repair to a PR. Agents execute; developers approve ready issues and review every resulting PR.
+For our automations, we use **Cursor Cloud Automations** to take a development-ready issue through implementation, QA, and bounded repair to a PR. Agents execute; developers approve ready issues and review every resulting PR.
 
 ### Trust Gap After Automation
 
-Automation creates a second problem: AI can return incorrect work confidently, while the team remains responsible for what merges. Acceptance criteria, test results, and QA findings make each handoff checkable, but teams must also know whether the complete workflow repeatedly produces acceptable work. Benchmarks test models on fixed tasks; they do not answer that question across a team's agents, context, tests, handoffs, and gates [[2](#sources)].
+Automation creates a second problem: AI can return incorrect work confidently, while the team remains responsible for what merges. Acceptance criteria, tests, and QA findings make handoffs checkable, but teams must also know whether the full workflow repeatedly produces acceptable work. Existing benchmarks help a bit, but they evaluate models, not whether the workflow setup repeatedly produces acceptable work [[2](#sources)]. So we built a framework to benchmark the setup.
 
 ### Solution Part 2: Rate and Improve the Workflow
 
-That leaves a practical question: how can a team tell whether its setup deserves trust and where it is failing? Rather than score the model alone, we treat trust as a property of verified workflow evidence that can rise or fall as work advances. We track the share of requirements verified at each lifecycle checkpoint as `V(t)`. It changes as decay `D`—context loss, ambiguity, opaque changes, and blast radius—competes with recovery `R` from repository context, CI, QA, repair, and review:
+How can a team tell whether its setup deserves trust and where it is failing? Rather than score the model alone, we treat trust as verified workflow evidence that rises or falls as work advances. `V(t)` is the share of requirements verified at each checkpoint. Decay `D` competes with recovery `R`:
 
 `dV/dt = (1 - V)·R(t) - V·D(t)`
 
 `V* = R / (R + D)`
 
-`V*` is the trust level the setup tends toward when recovery and decay balance. If recovery equals decay, it is 0.5; at 3× decay, it is 0.75. The **AI-Native PDLC Validity Framework** uses these measurements to locate weakness in the environment, implement→QA→repair cycle, or workflow handoffs; teams change one control and measure again.
+`V*` is where trust settles when those forces balance (0.5 when R equals D; 0.75 when R is 3× D). `D(t)` is how fast trust erodes—lost context, unclear acceptance criteria, hard-to-review changes, or wide impact of a mistake. `R(t)` is how fast trust is restored—CI, QA, repair, review gates, and a completion guard. Full factor definitions: https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework/blob/main/theory/formula.py. The **AI-Native PDLC Validity Framework** uses this measurement to find weak controls and improve them.
 
-### Evidence and Use
+### Validation and Adoption
 
-We tested the idea in two ways. First, computer simulations asked whether the model behaved as expected: a rule that blocks “done” until evidence is present helped hard tasks when automated QA was missing, but added little once the full pipeline was in place. Those results remain **simulation** only. Second, we applied the framework to **Modus Web Components**. In the first medium run, work failed QA and never entered repair. After adding a pre-open evidence check and fixing the QA→repair handoff, a comparable run failed QA, was repaired, and passed. `V*` is the long-run trust level the setup tends toward; in this pilot its provisional estimate moved from 0.56 to 0.74 using initial weights, not weights fitted to that repository.
+We will explain validation with the framework using an example from one of the simulations we conducted. We ran that example on **Modus Web Components**—Trimble's open-source UI component library—on our Cursor Cloud Automations path from a development-ready issue through implementation, QA, and repair to a PR. From earlier simulation evidence we used a provisional trust threshold of `V* = 0.65`. Applying the framework, we scored the run and diagnosed where trust failed: the workflow shape was right, but the agent skipped an acceptance criterion and claimed done without required evidence. That helped us find the weak recovery sub-factor `completion_guard_hook`; provisional `V*` was 0.56, below the threshold. Our plan was to add the completion-guard hook so unfinished work cannot claim done without acceptance evidence, then re-run. After that change, acceptance checks were enforced, quality failed once, was repaired, then passed, and provisional `V*` reached 0.74, above the threshold (initial weights, not fitted). That left a more believable workflow: iterating with the framework produced a stronger AI path on Modus Web Components that improved not only production but the delivery of an issue.
 
-Teams **Observe**, **Instrument**, then **Calibrate and improve** by task difficulty. Measured trust plus task risk sets review depth—deep, high-level, or minimal but nonzero. Install `pip install pdlc-validity` and follow the [quick start](https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework#quick-start); human review remains.
+Note: The framework can be accessed via `pip install pdlc-validity` [[4](#sources)].
 
 **Takeaways:**
 
-1. See how issue→PR automation lets developers focus on review instead of production.
-2. Learn a simple way to rate a workflow and improve its weakest control.
-3. Leave with a review policy that scales with evidence and risk.
+1. Automate the development path so people can focus on reviewing and merging, which is how faster production becomes faster delivery.
+2. Rate whether the whole setup earns trust, find the weakest control with the framework, and improve that control before trusting outcomes.
+3. Leave with a review policy that sets depth from measured trust and task risk—deep, high-level, or minimal but nonzero—with humans only involved in the review process, ensuring faster delivery with accurate production-quality results.
 
 ## Sources
 
 1. *AI Writes Faster Than Humans Can Review: A Longitudinal Study of an Enterprise “2×” Mandate*, arXiv:2607.01904, 2026. Reports approximately 20% longer time from first human review to merge for comparable AI-authored pull requests.
 2. METR, *Measuring AI Ability to Complete Long Tasks*, arXiv:2503.14499, 2025. Basis for task-complexity stratification and the compounding-error motivation.
 3. Trimble AI PDLC, https://trimble-ai-pdlc.web.app/. Company-wide initiative for AI-assisted delivery across the Product Development Lifecycle.
+4. AI-Native PDLC Validity Framework, https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework and https://pypi.org/project/pdlc-validity/. Research-preview CLI, schemas, and full abstract.
