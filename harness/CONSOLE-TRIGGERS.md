@@ -16,9 +16,10 @@ Automations (existing IDs if still current):
 |------|--------|------|-----|
 | Issue comment | `/approve` | trimble-oss/modus-wc-2.0 | **Me** |
 | Issue comment | `/ask` (and `/clarify` if the UI allows one regex: `/ask|/clarify`) | trimble-oss/modus-wc-2.0 | **Me** |
+| PR comment | `/ask` (same regex) | trimble-oss/modus-wc-2.0 | **Me** |
 | PR comment | `/refine` | trimble-oss/modus-wc-2.0 | **Me** |
 
-Paste instruction blocks from [`AUTOMATION-PROMPTS.md`](AUTOMATION-PROMPTS.md): official-repo gate, `/ask`, `/refine`.
+Paste instruction blocks from [`AUTOMATION-PROMPTS.md`](AUTOMATION-PROMPTS.md): official-repo gate, `/ask` on **issue and PR**, `/refine`. Agents must reply on the **PR** when the human wrote on the PR.
 
 ## QA Agent triggers
 
@@ -45,5 +46,6 @@ Human must click **Save** on each automation. Then smoke on official issues/PRs:
 1. Unclear issue → expect `## NEED CLARIFICATION` + `needs-human` (no PR).
 2. Blocked scope → expect `## NOT FEASIBLE` + `needs-human`.
 3. Your `/refine` on a PR → Dev routes or patches; QA re-runs only after `qa-rerun` add.
+4. Your questions on a PR → comment `/ask` on that PR; expect the reply **on the PR**, not the issue.
 
 Fork triggers on ElishaSamPeterPrabhu/modus-wc-2.0 may stay; do not add new ones there.

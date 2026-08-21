@@ -10,8 +10,10 @@ Every **slash / issue-comment / PR-comment** trigger must be **by Me**. Never An
 | Command | Surface | By |
 |---------|---------|----|
 | `/approve` | Issue comment | **Me** |
-| `/ask` or `/clarify` | Issue comment | **Me** |
+| `/ask` or `/clarify` | Issue comment **and** PR comment | **Me** |
 | `/refine` | PR comment | **Me** |
+
+**Reply where they wrote:** if the human commented on the PR, the agent comments on the **PR** (not the linked issue). If there is no PR yet, comment on the issue.
 
 **Exception (not a comment command):** QA Agent **PR opened** may be **by Anyone** so Dev (Cursor bot) can start QA.
 
@@ -34,21 +36,25 @@ GATE BEFORE IMPLEMENTING:
 Read the issue AC, Technical notes, Figma/MCP context, and permissions.
 Ask: is this clear AND feasible in this PR (scope, API/design, access, would it break the library)?
 
+REPLY SURFACE (always):
+- If an open PR already exists for this work, OR this run was triggered from a PR comment: comment on the PR. Do NOT post the answer/fix only on the linked issue.
+- If there is no PR yet: comment on the issue.
+
 If UNCLEAR:
-  Comment on the ISSUE:
+  Comment on the correct surface (PR if it exists, else issue):
     ## NEED CLARIFICATION
     - [one question per line]
   Add label needs-human
-  Do NOT open a PR. STOP until the human replies, /ask, or /approve.
+  Do NOT open a PR if none exists. STOP until the human replies, /ask, or /approve.
 
 If NOT FEASIBLE:
-  Comment on the ISSUE:
+  Comment on the correct surface (PR if it exists, else issue):
     ## NOT FEASIBLE
     Why: [constraint]
     Tried/blocked: [facts]
     Options: [narrow AC | split issue | wontfix]
   Add label needs-human
-  Do NOT invent a workaround. Do NOT open a PR. STOP.
+  Do NOT invent a workaround. Do NOT open a PR if none exists. STOP.
 
 BRANCHING:
 - Feature branch: exp/<issue-number>-<short-slug>
@@ -71,18 +77,29 @@ PRE-OPEN PR GATE (if not already in instructions):
 - PR body must include: Stop-boundary check: yes|no plus a command table.
 ```
 
-### Dev Agent — `/ask` / `/clarify` (same automation, extra trigger)
+### Dev Agent — `/ask` / `/clarify` (same automation, extra triggers)
 
-Trigger: GitHub → Issue comment matching `/ask` or `/clarify` on **trimble-oss/modus-wc-2.0** **by Me**.
+Triggers (both **by Me**, never Anyone):
+- GitHub → Issue comment matching `/ask` or `/clarify` on **trimble-oss/modus-wc-2.0** **by Me**
+- GitHub → **PR comment** matching `/ask` or `/clarify` on **trimble-oss/modus-wc-2.0** **by Me**
+
+If the human asked questions on the PR without `/ask`, they should follow with `/ask` on that PR so this trigger fires. Then treat the **recent PR comments** (since last `/ask`, or last 20) as the questions.
 
 ```
 You were invoked by /ask or /clarify from the human (by Me only).
 
-Read the issue body and the last 20 comments (including ## NEED CLARIFICATION or ## NOT FEASIBLE).
-Answer what you can. If still blocked, ask ONE tighter question.
+REPLY SURFACE:
+- If this is a PR comment (or an open PR exists): comment on the PR.
+  Do NOT post the answer only on the linked GitHub issue.
+- If there is no PR: comment on the issue.
+
+Read: issue body, PR body/diff if a PR exists, and the last 20 comments on THAT surface
+(including the human's questions, ## NEED CLARIFICATION, ## NOT FEASIBLE).
+Answer what you can on the same thread. If still blocked, ask ONE tighter question there.
 
 Remove needs-human only when AC is actionable AND feasible.
 Do NOT open a PR from /ask unless the human also commented /approve.
+Do NOT silently implement a "fix" on the issue while the conversation is on the PR.
 ```
 
 ### Dev Agent — `/refine` (same automation, extra trigger)
@@ -101,7 +118,7 @@ You were invoked by /refine from the human (by Me only).
      Comment: "Routed to Fix Agent for the latest QA FAILED."
      STOP.
    - Else: implement the requested refine on the SAME branch (minimal change).
-     Push. Comment what changed.
+     Push. Comment on the PR what changed (not only on the issue).
      Remove qa-rerun if present, then ADD qa-rerun (GitHub fires on label-added).
      Do NOT claim QA passed.
 
@@ -170,12 +187,12 @@ Keep the 3-iteration cap. **Add** this block (not-feasible / ask human):
 
 ```
 If the QA failure is not repairable within the AC or would require a library-breaking change:
-  Comment: "## NOT FEASIBLE\nWhy: …\nOptions: narrow AC | split issue | human fix"
+  Comment on the PR (not the issue): "## NOT FEASIBLE\nWhy: …\nOptions: narrow AC | split issue | human fix"
   Add label needs-human
   Do NOT loop. STOP.
 
 If this is iteration 3+:
-  Comment: "Max iterations reached (3 attempts). Requesting human review."
+  Comment on the PR: "Max iterations reached (3 attempts). Requesting human review."
   Add label needs-human
   STOP.
 
@@ -183,8 +200,9 @@ PUSH AND SIGNAL (after a real fix):
 - Push to the same branch
 - Remove qa-failed
 - Remove qa-rerun if present, then ADD qa-rerun
-- Comment: "Fix applied: [one sentence]"
+- Comment on the PR: "Fix applied: [one sentence]"
 - Do NOT claim QA passed
+- Do NOT post the fix summary only on the linked issue
 ```
 
 ### Fix Agent — official-repo trigger
