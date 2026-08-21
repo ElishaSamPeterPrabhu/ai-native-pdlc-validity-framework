@@ -10,16 +10,19 @@ Automations (existing IDs if still current):
 | QA Agent | `aac94e20-8523-48e4-a239-26daa40f1675` |
 | Fix Agent | `915ae382-a9d0-4d76-9742-3e6121108a3b` |
 
-## Dev Agent triggers
+## Dev Agent triggers (add ALL of these — PR rows are easy to miss)
 
-| Type | Match | Repo | By |
-|------|--------|------|-----|
-| Issue comment | `/approve` | trimble-oss/modus-wc-2.0 | **Me** |
-| Issue comment | `/ask` (and `/clarify` if the UI allows one regex: `/ask|/clarify`) | trimble-oss/modus-wc-2.0 | **Me** |
-| PR comment | `/ask` (same regex) | trimble-oss/modus-wc-2.0 | **Me** |
-| PR comment | `/refine` | trimble-oss/modus-wc-2.0 | **Me** |
+The console “Comment” trigger has two kinds. **Issue comment ≠ PR comment.**
+If you only add Issue comment `/ask`, typing `/ask` on a PR does nothing.
 
-Paste instruction blocks from [`AUTOMATION-PROMPTS.md`](AUTOMATION-PROMPTS.md): official-repo gate, `/ask` on **issue and PR**, `/refine`. Agents must reply on the **PR** when the human wrote on the PR.
+| Type in UI | Match | Repo | By | Command |
+|------------|--------|------|-----|---------|
+| **Comment on issues** | `/approve` | trimble-oss/modus-wc-2.0 | **Me** | start work |
+| **Comment on issues** | `/ask` or `/ask|/clarify` | trimble-oss/modus-wc-2.0 | **Me** | Q&A on issue |
+| **Comment on pull requests** | `/ask` or `/ask|/clarify` | trimble-oss/modus-wc-2.0 | **Me** | Q&A on PR |
+| **Comment on pull requests** | `/refine` | trimble-oss/modus-wc-2.0 | **Me** | apply PR/QA comments |
+
+Save after adding the two **Comment on pull requests** rows.
 
 ## QA Agent triggers
 

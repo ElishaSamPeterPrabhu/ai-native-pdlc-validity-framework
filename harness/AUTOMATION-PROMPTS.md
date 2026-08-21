@@ -3,23 +3,37 @@
 Paste these into [cursor.com/automations](https://cursor.com/t/trimble/automations) exactly as shown.
 Target repository is **trimble-oss/modus-wc-2.0** (not the experiment fork).
 
-## Hard rule: comment commands by Me only
+## Commands (what you type)
 
-Every **slash / issue-comment / PR-comment** trigger must be **by Me**. Never Anyone.
+### On a pull request (PR conversation)
 
-| Command | Surface | By |
-|---------|---------|----|
-| `/approve` | Issue comment | **Me** |
-| `/ask` or `/clarify` | Issue comment **and** PR comment | **Me** |
-| `/refine` | PR comment | **Me** |
+These **must** have their own Dev Agent triggers of type **GitHub → Comment on PRs** (not “Comment on issues”). **By Me** only.
 
-**Reply where they wrote:** if the human commented on the PR, the agent comments on the **PR** (not the linked issue). If there is no PR yet, comment on the issue.
+| You type | What happens |
+|----------|----------------|
+| `/ask` | Answer your recent **PR** questions **on the PR**. Do not reply only on the issue. |
+| `/clarify` | Same as `/ask`. |
+| `/refine` | Apply recent PR + QA comments on the same branch; re-signal QA. |
 
-**Exception (not a comment command):** QA Agent **PR opened** may be **by Anyone** so Dev (Cursor bot) can start QA.
+If you already asked in prose (like [PR #1417](https://github.com/trimble-oss/modus-wc-2.0/pull/1417)), add `/ask` on that PR so the trigger fires.
+
+### On an issue (no PR yet, or start work)
+
+Triggers of type **GitHub → Comment on issues**. **By Me** only.
+
+| You type | What happens |
+|----------|----------------|
+| `/approve` | Start implementation (only if clear and feasible). |
+| `/ask` | Answer questions on the **issue**. |
+| `/clarify` | Same as `/ask`. |
+
+**Reply where they wrote:** PR comment → reply on the PR. Issue comment and no PR yet → reply on the issue.
+
+**Exception (not a slash command):** QA Agent **PR opened** may be **by Anyone** so Dev (Cursor bot) can start QA.
 
 If the console defaults a new comment trigger to Anyone, change it to **Me** before Save.
 
-See [`CONSOLE-TRIGGERS.md`](CONSOLE-TRIGGERS.md) for the trigger table to apply in the console.
+See [`CONSOLE-TRIGGERS.md`](CONSOLE-TRIGGERS.md) — you need **two** `/ask` rows: one Issue comment, one **PR comment**.
 
 ---
 
