@@ -45,9 +45,19 @@
   "inspect_gaps_note": "framework inspect reported 12 measurement gaps because conductor's controls live in a TypeScript plugin rather than .cursor/.github conventions; those gaps are convention mismatches documented in user-intake.json setup_declared.notes, not absent controls.",
   "cross_check_status": {
     "their_benchmark": "three-arm harness-vs-bare benchmark with hidden tests; calibration metric self_score - objective",
-    "published_results": "none in-repo (.data/benchmark/ is gitignored)",
-    "local_reproduction_attempt": "2026-08-30: benchmark dry-run refused without validated model artifacts (20-48 GB GGUF, macOS/Metal-gated build); stub scan M5 PASS (221 files); see verification-run.log",
-    "status": "quantitative cross-check of sim deltas blocked until results are published",
+    "published_results": "none upstream in-repo (.data/benchmark/ is gitignored); local reproduction copied to data/external/llama-leash/",
+    "local_reproduction_attempt": "2026-08-30 round 1 on M4 Pro 24GB: ornith-9b Q4_K_M benchmark complete (calibration 0.0 on author-default merge-ranges preset); T0 conductor bench partial 8/30 cells; gate suite 2080/2085 under Node 26",
+    "status": "measured_round_1_partial",
+    "artifacts": [
+      "data/external/llama-leash/benchmark-results.json",
+      "data/external/llama-leash/t0-arm-results.json",
+      "data/external/llama-leash/cross-check.json"
+    ],
+    "claim_boundaries": [
+      "One model, one host, partial T0 only",
+      "Direction-level agreement only in cross-check.json; no fitted-weight claims",
+      "Conductor arm blocked by wire/template errors on this stack"
+    ],
     "structural_alignment": [
       "their calibration metric (self_score - objective) is the live counterpart of the simulation calibration gap added in v1.3",
       "their two hardest-enforced evidence-honesty gates (red-first FSM, verify freshness stamp) are the two factors with the largest simulated deltas in data/discipline_ablation.json",

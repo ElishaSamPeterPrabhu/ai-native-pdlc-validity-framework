@@ -11,7 +11,7 @@
       "constant_mean": 0.026189140043946214
     },
     "contract_checks": {
-      "formula_version_is_v1_1": true,
+      "formula_version_is_v1_3": true,
       "default_decay_hybrid": true,
       "completion_guard_simulation_only": true,
       "fit_results_marked_synthetic": true,
@@ -46,18 +46,22 @@
       }
     },
     "diagnosis_smoke": {
-      "weakest_layer": "unknown",
-      "rationale": "insufficient evidence to attribute weakness to a layer",
-      "recommended_controls": [
-        "instrument Level 1 collectors",
-        "run baseline tasks"
-      ]
+      "status": "non-authoritative-heuristic",
+      "result": {
+        "weakest_layer": "unknown",
+        "rationale": "insufficient evidence to attribute weakness to a layer",
+        "recommended_controls": [
+          "instrument Level 1 collectors",
+          "run baseline tasks"
+        ]
+      }
     },
     "claim_warnings": [
-      "formula v1.1 evidence_status=simulation-calibrated",
+      "formula v1.3 evidence_status=simulation-calibrated",
       "placeholder weights are not Modus-fitted factory calibration",
       "human review is never removed; lanes scale depth only",
-      "completion_guard_hook effects are simulation-only until live telemetry"
+      "completion_guard_hook effects are simulation-only until live telemetry",
+      "layer diagnosis and final review policy are AI-owned; run `python -m framework evidence` then validity-diagnose skill"
     ]
   },
   "report_excerpt": {
@@ -71,7 +75,14 @@
         ],
         "pass_at_1": 1.0,
         "pass_hat_k": 1.0,
-        "provisional_v_star": 1.0,
+        "provisional_v_star": {
+          "value": null,
+          "source": "missing",
+          "confidence": "none",
+          "method": "equilibrium_validity",
+          "weight_source": "none",
+          "notes": "decay proxies missing; V* not computed (never aliased to mean_v_obs)"
+        },
         "review_lane": "minimal"
       },
       "medium": {
@@ -83,7 +94,14 @@
         ],
         "pass_at_1": 1.0,
         "pass_hat_k": 1.0,
-        "provisional_v_star": 1.0,
+        "provisional_v_star": {
+          "value": null,
+          "source": "missing",
+          "confidence": "none",
+          "method": "equilibrium_validity",
+          "weight_source": "none",
+          "notes": "decay proxies missing; V* not computed (never aliased to mean_v_obs)"
+        },
         "review_lane": "minimal"
       },
       "high": {
@@ -95,17 +113,28 @@
         ],
         "pass_at_1": 0.8333,
         "pass_hat_k": 0.3349,
-        "provisional_v_star": 0.9722,
+        "provisional_v_star": {
+          "value": null,
+          "source": "missing",
+          "confidence": "none",
+          "method": "equilibrium_validity",
+          "weight_source": "none",
+          "notes": "decay proxies missing; V* not computed (never aliased to mean_v_obs)"
+        },
         "review_lane": "minimal"
       }
     },
     "layer_diagnosis": {
-      "weakest_layer": "unknown",
-      "rationale": "insufficient evidence to attribute weakness to a layer",
-      "recommended_controls": [
-        "instrument Level 1 collectors",
-        "run baseline tasks"
-      ]
+      "status": "deferred_to_ai",
+      "instruction": "Use Cursor skill validity-diagnose on the evidence pack from `python -m framework evidence`. Do not treat script heuristics as truth.",
+      "optional_heuristic": {
+        "weakest_layer": "unknown",
+        "rationale": "insufficient evidence to attribute weakness to a layer",
+        "recommended_controls": [
+          "instrument Level 1 collectors",
+          "run baseline tasks"
+        ]
+      }
     }
   }
 }
