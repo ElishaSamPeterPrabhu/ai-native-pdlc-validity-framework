@@ -65,6 +65,15 @@
     "notes": "Declared from repository documentation only (README, docs/, conductor/docs/HONEST-LIMITS.md), commit 'main' as of 2026-08-30. Controls live in the conductor opencode plugin (TypeScript gate stack), not in .cursor/.github conventions, so framework inspect cannot mechanically detect them - the 12 inspect gaps are convention mismatches, not absent controls. hooks=true refers to conductor's FSM gates and verify freeze, not .cursor/hooks.json. ci_gate=true refers to enforced visible test suites plus hidden-test benchmark gauge. No human PR review loop exists; this is a single-operator local harness."
   },
   "prs": [],
+  "verification_2026_08_30": {
+    "signal_provenance": {
+      "gate_mechanisms": "observed",
+      "benchmark_results": "missing",
+      "run_telemetry": "missing"
+    },
+    "missing_signals": ["run telemetry", "benchmark results", "live factor activity"],
+    "note": "Conductor gate suite executed locally: 2050/2052 tests pass (2 failures are host pytest assumptions; 2 skips are the absent-bun leg). Stub scan M5 PASS. See verification-run.log and factor-mapping.json per_factor_provenance."
+  },
   "goals": [
     "External Level 0 verification target for the AI-Native PDLC Validity Framework",
     "Map conductor gate mechanisms to registry factors (including v1.3 discipline factors)",

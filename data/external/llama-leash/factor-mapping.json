@@ -2,8 +2,22 @@
   "schema_version": "1.0.0",
   "subject_repo": "https://github.com/vorlac/llama-leash",
   "generated_at": "2026-08-30",
-  "provenance": "reported",
-  "provenance_note": "Presence judged from repository documentation only (README gate table, docs/, conductor/docs/HONEST-LIMITS.md). No run telemetry, no live activity measurement, no V* computed (see score-pack.json: n_scored=0, V* missing). This mapping is a setup inventory, not evidence of effectiveness.",
+  "provenance": "mixed (observed_gate_tests for test-covered mechanisms; reported otherwise)",
+  "provenance_note": "Initial presence judged from repository documentation (README gate table, docs/, conductor/docs/HONEST-LIMITS.md). 2026-08-30 upgrade: the conductor gate test suite was executed locally (2050/2052 pass; both failures environment-dependent pytest-host assumptions; see verification-run.log). Mechanisms exercised by named passing test files are upgraded to observed_gate_tests. Still no run telemetry, no live activity measurement, no V* computed (score-pack.json: n_scored=0, V* missing). Gate tests prove the controls behave as documented; they are not evidence of delivery effectiveness.",
+  "per_factor_provenance": {
+    "red_first_discipline": "observed_gate_tests (fsm-item.test.ts)",
+    "evidence_freshness": "observed_gate_tests (freshness.test.ts)",
+    "reviewer_independence": "observed_gate_tests (fanout.test.ts, fanout-transcript.test.ts)",
+    "doctrine_reinjection": "observed_gate_tests (doctrine.test.ts, doctrine-mechanics.test.ts, doctrine-content.test.ts)",
+    "completion_guard_hook": "observed_gate_tests (evidence.test.ts, evidence-attribution.test.ts)",
+    "checkpointing": "observed_gate_tests (g8-testscope-exit.test.ts, admission-seams.test.ts scope gates)",
+    "ci_gate": "reported",
+    "agentic_qa": "reported",
+    "fix_loop": "reported",
+    "spec_refinement": "reported",
+    "rules_context": "reported",
+    "review_bot": "reported"
+  },
   "formula_version": "v1.3",
   "factors_present_per_documentation": {
     "ci_gate": "visible test suites gate every item; hidden gauge tests in bench corpus",
@@ -32,6 +46,7 @@
   "cross_check_status": {
     "their_benchmark": "three-arm harness-vs-bare benchmark with hidden tests; calibration metric self_score - objective",
     "published_results": "none in-repo (.data/benchmark/ is gitignored)",
+    "local_reproduction_attempt": "2026-08-30: benchmark dry-run refused without validated model artifacts (20-48 GB GGUF, macOS/Metal-gated build); stub scan M5 PASS (221 files); see verification-run.log",
     "status": "quantitative cross-check of sim deltas blocked until results are published",
     "structural_alignment": [
       "their calibration metric (self_score - objective) is the live counterpart of the simulation calibration gap added in v1.3",

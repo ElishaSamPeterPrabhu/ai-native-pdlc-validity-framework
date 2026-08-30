@@ -178,3 +178,23 @@ Prediction agreement: 11/16 cells inside the pre-registered ΔV_obs range;
   exists (same tier as `completion_guard_hook`).
 - Sobol and identifiability re-runs including the new mechanisms are deferred
   to a later round.
+
+### External cross-check target (llama-leash, 2026-08-30)
+
+Level 0 verification artifacts live in `data/external/llama-leash/`
+(inspect setup-manifest, documented-setup intake, score pack, factor mapping).
+
+- `inspect` reported 12 measurement gaps: conductor's controls live in a
+  TypeScript plugin, not `.cursor`/`.github` conventions — the intake path
+  covers them as declared (`reported`) evidence.
+- `score` on the documented setup returned **n_scored=0, V\* missing**: no run
+  telemetry exists, so the framework refused to produce a number. This is the
+  intended insufficient-data behavior, exercised on a real external repo.
+- All four v1.3 discipline factors are live, mechanically enforced controls in
+  that harness; under the v1.1 registry the setup would have been
+  indistinguishable from a plain tests-exist pipeline.
+- Quantitative cross-check of the ablation deltas against their three-arm
+  hidden-test benchmark (calibration metric `self_score − objective`, the live
+  counterpart of our simulated calibration gap) is **blocked until they
+  publish results** (`.data/benchmark/` is gitignored). Until then no
+  agreement claim is made.
