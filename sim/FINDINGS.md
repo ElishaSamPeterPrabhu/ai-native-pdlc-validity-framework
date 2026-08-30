@@ -96,3 +96,85 @@ green.
   randomness consumed by earlier hook interventions and break ON/OFF pairing.
 - A true terminal checkpoint is required before the guard: trailing steps after the
   last commit can leave stale V_obs and fabricate negative deltas.
+
+## Discipline-factor ablation (2026-08-30, formula v1.3)
+
+Outputs: `data/discipline_predictions.json` (registered before the run),
+`data/discipline_ablation.json`, `data/figures/fig5_discipline_ablation.png`.
+Protocol: seed 20260830, 1,920 runs (4 factors × 2 arms × 2 strata × ON/OFF ×
+20 tasks × 3 repeats), fixed mechanism knobs (no sweep in round 1).
+Simulation-only; no live telemetry. Design source for the mechanisms:
+TDD-enforcing harness practice (llama-leash "conductor").
+
+### Mechanisms under test
+
+- `red_first_discipline`: without it, 35% of successful repairs are vacuously
+  green (test-after theater) — actually broken but masked from CI, QA,
+  self-repair, the completion guard, and anchored review.
+- `reviewer_independence`: terminal review catches actually-broken checks at
+  0.75 in a fresh context (including masked/stale) vs 0.25 anchored
+  (visible checks only).
+- `evidence_freshness`: trailing polish edits invalidate green checks at 0.12
+  after the last verify; freshness forces a terminal re-verify plus one
+  bounded repair pass.
+- `doctrine_reinjection`: without it, per-step error ramps to 1.8× by end of
+  run (process amnesia).
+
+New telemetry: `self_claimed_pass` per run, giving a **calibration gap**
+(self-claimed − objective pass rate) per arm.
+
+### Measured results (ΔV_obs / Δpass@1 / Δcalibration-gap, ON − OFF)
+
+| Factor | Arm | Stratum | ΔV_obs | Δpass@1 | Δcal-gap | Pred. match |
+| --- | --- | --- | --- | --- | --- | --- |
+| red_first_discipline | full_pipeline | medium | +0.006 | +0.050 | −0.050 | below range |
+| red_first_discipline | full_pipeline | high | +0.061 | +0.533 | −0.550 | agree |
+| red_first_discipline | no_agentic_qa | medium | +0.002 | +0.017 | −0.017 | agree |
+| red_first_discipline | no_agentic_qa | high | +0.036 | +0.317 | −0.350 | agree |
+| reviewer_independence | full_pipeline | medium | +0.000 | +0.000 | +0.000 | agree |
+| reviewer_independence | full_pipeline | high | +0.003 | +0.033 | +0.000 | agree |
+| reviewer_independence | no_agentic_qa | medium | +0.000 | +0.000 | +0.000 | below range |
+| reviewer_independence | no_agentic_qa | high | +0.010 | +0.083 | +0.000 | below range |
+| evidence_freshness | full_pipeline | medium | +0.085 | +0.367 | −0.583 | agree |
+| evidence_freshness | full_pipeline | high | +0.058 | +0.317 | −0.633 | agree |
+| evidence_freshness | no_agentic_qa | medium | +0.077 | +0.283 | −0.500 | agree |
+| evidence_freshness | no_agentic_qa | high | +0.078 | +0.250 | −0.617 | agree |
+| doctrine_reinjection | full_pipeline | medium | +0.000 | +0.000 | +0.000 | agree |
+| doctrine_reinjection | full_pipeline | high | +0.003 | +0.033 | +0.000 | agree |
+| doctrine_reinjection | no_agentic_qa | medium | +0.010 | +0.050 | +0.000 | below range |
+| doctrine_reinjection | no_agentic_qa | high | +0.022 | +0.100 | +0.000 | below range |
+
+Prediction agreement: 11/16 cells inside the pre-registered ΔV_obs range;
+5 below range (all reported as-is); direction non-negative in 16/16.
+
+### Reading the results (claim discipline applies)
+
+- `evidence_freshness` is the strongest and most uniform factor in round 1
+  (ΔV_obs +0.058 to +0.085 in every cell) and produces the largest
+  calibration-gap reductions (−0.50 to −0.63): stale terminal evidence is a
+  large, arm-independent source of false "done" claims under this mechanism.
+- `red_first_discipline` dominates on high-complexity work (Δpass@1 +0.53 on
+  the full pipeline) because vacuous greens are unrecoverable by every
+  downstream stage. The magnitude is conditional on the assumed
+  `vacuous_green_prob=0.35`; treat it as mechanism-conditional, not a fitted
+  effect size.
+- `reviewer_independence` under-performed its prediction. Round 1 isolated it
+  from the dishonest-evidence mechanisms (vacuous/stale knobs off in its
+  cells), so the independent reviewer's unique ability — seeing masked and
+  stale checks — was never exercised. A round-2 interaction arm
+  (red-first OFF × independent review ON) is the right test, not a bigger
+  catch probability.
+- `doctrine_reinjection` deltas were positive but below range on the weakened
+  arm: commit-time self-repair absorbs more drift breakage than predicted.
+- Calibration gap is measurable and moves as predicted for the two
+  evidence-honesty factors; it is the simulation counterpart of the live
+  `agent_claimed_done` vs QA-outcome signal already collected in intake.
+
+### Claim boundaries
+
+- All numbers are synthetic ablation contrasts under stated mechanism knobs;
+  none are live effect sizes or fitted weights.
+- The four factors stay `simulation-only` in the registry until live telemetry
+  exists (same tier as `completion_guard_hook`).
+- Sobol and identifiability re-runs including the new mechanisms are deferred
+  to a later round.

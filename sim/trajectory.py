@@ -56,6 +56,13 @@ class SetupConfig:
     checkpointing: bool = True
     review_bot: bool = False
     completion_guard_hook: bool = False
+    # v1.3 discipline factors. Their mechanisms are inert unless the matching
+    # MicroParams knob is nonzero, so existing seeded experiments reproduce
+    # bit-identically under default parameters.
+    red_first_discipline: bool = False
+    reviewer_independence: bool = False
+    evidence_freshness: bool = False
+    doctrine_reinjection: bool = False
 
     def activities(
         self,
@@ -75,6 +82,10 @@ class SetupConfig:
             "completion_guard_hook": (
                 hook_active if self.completion_guard_hook else 0.0
             ),
+            "red_first_discipline": 1.0 if self.red_first_discipline else 0.0,
+            "reviewer_independence": 1.0 if self.reviewer_independence else 0.0,
+            "evidence_freshness": 1.0 if self.evidence_freshness else 0.0,
+            "doctrine_reinjection": 1.0 if self.doctrine_reinjection else 0.0,
         }
 
 
@@ -114,6 +125,24 @@ class MicroParams:
     hook_detect_prob: float = 0.8
     # Completion-guard hook: max interventions at the stop boundary.
     hook_max_interventions: int = 1
+    # --- v1.3 discipline mechanisms (all inert at 0.0 defaults) -----------
+    # Without red-first discipline: probability a successful repair is
+    # vacuously green (test-after theater) — the check stays broken but is
+    # masked from every later catch stage because its evidence looks green.
+    vacuous_green_prob: float = 0.0
+    # Terminal review catch probabilities per actually-broken check.
+    # Anchored review trusts the authoring context (cannot see masked checks);
+    # independent review re-derives evidence (can). Review runs only when the
+    # relevant probability is nonzero.
+    review_catch_anchored: float = 0.0
+    review_catch_independent: float = 0.0
+    # Without evidence freshness: probability a green check is invalidated by
+    # trailing polish edits after the last verify. With freshness ON a forced
+    # terminal re-verify precedes the completion claim.
+    stale_evidence_prob: float = 0.0
+    # Without doctrine reinjection: per-step error multiplier ramps up to
+    # (1 + drift_ramp) by the end of the run (process amnesia).
+    drift_ramp: float = 0.0
 
 
 @dataclass
@@ -138,6 +167,11 @@ class RunResult:
     fix_iterations_used: int
     steps_taken: int
     hook_interventions: int = 0
+    # v1.3 telemetry: what the agent believes vs what the verifier says.
+    self_claimed_pass: bool = True
+    vacuous_greens: int = 0
+    stale_breaks: int = 0
+    review_repairs: int = 0
 
 
 def simulate_run(
@@ -159,12 +193,35 @@ def simulate_run(
         error_mult *= params.rules_error_mult
 
     checks_ok = np.ones(task.n_checks, dtype=bool)
+    # masked: vacuously-green checks (test-after theater) — actually broken but
+    # invisible to CI/QA/self-repair/hook because their evidence looks green.
+    masked = np.zeros(task.n_checks, dtype=bool)
+    # stale_hidden: checks broken by trailing edits after the last verify; the
+    # agent's evidence still shows them green.
+    stale_hidden = np.zeros(task.n_checks, dtype=bool)
+    vacuous_count = 0
+    stale_count = 0
+    review_repairs = 0
     tokens_frac = 0.0
     tool_calls = 0
     tool_fails = 0
     cum_loc = 0.0
     files_touched = 1
     checkpoints: list[Checkpoint] = []
+
+    def attempt_repair(idx: int) -> None:
+        """One repair attempt; without red-first discipline it may be vacuous."""
+        nonlocal vacuous_count
+        if rng.random() < params.fix_success_prob:
+            if (
+                params.vacuous_green_prob > 0.0
+                and not config.red_first_discipline
+                and rng.random() < params.vacuous_green_prob
+            ):
+                masked[idx] = True
+                vacuous_count += 1
+            else:
+                checks_ok[idx] = True
 
     steps_per_commit = max(
         2, params.steps_per_commit // (2 if config.checkpointing else 1)
@@ -206,6 +263,10 @@ def simulate_run(
         eps = task.base_step_error * error_mult
         eps *= 1.0 + params.entropy_error_gain * tokens_frac / task.base_step_error * 0.01
         eps *= 1.0 + params.ambiguity_error_gain * ambiguity / task.base_step_error * 0.01
+        # Instruction drift (process amnesia): without doctrine reinjection the
+        # per-step error rate ramps up over the run.
+        if params.drift_ramp > 0.0 and not config.doctrine_reinjection:
+            eps *= 1.0 + params.drift_ramp * (step / n_steps)
         n_at_risk = 1 + int(task.blast_radius * (task.n_checks - 1))
         for idx in rng.choice(task.n_checks, size=n_at_risk, replace=False):
             if checks_ok[idx] and rng.random() < eps:
@@ -213,8 +274,9 @@ def simulate_run(
 
         # Progress: the agent is also building the feature — each step has a chance
         # of turning a not-yet-green check green (front-loaded early in the run).
+        # Masked checks are believed done, so the agent does not work on them.
         progress_p = 2.0 / steps_per_commit
-        broken = np.flatnonzero(~checks_ok)
+        broken = np.flatnonzero(~checks_ok & ~masked)
         if broken.size and rng.random() < progress_p:
             checks_ok[rng.choice(broken)] = True
 
@@ -224,18 +286,20 @@ def simulate_run(
             catch_p = params.self_repair_prob + (
                 params.ci_catch_prob * 0.5 if config.ci_gate else 0.0
             )
-            for idx in np.flatnonzero(~checks_ok):
-                if rng.random() < catch_p and rng.random() < params.fix_success_prob:
-                    checks_ok[idx] = True
+            for idx in np.flatnonzero(~checks_ok & ~masked):
+                if rng.random() < catch_p:
+                    attempt_repair(idx)
             record(step / n_steps, 1.0)
 
     # --- QA / fix loop ----------------------------------------------------
+    # QA runs the visible test evidence, so masked (vacuously green) checks
+    # cannot be caught here.
     fix_used = 0
     if config.agentic_qa:
         cap = config.fix_iteration_cap if config.fix_loop else 0
         while not checks_ok.all() and fix_used < cap:
             caught = [
-                idx for idx in np.flatnonzero(~checks_ok)
+                idx for idx in np.flatnonzero(~checks_ok & ~masked)
                 if rng.random() < params.qa_catch_prob
                 or (config.ci_gate and rng.random() < params.ci_catch_prob)
             ]
@@ -243,11 +307,31 @@ def simulate_run(
                 break
             fix_used += 1
             for idx in caught:
-                if rng.random() < params.fix_success_prob:
-                    checks_ok[idx] = True
+                attempt_repair(idx)
             budget = 1.0 - fix_used / max(1, cap)
             cum_loc += rng.exponential(4.0)
             record(1.0 + 0.15 * fix_used, budget)
+
+    # --- Trailing polish edits / evidence staleness ------------------------
+    # After the last verify, polish edits can invalidate green checks. Without
+    # evidence freshness the completion claim still uses the stale snapshot;
+    # with it, a forced terminal re-verify reveals the breaks and gets one
+    # bounded repair pass.
+    if params.stale_evidence_prob > 0.0:
+        stale_idxs: list[int] = []
+        for idx in np.flatnonzero(checks_ok):
+            if rng.random() < params.stale_evidence_prob:
+                checks_ok[idx] = False
+                stale_idxs.append(int(idx))
+                stale_count += 1
+        if stale_idxs:
+            cum_loc += rng.exponential(2.0)
+            if config.evidence_freshness:
+                for idx in stale_idxs:
+                    attempt_repair(idx)
+                record(1.40, 0.0)
+            else:
+                stale_hidden[stale_idxs] = True
 
     # --- Completion-guard hook (stop boundary) ----------------------------
     # Detects remaining broken checks when the agent tries to stop and forces
@@ -264,19 +348,52 @@ def simulate_run(
         for intervention in range(params.hook_max_interventions):
             if checks_ok.all():
                 break
+            # The hook checks that evidence exists, not that it is honest or
+            # fresh: masked and stale-hidden checks are invisible to it.
             caught = [
                 idx
-                for idx in np.flatnonzero(~checks_ok)
+                for idx in np.flatnonzero(~checks_ok & ~masked & ~stale_hidden)
                 if rng.random() < params.hook_detect_prob
             ]
             if not caught:
                 break
             hook_interventions += 1
             for idx in caught:
-                if rng.random() < params.fix_success_prob:
-                    checks_ok[idx] = True
+                attempt_repair(idx)
             cum_loc += rng.exponential(3.0)
             record(1.5 + 0.1 * intervention, 0.0, hook_active=1.0)
+
+    # --- Terminal review (anchored vs independent) -------------------------
+    # An anchored reviewer trusts the authoring context's evidence, so masked
+    # and stale-hidden checks stay invisible. An independent reviewer
+    # re-derives evidence in a fresh context and can see every broken check.
+    review_p = (
+        params.review_catch_independent
+        if config.reviewer_independence
+        else params.review_catch_anchored
+    )
+    if review_p > 0.0 and not checks_ok.all():
+        if config.reviewer_independence:
+            visible = np.flatnonzero(~checks_ok)
+        else:
+            visible = np.flatnonzero(~checks_ok & ~masked & ~stale_hidden)
+        caught = [int(i) for i in visible if rng.random() < review_p]
+        for idx in caught:
+            # The reviewer surfaced the truth: belief resyncs regardless of
+            # whether the repair lands. Reviewer-observed reds are genuine, so
+            # the repair is never vacuous.
+            masked[idx] = False
+            stale_hidden[idx] = False
+            if rng.random() < params.fix_success_prob:
+                checks_ok[idx] = True
+                review_repairs += 1
+        if caught:
+            cum_loc += rng.exponential(3.0)
+            record(1.7, 0.0)
+
+    # The agent's completion claim is based on the evidence it can see:
+    # actually-green checks plus vacuous greens plus stale snapshots.
+    believed_ok = checks_ok | masked | stale_hidden
 
     return RunResult(
         task=task.name,
@@ -286,6 +403,10 @@ def simulate_run(
         fix_iterations_used=fix_used,
         steps_taken=n_steps,
         hook_interventions=hook_interventions,
+        self_claimed_pass=bool(believed_ok.all()),
+        vacuous_greens=vacuous_count,
+        stale_breaks=stale_count,
+        review_repairs=review_repairs,
     )
 
 
