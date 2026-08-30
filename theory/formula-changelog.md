@@ -41,6 +41,34 @@ Evidence: `sim/FINDINGS.md`, `data/sobol_indices.json`, `data/identifiability.js
 - Campaign design constraints: include bare and single-factor-off arms (outcome
   variance vanishes at full pipeline), and ensure High tasks are genuinely hard.
 
+## v1.2 — 2026-08-30 — Candidate process-discipline factors + provenance hardening
+
+Evidence: agent-evaluation literature review (RigorBench arXiv:2606.22678,
+ProcBench arXiv:2605.20251, LH-Bench arXiv:2603.22744, AgentEval
+arXiv:2604.23581, AgentRx failure taxonomy). No new fit; no numeric change to
+`D(t)`, existing weights, or any published score.
+
+- Registered five **candidate recovery factors** (placeholder weight 0.08,
+  `CANDIDATE_FACTORS`, evidence status `candidate`): `plan_fidelity`
+  (planning fidelity), `abstention_quality` (escalate instead of guessing),
+  `error_msg_quality` (actionable verifier/QA failure reports; LH-Bench found
+  recovery success strongly depends on it), `runtime_feedback_hooks`
+  (structured mid-run feedback; generalizes the completion guard), and
+  `rollback_reversibility` (control preservation / reversible changes).
+  They contribute zero R unless activity is actually observed and support no
+  published claims until simulation ablation, the same path
+  `completion_guard_hook` took.
+- Registered three **candidate decay constructs** in the catalog only
+  (`instruction_drift`, `tool_misuse_rate`, `goal_misalignment`). They are NOT
+  part of the `D(t)` computation; telemetry may be collected now, and entry
+  into `D(t)` requires a formula revision plus simulation.
+- Provenance hardening in the scorer (no formula change): per-field
+  `source` labels (observed / heuristic / imputed) on decay inputs,
+  catalog-aligned entropy imputation (0.5), explicit `assumed` labeling when
+  recovery activity is unobserved, `defaulted_inputs` / `missing_inputs`
+  surfaced per record, and refusal to compute D/V* when every decay input is a
+  policy default.
+
 ## v1.1.1 — 2026-08-04 — Publish contract alignment (no new fit)
 
 Evidence: `framework/CONTRACT.md`, research-preview packaging.

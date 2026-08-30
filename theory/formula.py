@@ -4,10 +4,11 @@ Every consumer (sim/, harness/, analysis/, dashboard/, framework/) imports this
 module; nothing else in the codebase hardcodes the model. Revisions are versioned
 here and explained in formula-changelog.md.
 
-Current version: v1.1 (Phase-B structure decisions + completion-guard registry
-entry). Factor weights remain placeholders until Phase D fits real campaign data
-(v2). Default decay form for analysis is HYBRID; MULTIPLICATIVE is kept only as
-a model-comparison baseline.
+Current version: v1.2 (candidate process-discipline factors registered from the
+agent-evaluation literature; no numeric change to D(t) or fitted claims).
+Factor weights remain placeholders until Phase D fits real campaign data (v2).
+Default decay form for analysis is HYBRID; MULTIPLICATIVE is kept only as a
+model-comparison baseline.
 
 Model summary (see theory/derivation.md for the derivation):
 
@@ -25,7 +26,7 @@ import math
 from dataclasses import dataclass, field
 from enum import Enum
 
-FORMULA_VERSION = "v1.1"
+FORMULA_VERSION = "v1.2"
 # Evidence status for published claims. Do not treat placeholder weights as fitted.
 EVIDENCE_STATUS = "simulation-calibrated"  # not yet "modus-fitted" / "multi-repo"
 DEFAULT_DECAY_FORM_NAME = "hybrid"
@@ -212,6 +213,15 @@ DEFAULT_REGISTRY: tuple[Factor, ...] = (
     Factor("gate_security", Stage.REVIEW, 0.05),
     # Completion-boundary recovery (simulation-only; not live-fitted)
     Factor("completion_guard_hook", Stage.REVIEW, 0.10),
+    # Candidate process-discipline factors (registered 2026-08-30 from the
+    # agent-evaluation literature; see formula-changelog v1.2). No simulation
+    # or live evidence yet: they contribute to R only when activity is
+    # actually observed, and no effect claim is allowed until ablation.
+    Factor("plan_fidelity", Stage.DEV, 0.08),
+    Factor("abstention_quality", Stage.DEV, 0.08),
+    Factor("error_msg_quality", Stage.QA, 0.08),
+    Factor("runtime_feedback_hooks", Stage.DEV, 0.08),
+    Factor("rollback_reversibility", Stage.DEV, 0.08),
 )
 
 # Factors with identifiable arm contrasts in the Modus campaign design.
@@ -228,6 +238,19 @@ CORE_FITTED_FACTORS: tuple[str, ...] = (
 
 # Simulation-only until .cursor/hooks.json telemetry lands on the live path.
 SIMULATION_ONLY_FACTORS: frozenset[str] = frozenset({"completion_guard_hook"})
+
+# Registered candidates with no simulation or live evidence yet. They may be
+# toggled in future ablation arms; until then they carry placeholder weights,
+# contribute zero R unless observed, and support no published claims.
+CANDIDATE_FACTORS: frozenset[str] = frozenset(
+    {
+        "plan_fidelity",
+        "abstention_quality",
+        "error_msg_quality",
+        "runtime_feedback_hooks",
+        "rollback_reversibility",
+    }
+)
 
 REGISTRY_BY_NAME: dict[str, Factor] = {f.name: f for f in DEFAULT_REGISTRY}
 

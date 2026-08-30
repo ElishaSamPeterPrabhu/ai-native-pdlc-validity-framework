@@ -18,6 +18,27 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "candidate_factors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Registered factors with no simulation or live evidence yet; excluded from claims until ablation"
+    },
+    "candidate_decay_proxies": {
+      "type": "object",
+      "description": "Registered decay constructs not yet part of the D(t) computation; telemetry-collection only",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["construct", "telemetry", "missing_behavior", "status"],
+        "properties": {
+          "construct": { "type": "string" },
+          "telemetry": { "type": "string" },
+          "normalization": { "type": "string" },
+          "missing_behavior": { "type": "string" },
+          "status": { "const": "candidate" },
+          "layer": { "enum": ["harness", "loop", "graph"] }
+        }
+      }
+    },
     "factors": {
       "type": "array",
       "items": {
@@ -43,7 +64,7 @@
           "confidence_rule": { "type": "string" },
           "toggle": { "type": "string" },
           "evidence_status": {
-            "enum": ["operational", "simulation-only", "deferred"]
+            "enum": ["operational", "simulation-only", "deferred", "candidate"]
           },
           "placeholder_weight": { "type": "number" }
         }
