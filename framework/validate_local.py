@@ -174,7 +174,7 @@ def run_validation(out_dir: str | Path) -> dict[str, Any]:
 
     # Contract checks
     contract_checks = {
-        "formula_version_is_v1_1": F.FORMULA_VERSION == "v1.1",
+        "formula_version_is_v1_3": F.FORMULA_VERSION == "v1.3",
         "default_decay_hybrid": F.DEFAULT_DECAY_FORM_NAME == "hybrid",
         "completion_guard_simulation_only": "completion_guard_hook" in F.SIMULATION_ONLY_FACTORS,
         "fit_results_marked_synthetic": _fit_results_synthetic(),

@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0",
+  "subject_repo": "https://github.com/vorlac/llama-leash",
+  "generated_at": "2026-08-30",
+  "provenance": "reported",
+  "provenance_note": "Presence judged from repository documentation only (README gate table, docs/, conductor/docs/HONEST-LIMITS.md). No run telemetry, no live activity measurement, no V* computed (see score-pack.json: n_scored=0, V* missing). This mapping is a setup inventory, not evidence of effectiveness.",
+  "formula_version": "v1.3",
+  "factors_present_per_documentation": {
+    "ci_gate": "visible test suites gate every item; hidden gauge tests in bench corpus",
+    "agentic_qa": "test-writer role plus adversarial review lenses",
+    "fix_loop": "RED -> GREEN repair inside the item FSM",
+    "spec_refinement": "decompose/plan stages produce items with acceptance criteria and explicit scopes",
+    "rules_context": "nine doctrine packs injected by role",
+    "checkpointing": "scope-disjoint waves; atomic transition integrity",
+    "review_bot": "adversarial reviewer sub-sessions with refuters",
+    "completion_guard_hook": "handler-derived evidence: a model claim never advances the FSM",
+    "red_first_discipline": "behavioral items cannot reach GREEN without an observed vetted RED (item FSM rule)",
+    "reviewer_independence": "review dispatched to fresh sub-sessions with no memory of writing the code",
+    "evidence_freshness": "verify start-stamped against HEAD; a later edit or HEAD move voids the verify; verify freeze",
+    "doctrine_reinjection": "doctrine packs plus live state block restated on every request, never remembered"
+  },
+  "factors_absent_or_na_per_documentation": {
+    "mcp_context": "no MCP servers; local opencode tools only",
+    "github_mcp": "not applicable; no GitHub loop",
+    "figma_mcp": "not applicable",
+    "human_alignment": "single-operator harness; no human PR review gate (HONEST-LIMITS: human at a raw terminal is ungated)",
+    "gate_changesets": "not documented",
+    "gate_security": "not documented"
+  },
+  "coverage_note": "All four v1.3 discipline factors are live, mechanically enforced controls in this harness. Under the v1.1 registry this setup would have been indistinguishable from a plain tests-exist pipeline; the v1.3 registry can describe what differentiates it.",
+  "inspect_gaps_note": "framework inspect reported 12 measurement gaps because conductor's controls live in a TypeScript plugin rather than .cursor/.github conventions; those gaps are convention mismatches documented in user-intake.json setup_declared.notes, not absent controls.",
+  "cross_check_status": {
+    "their_benchmark": "three-arm harness-vs-bare benchmark with hidden tests; calibration metric self_score - objective",
+    "published_results": "none in-repo (.data/benchmark/ is gitignored)",
+    "status": "quantitative cross-check of sim deltas blocked until results are published",
+    "structural_alignment": [
+      "their calibration metric (self_score - objective) is the live counterpart of the simulation calibration gap added in v1.3",
+      "their two hardest-enforced evidence-honesty gates (red-first FSM, verify freshness stamp) are the two factors with the largest simulated deltas in data/discipline_ablation.json",
+      "their three-arm hidden-test design matches the framework's factor-off ablation-arm methodology"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "repo": {
+    "owner": "vorlac",
+    "name": "llama-leash",
+    "default_branch": "main",
+    "url": "https://github.com/vorlac/llama-leash"
+  },
+  "automations": [
+    {
+      "name": "conductor implementer",
+      "role": "dev",
+      "trigger": "work-classified prompt decomposed into items with fileScope/testScope",
+      "repo_scope": "session-registered workspace only",
+      "tools_mcp": ["opencode tools gated by conductor plugin"],
+      "stop_rule": "item FSM PENDING->RED->TEST_VETTED->GREEN->VALIDATED->REVIEWED->PUBLISHED; handler re-derives evidence, model claim never advances state",
+      "repair_cap": null,
+      "instructions_summary": "Implement within declared fileScope minus testScope; behavioral items cannot reach GREEN without an observed vetted RED first",
+      "instructions_excerpt": "A model saying tests pass advances nothing (README: handler-derived evidence).",
+      "console_url": "https://github.com/vorlac/llama-leash",
+      "enabled": true
+    },
+    {
+      "name": "conductor test-writer",
+      "role": "qa",
+      "trigger": "per-item RED stage",
+      "repo_scope": "testScope only",
+      "tools_mcp": ["opencode tools gated by conductor plugin"],
+      "stop_rule": "test vetted before implementation may proceed (TEST_VETTED)",
+      "repair_cap": null,
+      "instructions_summary": "Write the failing test first; vetting precedes GREEN",
+      "enabled": true
+    },
+    {
+      "name": "conductor adversarial reviewers",
+      "role": "review",
+      "trigger": "plan review and item REVIEWED stage",
+      "repo_scope": "read-only (reviewers and planners write nothing)",
+      "tools_mcp": ["fresh sub-sessions, one lens each"],
+      "stop_rule": "findings face refuters before they count; surviving majors force revision and re-review",
+      "repair_cap": null,
+      "instructions_summary": "Fresh sub-sessions with no memory of writing the code review the work",
+      "enabled": true
+    },
+    {
+      "name": "conductor verify/freshness gates",
+      "role": "other",
+      "trigger": "every verify and every edit during a verify",
+      "repo_scope": "whole session tree",
+      "tools_mcp": ["gate stack (fail-closed)"],
+      "stop_rule": "verify start-stamped against HEAD; an edit to a staged behavioral file or a moved HEAD voids it; verify freeze blocks edits during verification",
+      "repair_cap": null,
+      "instructions_summary": "Evidence freshness enforced mechanically; doctrine packs re-injected on every request",
+      "enabled": true
+    }
+  ],
+  "setup_declared": {
+    "has_rules": true,
+    "has_mcp": false,
+    "has_hooks": true,
+    "has_ci_gate": true,
+    "has_review_bot": true,
+    "label_handoff": false,
+    "human_review_always": false,
+    "notes": "Declared from repository documentation only (README, docs/, conductor/docs/HONEST-LIMITS.md), commit 'main' as of 2026-08-30. Controls live in the conductor opencode plugin (TypeScript gate stack), not in .cursor/.github conventions, so framework inspect cannot mechanically detect them - the 12 inspect gaps are convention mismatches, not absent controls. hooks=true refers to conductor's FSM gates and verify freeze, not .cursor/hooks.json. ci_gate=true refers to enforced visible test suites plus hidden-test benchmark gauge. No human PR review loop exists; this is a single-operator local harness."
+  },
+  "prs": [],
+  "goals": [
+    "External Level 0 verification target for the AI-Native PDLC Validity Framework",
+    "Map conductor gate mechanisms to registry factors (including v1.3 discipline factors)",
+    "Cross-check simulation predictions against their three-arm benchmark when results are published"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-30T13:55:29.320301+00:00",
+  "formula_version": "v1.3",
+  "repo": {
+    "owner": "vorlac",
+    "name": "llama-leash",
+    "default_branch": "main",
+    "url": "https://github.com/vorlac/llama-leash"
+  },
+  "scoring": {
+    "scoring_method": "formula_equilibrium",
+    "evidence_status": "simulation-calibrated",
+    "formula_used": true,
+    "weight_source": "placeholder"
+  },
+  "runs": [],
+  "intake_prs": [],
+  "aggregate": {
+    "V_star": {
+      "value": null,
+      "source": "missing",
+      "confidence": "none",
+      "method": "mean_equilibrium_validity",
+      "weight_source": "none"
+    },
+    "n_scored": 0
+  },
+  "claim_warnings": [
+    "formula v1.3 weight_source=placeholder (not repo-fitted)",
+    "AI owns metric judgments; CLI owns R/D/V* numbers here",
+    "Do not treat intake PR scores as live harness telemetry"
+  ]
+}

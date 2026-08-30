@@ -77,6 +77,7 @@ Project skills under `.cursor/skills/`:
 
 - `validity-setup` — layout + inspect + evidence (approval required for writes)
 - `validity-intake` — online automations + PR paste when console is not API-readable
+- `validity-score` — after an automation, run `pdlc-validity` / `score` and quote R/D/V*
 - `validity-diagnose` — **AI reasoning**: harness/loop/graph + review policy
 - `validity-improve` — apply human-approved fixes via CLI/paths/automations
 - `validity-improve-from-delta` — score dropped: explain metrics + one playbook fix

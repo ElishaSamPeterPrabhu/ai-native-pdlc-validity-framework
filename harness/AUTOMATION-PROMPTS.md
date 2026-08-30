@@ -1,48 +1,150 @@
-# Exact automation instruction updates for the 5-issue live run
+# Official-repo automation instructions (trimble-oss/modus-wc-2.0)
 
-Paste these into cursor.com/automations exactly as shown. Changes vs the
-current instructions are marked with [ADDED] / [CHANGED]. Keep all existing
-text unless overridden.
+Paste these into [cursor.com/automations](https://cursor.com/t/trimble/automations) exactly as shown.
+Target repository is **trimble-oss/modus-wc-2.0** (not the experiment fork).
+
+## Commands (what you type)
+
+### On a pull request (PR conversation)
+
+These **must** have their own Dev Agent triggers of type **GitHub → Comment on PRs** (not “Comment on issues”). **By Me** only.
+
+| You type | What happens |
+|----------|----------------|
+| `/ask` | Answer your recent **PR** questions **on the PR**. Do not reply only on the issue. |
+| `/clarify` | Same as `/ask`. |
+| `/refine` | Apply recent PR + QA comments on the same branch; re-signal QA. |
+
+If you already asked in prose (like [PR #1417](https://github.com/trimble-oss/modus-wc-2.0/pull/1417)), add `/ask` on that PR so the trigger fires.
+
+### On an issue (no PR yet, or start work)
+
+Triggers of type **GitHub → Comment on issues**. **By Me** only.
+
+| You type | What happens |
+|----------|----------------|
+| `/approve` | Start implementation (only if clear and feasible). |
+| `/ask` | Answer questions on the **issue**. |
+| `/clarify` | Same as `/ask`. |
+
+**Reply where they wrote:** PR comment → reply on the PR. Issue comment and no PR yet → reply on the issue.
+
+**Exception (not a slash command):** QA Agent **PR opened** may be **by Anyone** so Dev (Cursor bot) can start QA.
+
+If the console defaults a new comment trigger to Anyone, change it to **Me** before Save.
+
+See [`CONSOLE-TRIGGERS.md`](CONSOLE-TRIGGERS.md) — you need **two** `/ask` rows: one Issue comment, one **PR comment**.
 
 ---
 
-## Dev Agent — instruction additions
+## Dev Agent — official-repo block
 
-Add the following block at the **end** of the existing Agent Instructions,
-after all current content:
+Add at the **end** of existing Agent Instructions (keep PRE-OPEN PR GATE if already present):
 
 ```
 ---
 
-EXPERIMENT INSTRUCTIONS (modus-wc-2.0 fork):
-When working on the ElishaSamPeterPrabhu/modus-wc-2.0 repository:
+OFFICIAL REPO (trimble-oss/modus-wc-2.0):
+
+GATE BEFORE IMPLEMENTING:
+Read the issue AC, Technical notes, Figma/MCP context, and permissions.
+Ask: is this clear AND feasible in this PR (scope, API/design, access, would it break the library)?
+
+REPLY SURFACE (always):
+- If an open PR already exists for this work, OR this run was triggered from a PR comment: comment on the PR. Do NOT post the answer/fix only on the linked issue.
+- If there is no PR yet: comment on the issue.
+
+If UNCLEAR:
+  Comment on the correct surface (PR if it exists, else issue):
+    ## NEED CLARIFICATION
+    - [one question per line]
+  Add label needs-human
+  Do NOT open a PR if none exists. STOP until the human replies, /ask, or /approve.
+
+If NOT FEASIBLE:
+  Comment on the correct surface (PR if it exists, else issue):
+    ## NOT FEASIBLE
+    Why: [constraint]
+    Tried/blocked: [facts]
+    Options: [narrow AC | split issue | wontfix]
+  Add label needs-human
+  Do NOT invent a workaround. Do NOT open a PR if none exists. STOP.
 
 BRANCHING:
-- Create the feature branch as: exp/<issue-number>-<short-slug>
-  Example: exp/28-checkbox-switch-value
-- Base all work on the `main` branch of the fork.
+- Feature branch: exp/<issue-number>-<short-slug>
+- Base on `main` of trimble-oss/modus-wc-2.0
 
-COMMIT CADENCE (checkpointing factor):
-- Commit frequently — after each logical sub-task, not just at the end.
-- Minimum: one commit after each acceptance criterion is addressed.
-- Commit message format: "feat(component): <description>" or "fix(component): <description>"
+COMMIT CADENCE:
+- Commit after each logical sub-task / AC.
+- feat(component): … or fix(component): …
 
-CHANGE CLASSIFICATION (QA routing):
-After opening the PR, examine your own diff and add ONE label:
-- `qa-skip` if ALL changes are: .scss files, .tailwind.ts files, .stories.ts files, docs, or .md files only
-- `qa-full` for everything else (logic changes, new slots, event handling, test files)
+CHANGE CLASSIFICATION (after Open PR):
+- qa-skip if ALL changes are .scss, .tailwind.ts, .stories.ts, docs, or .md only
+- qa-full otherwise
 
 SPEC AWARENESS:
-- The issue body contains "Acceptance Criteria" checkboxes. Check each one off
-  in the PR body or a comment when it is satisfied.
-- The issue body may contain "Technical notes" — read them before planning.
+- Check off Acceptance Criteria in the PR body when satisfied.
+- Read Technical notes before planning.
+
+PRE-OPEN PR GATE (if not already in instructions):
+- Run QA STEP 1 locally (or equivalent documented commands) before Open PR.
+- PR body must include: Stop-boundary check: yes|no plus a command table.
+```
+
+### Dev Agent — `/ask` / `/clarify` (same automation, extra triggers)
+
+Triggers (both **by Me**, never Anyone):
+- GitHub → Issue comment matching `/ask` or `/clarify` on **trimble-oss/modus-wc-2.0** **by Me**
+- GitHub → **PR comment** matching `/ask` or `/clarify` on **trimble-oss/modus-wc-2.0** **by Me**
+
+If the human asked questions on the PR without `/ask`, they should follow with `/ask` on that PR so this trigger fires. Then treat the **recent PR comments** (since last `/ask`, or last 20) as the questions.
+
+```
+You were invoked by /ask or /clarify from the human (by Me only).
+
+REPLY SURFACE:
+- If this is a PR comment (or an open PR exists): comment on the PR.
+  Do NOT post the answer only on the linked GitHub issue.
+- If there is no PR: comment on the issue.
+
+Read: issue body, PR body/diff if a PR exists, and the last 20 comments on THAT surface
+(including the human's questions, ## NEED CLARIFICATION, ## NOT FEASIBLE).
+Answer what you can on the same thread. If still blocked, ask ONE tighter question there.
+
+Remove needs-human only when AC is actionable AND feasible.
+Do NOT open a PR from /ask unless the human also commented /approve.
+Do NOT silently implement a "fix" on the issue while the conversation is on the PR.
+```
+
+### Dev Agent — `/refine` (same automation, extra trigger)
+
+Trigger: GitHub → PR comment matching `/refine` on **trimble-oss/modus-wc-2.0** **by Me**.
+
+```
+You were invoked by /refine from the human (by Me only).
+
+1. Collect RECENT comments since the last /refine (or last 20):
+   - PR conversation, review threads, QA reviews (## QA FAILED / PASSED / SKIPPED)
+
+2. Route (do not run both Fix and a Dev patch on the same /refine):
+   - If latest QA is ## QA FAILED and not yet repaired:
+     Add qa-failed (or remove then ADD qa-rerun if Fix already ran).
+     Comment: "Routed to Fix Agent for the latest QA FAILED."
+     STOP.
+   - Else: implement the requested refine on the SAME branch (minimal change).
+     Push. Comment on the PR what changed (not only on the issue).
+     Remove qa-rerun if present, then ADD qa-rerun (GitHub fires on label-added).
+     Do NOT claim QA passed.
+
+If the requested refine is not feasible:
+  Comment ## NOT FEASIBLE on the PR, add needs-human, STOP.
 ```
 
 ---
 
 ## QA Agent — instruction additions
 
-Replace the existing STEP 0 block with this expanded version:
+Replace STEP 0 with:
 
 ```
 STEP 0: Decide if QA is needed.
@@ -82,35 +184,53 @@ If ANY fail:
   STOP.
 ```
 
----
+### QA Agent — official-repo trigger
 
-## Fix Agent — instruction changes (none needed)
-
-The existing Fix Agent instructions are correct. The 3-iteration memory cap,
-qa-failed label trigger, and needs-human escalation path are all right.
-No changes required.
-
----
-
-## QA Agent — also add the modus-wc-2.0 fork trigger
-
-In the Triggers section, add a new trigger:
 - Type: GitHub → PR opened
-- Repository: ElishaSamPeterPrabhu/modus-wc-2.0
-- By: Anyone (PRs opened by the Dev Agent cloud user, not by you)
+- Repository: **trimble-oss/modus-wc-2.0**
+- By: **Anyone** (Dev Agent opens PRs as Cursor bot — this is the only Anyone exception)
+- Also: Label added matching `qa-full` and `qa-rerun` on PRs in trimble-oss/modus-wc-2.0
+
+Do **not** add a QA trigger on PR comments from Anyone.
 
 ---
 
-## Fix Agent — also add the modus-wc-2.0 fork trigger
+## Fix Agent — instruction additions
 
-In the Triggers section, add a new trigger:
-- Type: GitHub → Label change (label added)
-- Label: qa-failed
-- Repository: ElishaSamPeterPrabhu/modus-wc-2.0
+Keep the 3-iteration cap. **Add** this block (not-feasible / ask human):
+
+```
+If the QA failure is not repairable within the AC or would require a library-breaking change:
+  Comment on the PR (not the issue): "## NOT FEASIBLE\nWhy: …\nOptions: narrow AC | split issue | human fix"
+  Add label needs-human
+  Do NOT loop. STOP.
+
+If this is iteration 3+:
+  Comment on the PR: "Max iterations reached (3 attempts). Requesting human review."
+  Add label needs-human
+  STOP.
+
+PUSH AND SIGNAL (after a real fix):
+- Push to the same branch
+- Remove qa-failed
+- Remove qa-rerun if present, then ADD qa-rerun
+- Comment on the PR: "Fix applied: [one sentence]"
+- Do NOT claim QA passed
+- Do NOT post the fix summary only on the linked issue
+```
+
+### Fix Agent — official-repo trigger
+
+- Type: GitHub → Label added
+- Label: `qa-failed`
+- On: PRs
+- Repository: **trimble-oss/modus-wc-2.0**
+
+No comment trigger. Do not set Fix to wake on Anyone comments.
 
 ---
 
-## GitHub MCP tool fix (applies to all automations showing "Failing")
+## GitHub MCP tool fix (Failing tools)
 
 For each automation with a failing GitHub MCP tool:
 1. Click "Disconnect" next to the github tool

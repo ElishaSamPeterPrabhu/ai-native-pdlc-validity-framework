@@ -1,0 +1,162 @@
+{
+  "registered_before_run": true,
+  "protocol": "Predictions recorded before any discipline-ablation code executes. Results must be compared against these expectations; agreement and disagreement are both reportable.",
+  "mechanisms": {
+    "red_first_discipline": {
+      "description": "A repair only counts after an observed failing check. Without it, 35% of successful repairs are vacuously green (test-after theater): the check stays broken but is masked from CI, QA, self-repair, the completion guard, and anchored review.",
+      "enters_formula_as": "recovery factor in R(t); does not alter D(t) directly",
+      "knobs": { "vacuous_green_prob": 0.35 },
+      "calibration_prediction": "OFF arms should widen the calibration gap (self-claimed pass exceeds objective pass)."
+    },
+    "reviewer_independence": {
+      "description": "Terminal review in a fresh context catches actually-broken checks at 0.75 (including masked/stale ones); anchored review catches only visibly-broken checks at 0.25. Caught checks get one bounded repair attempt.",
+      "enters_formula_as": "recovery factor in R(t)",
+      "knobs": { "review_catch_anchored": 0.25, "review_catch_independent": 0.75 },
+      "calibration_prediction": "ON arms should narrow the calibration gap by surfacing hidden breakage."
+    },
+    "evidence_freshness": {
+      "description": "Trailing polish edits invalidate each green check with probability 0.12 after the last verify. With freshness ON a forced terminal re-verify reveals the breaks and gets one bounded repair pass; OFF, the completion claim uses the stale snapshot.",
+      "enters_formula_as": "recovery factor in R(t)",
+      "knobs": { "stale_evidence_prob": 0.12 },
+      "calibration_prediction": "OFF arms should widen the calibration gap (stale evidence hides breaks from the claim)."
+    },
+    "doctrine_reinjection": {
+      "description": "Without reinjection the per-step error rate ramps linearly up to 1.8x by end of run (process amnesia / instruction drift). With it the rate stays flat.",
+      "enters_formula_as": "recovery factor in R(t); modeled as suppressing a drift-driven error ramp",
+      "knobs": { "drift_ramp": 0.8 },
+      "calibration_prediction": "Little direct calibration effect; drift breaks are visible to downstream stages."
+    }
+  },
+  "arms_note": "full_pipeline = all core factors on; no_agentic_qa = agentic_qa and fix_loop off. Each factor is contrasted ON vs OFF with the other three discipline factors OFF and only its own mechanism knobs nonzero.",
+  "predictions": [
+    {
+      "factor": "red_first_discipline",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.02, 0.15],
+      "rationale": "The full pipeline performs many repairs (self-repair plus fix loop); with 35% of repairs vacuous when OFF, masked checks accumulate and are unrecoverable by any later stage."
+    },
+    {
+      "factor": "red_first_discipline",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.04, 0.22],
+      "rationale": "High stratum has the most breakage and therefore the most repair events exposed to the vacuous-green mechanism."
+    },
+    {
+      "factor": "red_first_discipline",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.0, 0.1],
+      "rationale": "Without the QA/fix loop the only repairs are commit-time self-repairs, so fewer repair events are exposed to vacuous greens."
+    },
+    {
+      "factor": "red_first_discipline",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.0, 0.14],
+      "rationale": "More breakage than medium but repairs remain limited to self-repair; effect bounded by repair volume."
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "expected_direction": "near_zero",
+      "expected_delta_v_obs_range": [0.0, 0.05],
+      "rationale": "Ceiling effect: the full pipeline leaves little residual breakage for any terminal reviewer to catch."
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.0, 0.1],
+      "rationale": "Some residual breakage survives the full pipeline on high tasks; an independent reviewer catches more of it than an anchored one."
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.03, 0.18],
+      "rationale": "Without QA the terminal review is the main recovery stage; tripling the catch rate should produce a clear positive delta."
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.05, 0.25],
+      "rationale": "Maximum residual breakage at review time; largest expected gain from independent review."
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.03, 0.13],
+      "rationale": "Polish edits strike after QA regardless of arm; with ~all checks green, expected recovery is roughly 0.12 x 0.65 of the green mass."
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.03, 0.13],
+      "rationale": "Slightly less green mass than medium but the same terminal mechanism applies."
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.02, 0.12],
+      "rationale": "Less green mass at polish time reduces the absolute recovery available to the re-verify."
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.01, 0.1],
+      "rationale": "Smallest green mass of the four cells; the stale mechanism has the least to invalidate and the re-verify the least to recover."
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.0, 0.08],
+      "rationale": "Drift-driven extra breakage is largely recovered by the QA/fix loop on medium tasks."
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "expected_direction": "near_zero_to_small_positive",
+      "expected_delta_v_obs_range": [0.0, 0.12],
+      "rationale": "Recovery is closer to saturation on high tasks, so more drift breakage survives, but the pipeline still absorbs most of it."
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.02, 0.15],
+      "rationale": "Without the QA/fix loop, drift-driven breakage late in the run goes largely unrecovered."
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "expected_direction": "positive",
+      "expected_delta_v_obs_range": [0.03, 0.2],
+      "rationale": "Long runs amplify the ramp (more late steps at elevated error) and nothing downstream recovers the breakage."
+    }
+  ],
+  "claim_rule": "Cite measured deltas from data/discipline_ablation.json only. If a measured delta is negligible, negative, or outside the predicted range, report that result as-is and do not claim improvement for that cell. All results are simulation-only; no live effect claims."
+}

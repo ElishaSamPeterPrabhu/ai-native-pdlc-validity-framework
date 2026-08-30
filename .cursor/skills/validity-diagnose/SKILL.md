@@ -41,6 +41,12 @@ Do **not** treat `python -m framework diagnose --heuristic` or
    Add `--include-synthetic` only for demos.
 3. Read `data/evidence-pack.json` (or layout data dir). Follow
    `diagnosis_instructions` inside the pack.
+   Before judging any factor weak or strong, check the score pack's per-field
+   provenance (`decay_proxies.*.source`, `defaulted_inputs`,
+   `activities_assumed`/`recovery_assumed`) and the registry's
+   `missing_behavior` for that factor. A defaulted input is a **measurement
+   gap**, not evidence of weakness; list it under `open_questions` instead of
+   citing it as a finding.
 4. Write a diagnosis artifact (propose path `data/diagnosis.json` or under
    layout `data_dir`) with:
    ```json
@@ -74,6 +80,10 @@ Do **not** treat `python -m framework diagnose --heuristic` or
 ## Hard rules
 
 - Never invent telemetry absent from the evidence pack.
+- Never invent factor activity or decay proxy values; if required inputs are
+  missing, say the framework does not have the necessary data and name the gap.
+- Disclose per-field provenance (observed / heuristic / imputed / missing)
+  before presenting any score-derived finding.
 - **Quote** R, D, V* from `python -m framework score` when citing formula numbers; never invent equilibria or fitted weights.
 - **You own** metric assessments (evidence → metric, dominant metric, direction) in diagnosis.json.
 - Human review is never removed.

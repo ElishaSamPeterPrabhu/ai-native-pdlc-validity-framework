@@ -1,7 +1,7 @@
 # AI-Native PDLC Validity Framework — Contract (research preview)
 
 **Status:** research preview  
-**Formula version:** v1.1 (`theory/formula.py`)  
+**Formula version:** v1.3 (`theory/formula.py`)  
 **Evidence status:** simulation-calibrated (not Modus-fitted; not multi-repo validated)
 
 This contract is the published boundary for what the framework measures, what a
@@ -24,7 +24,7 @@ repository-specific calibration exists (Level 2 / Phase D).
 
 | Layer | Responsibility |
 | --- | --- |
-| **AI skills** (`validity-intake` → `validity-diagnose` → `validity-improve`) | Metric judgments (which metrics moved, dominant metric); layer diagnosis; intervention choice; review policy |
+| **AI skills** (`validity-score` → `validity-diagnose` → `validity-improve`) | Post-run formula quote (`score`); metric judgments; layer diagnosis; intervention choice; review policy |
 | **CLI** (`init`, `inspect`, `evidence`, `intake`, `score`, `collect`, `calibrate`, `report`) | Mechanical facts, labeled heuristics, R/D/V* formula eval (placeholder weights), apply **approved** writes |
 | **Automations** (Dev/QA/Fix) | Execute the delivery path; definitions often console-only (not API-listed) |
 | **Human** | Provides automation/PR intake when needed; approves **apply**; always reviews PRs |
@@ -33,6 +33,18 @@ repository-specific calibration exists (Level 2 / Phase D).
 provenance). AI owns metric assessments (evidence → metric id, severity, dominant
 metric) — human optional on that judgment, required before apply. AI must not
 invent fitted weights or formula equilibria without quoting `python -m framework score`.
+AI must not invent factor activity or decay proxy values: a factor without
+observed activity contributes zero to R, and a proxy without telemetry follows
+its registry `missing_behavior` (impute-with-label or declare missing).
+
+**Required agent-facing labels:** every presented number must carry
+`weight_source` (placeholder vs repo-fitted), `record_kind` (`run_record` vs
+`intake_pseudo`), and per-field `source`
+(observed / heuristic / imputed / declared / assumed / missing) from the pack.
+When required inputs are missing, the correct output is "the framework does not
+have the necessary data" plus the gap list — never an estimate. Score packs
+list `defaulted_inputs` / `missing_inputs` per record, and the CLI prints the
+same disclosure on stdout; skills must repeat it before any standing.
 
 Scripted `diagnose --heuristic` is a smoke-test hint only. Authoritative diagnosis
 comes from the AI skill reading `python -m framework evidence`.

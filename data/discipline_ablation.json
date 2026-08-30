@@ -1,0 +1,780 @@
+{
+  "seed": 20260830,
+  "n_tasks": 20,
+  "k": 3,
+  "factors": [
+    "red_first_discipline",
+    "reviewer_independence",
+    "evidence_freshness",
+    "doctrine_reinjection"
+  ],
+  "arms": [
+    "full_pipeline",
+    "no_agentic_qa"
+  ],
+  "strata": [
+    "medium",
+    "high"
+  ],
+  "total_runs": 1920,
+  "predictions_path": "data/discipline_predictions.json",
+  "evidence_status": "simulation-only; no live telemetry",
+  "cells": [
+    {
+      "factor": "red_first_discipline",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "vacuous_green_prob": 0.35
+      },
+      "seed": 557509867,
+      "factor_off": {
+        "mean_v_obs": 0.99375,
+        "sd_v_obs": 0.027243118397129205,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444445,
+        "self_claimed_pass": 1.0,
+        "calibration_gap": 0.050000000000000044,
+        "mean_fix_iterations": 0.016666666666666666,
+        "mean_vacuous_greens": 0.05,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "self_claimed_pass": 1.0,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.05,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.006249999999999978,
+      "delta_pass_at_1": 0.050000000000000044,
+      "delta_pass_hat_k": 0.10555555555555551,
+      "delta_calibration_gap": -0.050000000000000044,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "factor": "red_first_discipline",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "vacuous_green_prob": 0.35
+      },
+      "seed": 739860705,
+      "factor_off": {
+        "mean_v_obs": 0.9347222222222222,
+        "sd_v_obs": 0.0698736734894737,
+        "pass_at_1": 0.4166666666666667,
+        "pass_hat_k": 0.23518518518518522,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.55,
+        "mean_fix_iterations": 0.23333333333333334,
+        "mean_vacuous_greens": 0.75,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.01816207893141948,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444445,
+        "self_claimed_pass": 0.95,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.35,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.061111111111111116,
+      "delta_pass_at_1": 0.5333333333333332,
+      "delta_pass_hat_k": 0.6592592592592592,
+      "delta_calibration_gap": -0.55,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.04,
+          0.22
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "red_first_discipline",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "vacuous_green_prob": 0.35
+      },
+      "seed": 766186733,
+      "factor_off": {
+        "mean_v_obs": 0.99375,
+        "sd_v_obs": 0.027243118397129205,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444445,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.01666666666666672,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.016666666666666666,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393764,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002083333333333326,
+      "delta_pass_at_1": 0.01666666666666672,
+      "delta_pass_hat_k": 0.0351851851851851,
+      "delta_calibration_gap": -0.01666666666666672,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.1
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "red_first_discipline",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "vacuous_green_prob": 0.35
+      },
+      "seed": 751669217,
+      "factor_off": {
+        "mean_v_obs": 0.9402777777777778,
+        "sd_v_obs": 0.06471387642900968,
+        "pass_at_1": 0.45,
+        "pass_hat_k": 0.26111111111111107,
+        "self_claimed_pass": 0.8,
+        "calibration_gap": 0.35000000000000003,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.5166666666666667,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9763888888888889,
+        "sd_v_obs": 0.045875401569204846,
+        "pass_at_1": 0.7666666666666667,
+        "pass_hat_k": 0.5740740740740741,
+        "self_claimed_pass": 0.7666666666666667,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.036111111111111094,
+      "delta_pass_at_1": 0.3166666666666667,
+      "delta_pass_hat_k": 0.312962962962963,
+      "delta_calibration_gap": -0.35000000000000003,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.14
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "review_catch_anchored": 0.25,
+        "review_catch_independent": 0.75
+      },
+      "seed": 2146349495,
+      "factor_off": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "self_claimed_pass": 1.0,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "self_claimed_pass": 1.0,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.03333333333333333,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.05
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "review_catch_anchored": 0.25,
+        "review_catch_independent": 0.75
+      },
+      "seed": 1829720964,
+      "factor_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.01816207893141948,
+        "pass_at_1": 0.95,
+        "pass_hat_k": 0.8944444444444445,
+        "self_claimed_pass": 0.95,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.21666666666666667,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9986111111111112,
+        "sd_v_obs": 0.01066825798315085,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "self_claimed_pass": 0.9833333333333333,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.21666666666666667,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.03333333333333333,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777879,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.07037037037037042,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.1
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "review_catch_anchored": 0.25,
+        "review_catch_independent": 0.75
+      },
+      "seed": 1155932080,
+      "factor_off": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393768,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9958333333333333,
+        "sd_v_obs": 0.022438186696393768,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.18
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "factor": "reviewer_independence",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "review_catch_anchored": 0.25,
+        "review_catch_independent": 0.75
+      },
+      "seed": 735551543,
+      "factor_off": {
+        "mean_v_obs": 0.9777777777777777,
+        "sd_v_obs": 0.04779069592801459,
+        "pass_at_1": 0.8,
+        "pass_hat_k": 0.6666666666666666,
+        "self_claimed_pass": 0.8,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.1,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9875,
+        "sd_v_obs": 0.03672028907333968,
+        "pass_at_1": 0.8833333333333333,
+        "pass_hat_k": 0.798148148148148,
+        "self_claimed_pass": 0.8833333333333333,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.21666666666666667,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.009722222222222299,
+      "delta_pass_at_1": 0.08333333333333326,
+      "delta_pass_hat_k": 0.13148148148148142,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.05,
+          0.25
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "stale_evidence_prob": 0.12
+      },
+      "seed": 2050489460,
+      "factor_off": {
+        "mean_v_obs": 0.88125,
+        "sd_v_obs": 0.11731590187750908,
+        "pass_at_1": 0.4,
+        "pass_hat_k": 0.17777777777777778,
+        "self_claimed_pass": 0.9833333333333333,
+        "calibration_gap": 0.5833333333333333,
+        "mean_fix_iterations": 0.05,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.9333333333333333,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9666666666666667,
+        "sd_v_obs": 0.06400954789890508,
+        "pass_at_1": 0.7666666666666667,
+        "pass_hat_k": 0.5518518518518517,
+        "self_claimed_pass": 0.7666666666666667,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.05,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.9333333333333333,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0854166666666667,
+      "delta_pass_at_1": 0.3666666666666667,
+      "delta_pass_hat_k": 0.3740740740740739,
+      "delta_calibration_gap": -0.5833333333333333,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.13
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "stale_evidence_prob": 0.12
+      },
+      "seed": 1204371410,
+      "factor_off": {
+        "mean_v_obs": 0.9055555555555554,
+        "sd_v_obs": 0.0931280811902234,
+        "pass_at_1": 0.35,
+        "pass_hat_k": 0.09444444444444441,
+        "self_claimed_pass": 0.9833333333333333,
+        "calibration_gap": 0.6333333333333333,
+        "mean_fix_iterations": 0.26666666666666666,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 1.1166666666666667,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9638888888888888,
+        "sd_v_obs": 0.057668165255629705,
+        "pass_at_1": 0.6666666666666666,
+        "pass_hat_k": 0.3851851851851851,
+        "self_claimed_pass": 0.6666666666666666,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.26666666666666666,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 1.1166666666666667,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.05833333333333335,
+      "delta_pass_at_1": 0.31666666666666665,
+      "delta_pass_hat_k": 0.29074074074074063,
+      "delta_calibration_gap": -0.6333333333333333,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.13
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "stale_evidence_prob": 0.12
+      },
+      "seed": 320003935,
+      "factor_off": {
+        "mean_v_obs": 0.8770833333333333,
+        "sd_v_obs": 0.13786252713804753,
+        "pass_at_1": 0.4666666666666667,
+        "pass_hat_k": 0.26296296296296295,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.5,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.95,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9541666666666667,
+        "sd_v_obs": 0.08829008375173789,
+        "pass_at_1": 0.75,
+        "pass_hat_k": 0.5611111111111111,
+        "self_claimed_pass": 0.75,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.95,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.07708333333333339,
+      "delta_pass_at_1": 0.2833333333333333,
+      "delta_pass_hat_k": 0.29814814814814816,
+      "delta_calibration_gap": -0.5,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.12
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "evidence_freshness",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "stale_evidence_prob": 0.12
+      },
+      "seed": 1600287419,
+      "factor_off": {
+        "mean_v_obs": 0.8402777777777778,
+        "sd_v_obs": 0.11002069109551985,
+        "pass_at_1": 0.13333333333333333,
+        "pass_hat_k": 0.025925925925925918,
+        "self_claimed_pass": 0.75,
+        "calibration_gap": 0.6166666666666667,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 1.5666666666666667,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9180555555555556,
+        "sd_v_obs": 0.08401342852687006,
+        "pass_at_1": 0.38333333333333336,
+        "pass_hat_k": 0.14259259259259255,
+        "self_claimed_pass": 0.38333333333333336,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 1.5666666666666667,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.07777777777777783,
+      "delta_pass_at_1": 0.25,
+      "delta_pass_hat_k": 0.11666666666666663,
+      "delta_calibration_gap": -0.6166666666666667,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.01,
+          0.1
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "full_pipeline",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "drift_ramp": 0.8
+      },
+      "seed": 1624320367,
+      "factor_off": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "self_claimed_pass": 1.0,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.11666666666666667,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 1.0,
+        "sd_v_obs": 0.0,
+        "pass_at_1": 1.0,
+        "pass_hat_k": 1.0,
+        "self_claimed_pass": 1.0,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.08333333333333333,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.0,
+      "delta_pass_at_1": 0.0,
+      "delta_pass_hat_k": 0.0,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.08
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "full_pipeline",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "drift_ramp": 0.8
+      },
+      "seed": 1420517165,
+      "factor_off": {
+        "mean_v_obs": 0.9944444444444444,
+        "sd_v_obs": 0.020786985482077462,
+        "pass_at_1": 0.9333333333333333,
+        "pass_hat_k": 0.8592592592592594,
+        "self_claimed_pass": 0.9333333333333333,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.6166666666666667,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9972222222222221,
+        "sd_v_obs": 0.014958791130929183,
+        "pass_at_1": 0.9666666666666667,
+        "pass_hat_k": 0.9296296296296296,
+        "self_claimed_pass": 0.9666666666666667,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.36666666666666664,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.002777777777777768,
+      "delta_pass_at_1": 0.033333333333333326,
+      "delta_pass_hat_k": 0.0703703703703702,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "near_zero_to_small_positive",
+        "expected_delta_v_obs_range": [
+          0.0,
+          0.12
+        ],
+        "match": "agree"
+      }
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "no_agentic_qa",
+      "stratum": "medium",
+      "mechanism_knobs": {
+        "drift_ramp": 0.8
+      },
+      "seed": 1762021199,
+      "factor_off": {
+        "mean_v_obs": 0.9875,
+        "sd_v_obs": 0.049476425362657984,
+        "pass_at_1": 0.9333333333333333,
+        "pass_hat_k": 0.8814814814814815,
+        "self_claimed_pass": 0.9333333333333333,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9979166666666667,
+        "sd_v_obs": 0.01600238697472627,
+        "pass_at_1": 0.9833333333333333,
+        "pass_hat_k": 0.9648148148148149,
+        "self_claimed_pass": 0.9833333333333333,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.01041666666666663,
+      "delta_pass_at_1": 0.04999999999999993,
+      "delta_pass_hat_k": 0.08333333333333337,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.02,
+          0.15
+        ],
+        "match": "below_predicted_range"
+      }
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "arm": "no_agentic_qa",
+      "stratum": "high",
+      "mechanism_knobs": {
+        "drift_ramp": 0.8
+      },
+      "seed": 1019310560,
+      "factor_off": {
+        "mean_v_obs": 0.9486111111111111,
+        "sd_v_obs": 0.07621191621288304,
+        "pass_at_1": 0.6,
+        "pass_hat_k": 0.311111111111111,
+        "self_claimed_pass": 0.6,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "factor_on": {
+        "mean_v_obs": 0.9708333333333333,
+        "sd_v_obs": 0.04768967975941499,
+        "pass_at_1": 0.7,
+        "pass_hat_k": 0.5,
+        "self_claimed_pass": 0.7,
+        "calibration_gap": 0.0,
+        "mean_fix_iterations": 0.0,
+        "mean_vacuous_greens": 0.0,
+        "mean_stale_breaks": 0.0,
+        "mean_review_repairs": 0.0,
+        "n_runs": 60
+      },
+      "delta_v_obs": 0.022222222222222254,
+      "delta_pass_at_1": 0.09999999999999998,
+      "delta_pass_hat_k": 0.188888888888889,
+      "delta_calibration_gap": 0.0,
+      "prediction": {
+        "expected_direction": "positive",
+        "expected_delta_v_obs_range": [
+          0.03,
+          0.2
+        ],
+        "match": "below_predicted_range"
+      }
+    }
+  ]
+}

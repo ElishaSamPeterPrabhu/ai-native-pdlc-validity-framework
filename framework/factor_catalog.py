@@ -28,6 +28,99 @@ LAYER_BY_FACTOR: dict[str, str] = {
     "gate_changesets": "graph",
     "gate_security": "graph",
     "completion_guard_hook": "loop",
+    # Candidate process-discipline factors (v1.2; no evidence yet)
+    "plan_fidelity": "loop",
+    "abstention_quality": "graph",
+    "error_msg_quality": "loop",
+    "runtime_feedback_hooks": "loop",
+    "rollback_reversibility": "harness",
+    # Discipline factors with simulation mechanisms (v1.3)
+    "red_first_discipline": "loop",
+    "reviewer_independence": "graph",
+    "evidence_freshness": "loop",
+    "doctrine_reinjection": "harness",
+}
+
+# Candidate factor constructs (v1.2). Sources: RigorBench (arXiv:2606.22678),
+# ProcBench (arXiv:2605.20251), LH-Bench (arXiv:2603.22744), AgentRx taxonomy.
+CANDIDATE_FACTOR_CONSTRUCTS: dict[str, dict[str, str]] = {
+    "plan_fidelity": {
+        "construct": "Plan exists and execution matched it (planning fidelity)",
+        "telemetry": "Plan artifact present + step-vs-plan deviation from run trace",
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    "abstention_quality": {
+        "construct": "Agent escalates or stops instead of guessing (know when to fold)",
+        "telemetry": "needs-human / clarification events at genuinely blocked points",
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    "error_msg_quality": {
+        "construct": "Verifier/QA failure messages are actionable for repair",
+        "telemetry": "Repair success rate conditioned on failure-report structure",
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    "runtime_feedback_hooks": {
+        "construct": "Structured feedback surfaced during execution (test-time verification)",
+        "telemetry": "Hook events emitting structured findings mid-run",
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    "rollback_reversibility": {
+        "construct": "Changes stay interruptible/reversible mid-run (control preservation)",
+        "telemetry": "Revert-capable checkpoints; clean rollback drills",
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    # v1.3 discipline factors: simulation mechanisms exist (sim/trajectory.py);
+    # live telemetry does not. Same tier as completion_guard_hook.
+    "red_first_discipline": {
+        "construct": "A repair only counts after an observed failing check (no test-after theater)",
+        "telemetry": "Verify ordering: failing run observed before the fixing commit",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    "reviewer_independence": {
+        "construct": "Review runs in a fresh context, not the authoring context (no anchored review)",
+        "telemetry": "Reviewer session provenance: fresh sub-session vs same-context review",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    "evidence_freshness": {
+        "construct": "Verify evidence voided by later edits; terminal claim requires re-verify",
+        "telemetry": "Verify timestamp vs last edit/HEAD move before completion claim",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    "doctrine_reinjection": {
+        "construct": "Rules re-injected every request instead of stated once (drift countermeasure)",
+        "telemetry": "Rule-injection cadence in agent transcripts",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+}
+
+# Candidate decay proxies (v1.2). Registered constructs only: they are NOT part
+# of the D(t) computation in formula v1.x and carry no weights. Telemetry can be
+# collected now; entering D(t) requires a formula revision plus simulation.
+CANDIDATE_DECAY_PROXIES: dict[str, dict[str, str]] = {
+    "instruction_drift": {
+        "construct": "Deviation from pinned acceptance criteria over long context",
+        "telemetry": "AC-vs-diff divergence across checkpoints; plan-adherence audits",
+        "normalization": "to be defined at formula revision",
+        "missing_behavior": "not in D(t); collect telemetry only",
+        "status": "candidate",
+        "layer": "loop",
+    },
+    "tool_misuse_rate": {
+        "construct": "Malformed or repeated no-progress tool calls",
+        "telemetry": "Invalid invocation count / repeated identical failing calls",
+        "normalization": "to be defined at formula revision",
+        "missing_behavior": "not in D(t); collect telemetry only",
+        "status": "candidate",
+        "layer": "harness",
+    },
+    "goal_misalignment": {
+        "construct": "Pursuing the wrong objective despite locally valid steps",
+        "telemetry": "Intent-vs-outcome audits on completed runs",
+        "normalization": "to be defined at formula revision",
+        "missing_behavior": "not in D(t); collect telemetry only",
+        "status": "candidate",
+        "layer": "graph",
+    },
 }
 
 DECAY_PROXIES: dict[str, dict[str, str]] = {
@@ -73,26 +166,44 @@ DECAY_PROXIES: dict[str, dict[str, str]] = {
 def factor_entries(formula_module: Any) -> list[dict[str, Any]]:
     """Build portable registry rows from theory.formula."""
     sim_only = getattr(formula_module, "SIMULATION_ONLY_FACTORS", frozenset())
+    sim_only = sim_only | getattr(
+        formula_module, "DISCIPLINE_SIM_FACTORS", frozenset()
+    )
+    candidates = getattr(formula_module, "CANDIDATE_FACTORS", frozenset())
     rows: list[dict[str, Any]] = []
     for factor in formula_module.DEFAULT_REGISTRY:
         name = factor.name
-        evidence = "simulation-only" if name in sim_only else "operational"
+        if name in candidates:
+            evidence = "candidate"
+        elif name in sim_only:
+            evidence = "simulation-only"
+        else:
+            evidence = "operational"
         if name == "human_alignment":
             evidence = "deferred"
+        candidate_meta = CANDIDATE_FACTOR_CONSTRUCTS.get(name, {})
+        if name in candidates:
+            confidence_rule = "candidate — no evidence; excluded from claims until ablation"
+        elif name in sim_only:
+            confidence_rule = "simulation-only until live telemetry"
+        else:
+            confidence_rule = "high when toggle and activity both observed"
         rows.append(
             {
                 "name": name,
                 "stage": factor.stage.value,
                 "layer": LAYER_BY_FACTOR.get(name, "unknown"),
-                "construct": f"Recovery control contributing to R(t): {name}",
-                "telemetry": "arm toggle + collector activity f(t) ∈ [0,1]",
-                "normalization": "activity clipped to [0,1]; weight w_f units 1/time",
-                "missing_behavior": "activity=0 when disabled or unobserved",
-                "confidence_rule": (
-                    "simulation-only until live telemetry"
-                    if name in sim_only
-                    else "high when toggle and activity both observed"
+                "construct": candidate_meta.get(
+                    "construct", f"Recovery control contributing to R(t): {name}"
                 ),
+                "telemetry": candidate_meta.get(
+                    "telemetry", "arm toggle + collector activity f(t) ∈ [0,1]"
+                ),
+                "normalization": "activity clipped to [0,1]; weight w_f units 1/time",
+                "missing_behavior": candidate_meta.get(
+                    "missing_behavior", "activity=0 when disabled or unobserved"
+                ),
+                "confidence_rule": confidence_rule,
                 "toggle": "see harness/factors/registry.py",
                 "evidence_status": evidence,
                 "placeholder_weight": factor.weight,
@@ -108,6 +219,10 @@ def export_registry(formula_module: Any) -> dict[str, Any]:
         "default_decay_form": formula_module.DEFAULT_DECAY_FORM_NAME,
         "core_fitted_factors": list(formula_module.CORE_FITTED_FACTORS),
         "simulation_only_factors": sorted(formula_module.SIMULATION_ONLY_FACTORS),
+        "candidate_factors": sorted(
+            getattr(formula_module, "CANDIDATE_FACTORS", frozenset())
+        ),
         "decay_proxies": DECAY_PROXIES,
+        "candidate_decay_proxies": CANDIDATE_DECAY_PROXIES,
         "factors": factor_entries(formula_module),
     }

@@ -41,6 +41,64 @@ Evidence: `sim/FINDINGS.md`, `data/sobol_indices.json`, `data/identifiability.js
 - Campaign design constraints: include bare and single-factor-off arms (outcome
   variance vanishes at full pipeline), and ensure High tasks are genuinely hard.
 
+## v1.3 — 2026-08-30 — Discipline factors with simulation mechanisms
+
+Evidence: harness design practice (llama-leash "conductor": TDD-enforcing,
+adversarially-reviewed local harness whose gate handlers re-derive their own
+evidence), plus the v1.2 literature base. No numeric change to `D(t)`, existing
+weights, or any published score.
+
+- Registered four **discipline factors** (placeholder weight 0.08,
+  `DISCIPLINE_SIM_FACTORS`, evidence status `simulation-only`), each with a
+  micro-process mechanism in `sim/trajectory.py`:
+  - `red_first_discipline` (QA): a repair only counts after an observed failing
+    check. Mechanism: without it, a share of repairs are vacuously green
+    (`vacuous_green_prob`) and can silently regress before the terminal state.
+  - `reviewer_independence` (review): terminal review in a fresh context
+    catches residual broken checks at `review_catch_independent`; anchored
+    review only at `review_catch_anchored`.
+  - `evidence_freshness` (review): without it, the terminal completion claim
+    uses the last verify snapshot, which later edits may have invalidated
+    (`stale_evidence_prob`); with it, a forced terminal re-verify precedes the
+    claim.
+  - `doctrine_reinjection` (dev): without it, per-step error grows with step
+    index (`drift_ramp`, process amnesia); with it, the rate stays flat.
+- Added an agent **self-report channel** to the simulation
+  (`self_claimed_pass`), enabling a per-arm **calibration gap**
+  (`self_claimed_pass − objective pass`) as a diagnostic metric. This is a
+  metric, not a registry factor.
+- Ablation protocol mirrors the completion-guard hook: predictions registered
+  in `data/discipline_predictions.json` before the run; measured output in
+  `data/discipline_ablation.json`; simulation-only, no live effect claims.
+
+## v1.2 — 2026-08-30 — Candidate process-discipline factors + provenance hardening
+
+Evidence: agent-evaluation literature review (RigorBench arXiv:2606.22678,
+ProcBench arXiv:2605.20251, LH-Bench arXiv:2603.22744, AgentEval
+arXiv:2604.23581, AgentRx failure taxonomy). No new fit; no numeric change to
+`D(t)`, existing weights, or any published score.
+
+- Registered five **candidate recovery factors** (placeholder weight 0.08,
+  `CANDIDATE_FACTORS`, evidence status `candidate`): `plan_fidelity`
+  (planning fidelity), `abstention_quality` (escalate instead of guessing),
+  `error_msg_quality` (actionable verifier/QA failure reports; LH-Bench found
+  recovery success strongly depends on it), `runtime_feedback_hooks`
+  (structured mid-run feedback; generalizes the completion guard), and
+  `rollback_reversibility` (control preservation / reversible changes).
+  They contribute zero R unless activity is actually observed and support no
+  published claims until simulation ablation, the same path
+  `completion_guard_hook` took.
+- Registered three **candidate decay constructs** in the catalog only
+  (`instruction_drift`, `tool_misuse_rate`, `goal_misalignment`). They are NOT
+  part of the `D(t)` computation; telemetry may be collected now, and entry
+  into `D(t)` requires a formula revision plus simulation.
+- Provenance hardening in the scorer (no formula change): per-field
+  `source` labels (observed / heuristic / imputed) on decay inputs,
+  catalog-aligned entropy imputation (0.5), explicit `assumed` labeling when
+  recovery activity is unobserved, `defaulted_inputs` / `missing_inputs`
+  surfaced per record, and refusal to compute D/V* when every decay input is a
+  policy default.
+
 ## v1.1.1 — 2026-08-04 — Publish contract alignment (no new fit)
 
 Evidence: `framework/CONTRACT.md`, research-preview packaging.
