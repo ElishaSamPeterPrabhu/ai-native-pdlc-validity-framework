@@ -307,7 +307,12 @@ def cmd_collect(args: argparse.Namespace) -> int:
 
 
 def cmd_score(args: argparse.Namespace) -> int:
-    from framework.score import build_score_pack, load_input, write_score_pack
+    from framework.score import (
+        build_score_pack,
+        disclosure_lines,
+        load_input,
+        write_score_pack,
+    )
 
     if args.metrics:
         in_path = Path(args.metrics)
@@ -343,6 +348,8 @@ def cmd_score(args: argparse.Namespace) -> int:
         out = _repo(args) / out
     write_score_pack(out, pack)
     print(f"wrote score pack → {out}")
+    for line in disclosure_lines(pack):
+        print(f"  {line}")
     agg = pack.get("aggregate", {}).get("V_star", {})
     v_star = agg.get("value") if isinstance(agg, dict) else agg
     print(f"aggregate_V_star={v_star} weight_source=placeholder")

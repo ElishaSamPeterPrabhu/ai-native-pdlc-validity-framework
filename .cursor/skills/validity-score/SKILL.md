@@ -65,13 +65,26 @@ python -m framework score --repo "$REPO" --input "$REPO/data/user-intake.json" -
 2. If the latest PR/issue is not in `user-intake.json`, append a PR row from GitHub facts (`gh pr view`, reviews, labels). Record `needs-human`, `/ask`, `/refine`, and `## NOT FEASIBLE` under `formula_signals.recovery_seen` when they happened. Do not invent `M(t)` / `human_alignment` scores (formula v1 leaves them unused).
 3. Run `intake` then `score` as above.
 4. Quote **only** `data/score-pack.json` (or layout `data_dir`) for R, D, V*.
-5. Present a standings table: this PR vs prior PR in the same intake, plus aggregate V* if present.
-6. Label every number: `weight_source` from the pack (usually `placeholder`); `record_kind=intake_pseudo`; `n_runs` = line count of layout `metrics_path` (0 until collectors).
-7. Stop. Do **not** diagnose harness/loop/graph — that is **validity-diagnose**.
+5. **Provenance disclosure (mandatory, before any standing):** for each scored
+   record, read `decay_proxies.*.source`, `defaulted_inputs`,
+   `missing_inputs`, and `activities_assumed`/`recovery_assumed`, then state
+   which inputs were `observed` (measured), `heuristic` (keyword rules on
+   notes), `imputed` (policy defaults), or `missing`. The CLI prints the same
+   disclosure lines on stdout — repeat them, do not paraphrase them away.
+6. If a record's V* is missing (`source=missing`), say exactly: "The framework
+   does not have the necessary data to compute this; the gap is <missing
+   inputs>." Never substitute an estimate.
+7. Present a standings table: this PR vs prior PR in the same intake, plus aggregate V* if present.
+8. Label every number: `weight_source` from the pack (usually `placeholder`); `record_kind=intake_pseudo`; `n_runs` = line count of layout `metrics_path` (0 until collectors).
+9. Stop. Do **not** diagnose harness/loop/graph — that is **validity-diagnose**.
 
 ## Hard rules
 
 - Never invent R, D, V*, or fitted weights.
+- Never invent factor activity or decay proxy values; a factor not present in
+  `recovery_seen` or telemetry contributes zero to R.
+- Never present a defaulted or heuristic input as measured; disclose per-field
+  `source` before citing any standing (see `.cursor/rules/factor-provenance.mdc`).
 - Never treat `delta-pack` `intake_heuristic_scores` as formula output.
 - Human review is never removed.
 - `completion_guard_hook` stays simulation-only until live telemetry exists.

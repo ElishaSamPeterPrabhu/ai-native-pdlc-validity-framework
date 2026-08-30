@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-Source = Literal["observed", "imputed", "declared", "heuristic", "missing"]
+Source = Literal[
+    "observed", "imputed", "declared", "heuristic", "missing", "assumed"
+]
 Confidence = Literal["high", "medium", "low", "none"]
 WeightSource = Literal["none", "placeholder", "repo-fitted"]
 

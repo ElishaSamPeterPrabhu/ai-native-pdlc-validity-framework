@@ -86,6 +86,18 @@
               "recovery_seen": {
                 "type": "array",
                 "items": { "type": "string" }
+              },
+              "signal_provenance": {
+                "type": "object",
+                "description": "Per-signal origin: observed (from logs/PR data), reported (human recollection), guessed (uncertain)",
+                "additionalProperties": {
+                  "enum": ["observed", "reported", "guessed"]
+                }
+              },
+              "missing_signals": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Signals the user could not provide; surfaced as measurement gaps in the score pack"
               }
             }
           }

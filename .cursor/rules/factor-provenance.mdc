@@ -1,0 +1,51 @@
+---
+description: Factor provenance discipline for the Validity Framework
+alwaysApply: true
+---
+
+# Factor provenance (always apply)
+
+The framework's credibility depends on every factor value being traceable. These
+rules bind any agent that touches R, D, V*, decay proxies, or recovery factors.
+
+## Numbers come only from the CLI
+
+- R, D, V*, decay proxies (`Hc`, `O`, `Cb`, `σspec`), and recovery activities
+  come **only** from `python -m framework score` (or another CLI command)
+  output. Never estimate, extrapolate, or "reasonably assume" any of them.
+- Never invent factor activity `f(t)` values. A factor not present in
+  `recovery_seen`, collector telemetry, or an explicit toggle is **not active**;
+  its contribution to R is zero, and you must not add it.
+- Never invent decay proxy values. If a proxy's telemetry is absent, the correct
+  output is its registry `missing_behavior` (impute-with-label or
+  declare-missing), never a guessed number.
+
+## Disclose provenance before any standing
+
+Whenever presenting a score, standing, or before/after comparison, you MUST
+first list per-field provenance from the pack:
+
+- which inputs were `observed` (real telemetry),
+- which were `heuristic` (keyword rules on notes),
+- which were `imputed`/`default` (filled by policy, not measured),
+- which were `missing` (not computed).
+
+Also always state `weight_source` (e.g. `placeholder`) and `record_kind`
+(e.g. `intake_pseudo`).
+
+## Insufficient data is a valid answer
+
+- If required inputs are missing, say exactly:
+  "The framework does not have the necessary data to compute this; the gap is
+  <field list>." Do not substitute an estimate.
+- If every decay input for a record is a default (nothing observed or
+  heuristic), treat V* for that record as **not computable** and report the gap
+  instead of the number.
+
+## Adding factors
+
+New factors enter only through the registered pipeline: an entry in
+`theory/formula.py` DEFAULT_REGISTRY plus `framework/factor_catalog.py`
+(construct, telemetry, normalization, `missing_behavior`, confidence rule) and a
+`theory/formula-changelog.md` entry. Simulation ablation precedes any live
+claim. No unregistered factor may contribute to R.
