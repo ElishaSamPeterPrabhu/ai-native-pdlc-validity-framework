@@ -34,6 +34,11 @@ LAYER_BY_FACTOR: dict[str, str] = {
     "error_msg_quality": "loop",
     "runtime_feedback_hooks": "loop",
     "rollback_reversibility": "harness",
+    # Discipline factors with simulation mechanisms (v1.3)
+    "red_first_discipline": "loop",
+    "reviewer_independence": "graph",
+    "evidence_freshness": "loop",
+    "doctrine_reinjection": "harness",
 }
 
 # Candidate factor constructs (v1.2). Sources: RigorBench (arXiv:2606.22678),
@@ -63,6 +68,28 @@ CANDIDATE_FACTOR_CONSTRUCTS: dict[str, dict[str, str]] = {
         "construct": "Changes stay interruptible/reversible mid-run (control preservation)",
         "telemetry": "Revert-capable checkpoints; clean rollback drills",
         "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    # v1.3 discipline factors: simulation mechanisms exist (sim/trajectory.py);
+    # live telemetry does not. Same tier as completion_guard_hook.
+    "red_first_discipline": {
+        "construct": "A repair only counts after an observed failing check (no test-after theater)",
+        "telemetry": "Verify ordering: failing run observed before the fixing commit",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    "reviewer_independence": {
+        "construct": "Review runs in a fresh context, not the authoring context (no anchored review)",
+        "telemetry": "Reviewer session provenance: fresh sub-session vs same-context review",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    "evidence_freshness": {
+        "construct": "Verify evidence voided by later edits; terminal claim requires re-verify",
+        "telemetry": "Verify timestamp vs last edit/HEAD move before completion claim",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    "doctrine_reinjection": {
+        "construct": "Rules re-injected every request instead of stated once (drift countermeasure)",
+        "telemetry": "Rule-injection cadence in agent transcripts",
+        "missing_behavior": "activity=0; simulation-only until live telemetry",
     },
 }
 
@@ -139,6 +166,9 @@ DECAY_PROXIES: dict[str, dict[str, str]] = {
 def factor_entries(formula_module: Any) -> list[dict[str, Any]]:
     """Build portable registry rows from theory.formula."""
     sim_only = getattr(formula_module, "SIMULATION_ONLY_FACTORS", frozenset())
+    sim_only = sim_only | getattr(
+        formula_module, "DISCIPLINE_SIM_FACTORS", frozenset()
+    )
     candidates = getattr(formula_module, "CANDIDATE_FACTORS", frozenset())
     rows: list[dict[str, Any]] = []
     for factor in formula_module.DEFAULT_REGISTRY:

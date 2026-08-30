@@ -41,6 +41,36 @@ Evidence: `sim/FINDINGS.md`, `data/sobol_indices.json`, `data/identifiability.js
 - Campaign design constraints: include bare and single-factor-off arms (outcome
   variance vanishes at full pipeline), and ensure High tasks are genuinely hard.
 
+## v1.3 — 2026-08-30 — Discipline factors with simulation mechanisms
+
+Evidence: harness design practice (llama-leash "conductor": TDD-enforcing,
+adversarially-reviewed local harness whose gate handlers re-derive their own
+evidence), plus the v1.2 literature base. No numeric change to `D(t)`, existing
+weights, or any published score.
+
+- Registered four **discipline factors** (placeholder weight 0.08,
+  `DISCIPLINE_SIM_FACTORS`, evidence status `simulation-only`), each with a
+  micro-process mechanism in `sim/trajectory.py`:
+  - `red_first_discipline` (QA): a repair only counts after an observed failing
+    check. Mechanism: without it, a share of repairs are vacuously green
+    (`vacuous_green_prob`) and can silently regress before the terminal state.
+  - `reviewer_independence` (review): terminal review in a fresh context
+    catches residual broken checks at `review_catch_independent`; anchored
+    review only at `review_catch_anchored`.
+  - `evidence_freshness` (review): without it, the terminal completion claim
+    uses the last verify snapshot, which later edits may have invalidated
+    (`stale_evidence_prob`); with it, a forced terminal re-verify precedes the
+    claim.
+  - `doctrine_reinjection` (dev): without it, per-step error grows with step
+    index (`drift_ramp`, process amnesia); with it, the rate stays flat.
+- Added an agent **self-report channel** to the simulation
+  (`self_claimed_pass`), enabling a per-arm **calibration gap**
+  (`self_claimed_pass − objective pass`) as a diagnostic metric. This is a
+  metric, not a registry factor.
+- Ablation protocol mirrors the completion-guard hook: predictions registered
+  in `data/discipline_predictions.json` before the run; measured output in
+  `data/discipline_ablation.json`; simulation-only, no live effect claims.
+
 ## v1.2 — 2026-08-30 — Candidate process-discipline factors + provenance hardening
 
 Evidence: agent-evaluation literature review (RigorBench arXiv:2606.22678,

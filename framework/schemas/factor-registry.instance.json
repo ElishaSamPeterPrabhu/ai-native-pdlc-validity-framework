@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "formula_version": "v1.2",
+  "formula_version": "v1.3",
   "default_decay_form": "hybrid",
   "core_fitted_factors": [
     "spec_refinement",
@@ -436,6 +436,58 @@
       "confidence_rule": "candidate — no evidence; excluded from claims until ablation",
       "toggle": "see harness/factors/registry.py",
       "evidence_status": "candidate",
+      "placeholder_weight": 0.08
+    },
+    {
+      "name": "red_first_discipline",
+      "stage": "qa",
+      "layer": "loop",
+      "construct": "A repair only counts after an observed failing check (no test-after theater)",
+      "telemetry": "Verify ordering: failing run observed before the fixing commit",
+      "normalization": "activity clipped to [0,1]; weight w_f units 1/time",
+      "missing_behavior": "activity=0; simulation-only until live telemetry",
+      "confidence_rule": "simulation-only until live telemetry",
+      "toggle": "see harness/factors/registry.py",
+      "evidence_status": "simulation-only",
+      "placeholder_weight": 0.08
+    },
+    {
+      "name": "reviewer_independence",
+      "stage": "review",
+      "layer": "graph",
+      "construct": "Review runs in a fresh context, not the authoring context (no anchored review)",
+      "telemetry": "Reviewer session provenance: fresh sub-session vs same-context review",
+      "normalization": "activity clipped to [0,1]; weight w_f units 1/time",
+      "missing_behavior": "activity=0; simulation-only until live telemetry",
+      "confidence_rule": "simulation-only until live telemetry",
+      "toggle": "see harness/factors/registry.py",
+      "evidence_status": "simulation-only",
+      "placeholder_weight": 0.08
+    },
+    {
+      "name": "evidence_freshness",
+      "stage": "review",
+      "layer": "loop",
+      "construct": "Verify evidence voided by later edits; terminal claim requires re-verify",
+      "telemetry": "Verify timestamp vs last edit/HEAD move before completion claim",
+      "normalization": "activity clipped to [0,1]; weight w_f units 1/time",
+      "missing_behavior": "activity=0; simulation-only until live telemetry",
+      "confidence_rule": "simulation-only until live telemetry",
+      "toggle": "see harness/factors/registry.py",
+      "evidence_status": "simulation-only",
+      "placeholder_weight": 0.08
+    },
+    {
+      "name": "doctrine_reinjection",
+      "stage": "dev",
+      "layer": "harness",
+      "construct": "Rules re-injected every request instead of stated once (drift countermeasure)",
+      "telemetry": "Rule-injection cadence in agent transcripts",
+      "normalization": "activity clipped to [0,1]; weight w_f units 1/time",
+      "missing_behavior": "activity=0; simulation-only until live telemetry",
+      "confidence_rule": "simulation-only until live telemetry",
+      "toggle": "see harness/factors/registry.py",
+      "evidence_status": "simulation-only",
       "placeholder_weight": 0.08
     }
   ]

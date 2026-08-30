@@ -1,7 +1,7 @@
 # AI-Native PDLC Validity Framework — Contract (research preview)
 
 **Status:** research preview  
-**Formula version:** v1.2 (`theory/formula.py`)  
+**Formula version:** v1.3 (`theory/formula.py`)  
 **Evidence status:** simulation-calibrated (not Modus-fitted; not multi-repo validated)
 
 This contract is the published boundary for what the framework measures, what a
