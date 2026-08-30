@@ -17,6 +17,7 @@ from theory import formula as F
 
 from framework.report import build_validity_report, diagnose_layers
 
+_ROOT = Path(__file__).resolve().parents[1]
 
 SUCCESS_CRITERIA = {
     "pilot": {
