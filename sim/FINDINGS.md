@@ -193,8 +193,14 @@ Level 0 verification artifacts live in `data/external/llama-leash/`
 - All four v1.3 discipline factors are live, mechanically enforced controls in
   that harness; under the v1.1 registry the setup would have been
   indistinguishable from a plain tests-exist pipeline.
-- Quantitative cross-check of the ablation deltas against their three-arm
-  hidden-test benchmark (calibration metric `self_score − objective`, the live
-  counterpart of our simulated calibration gap) is **blocked until they
-  publish results** (`.data/benchmark/` is gitignored). Until then no
-  agreement claim is made.
+- **Measured round 1 (local Mac, 2026-08-30):** benchmark calibration
+  `self_score − objective` observed at **0.0** on ornith-9b Q4_K_M
+  (merge-ranges, author-default preset); see
+  `data/external/llama-leash/benchmark-results.json`. T0 three-arm conductor
+  bench is **partial (8/30 cells)** — baseline 3/3 hidden pass, doctrine 2/3,
+  conductor 0/2 (timeouts plus Jinja system-message ordering on the ornith
+  router path); see `t0-arm-results.json`. Direction-level cross-check vs
+  `data/discipline_ablation.json` is in `cross-check.json` with explicit
+  boundaries (one model, one host, no magnitude claims). No sim direction
+  claim is confirmed or refuted on this slice; conductor arm must be fixed
+  before arm contrasts are informative.

@@ -1,0 +1,335 @@
+{
+  "provenance": {
+    "source": "llama-leash scripts/conductor_bench.py --tier T0 --model llamacpp/ornith-9b --reps 1",
+    "host": "Mac16,7 Apple M4 Pro, 24 GiB RAM",
+    "model": "llamacpp/ornith-9b",
+    "tier": "T0",
+    "cells_completed": 8,
+    "cells_planned": 30,
+    "status": "partial_round_1",
+    "abort_reason": "Stopped after 8/30 cells; conductor arm hit 30-min tier timeouts and Jinja system-message ordering errors with ornith-9b on llama.cpp router path",
+    "server_config_note": "llama-server --parallel 1 --ctx-size 65536 required on 24GB host (default 6-slot config OOMed Metal)",
+    "gate_suite_node26": "2080/2085 pass; 5 host/env failures (pytest/go/cargo assumptions, one opencode wire-contract subtest)",
+    "llama_leash_commit": "1bbbd0558a0ce7aa73e42dcb3991d1b31aa6d508",
+    "recorded_at": "2026-08-30T17:40:02Z"
+  },
+  "arm_summary": {
+    "baseline": {
+      "cells_completed": 3,
+      "cells_planned_t0": 10,
+      "hidden_pass_rate": 1.0,
+      "mean_wall_s": 81.829,
+      "timeouts": 0,
+      "tasks": [
+        "duration-py",
+        "retry-ts",
+        "slugify-ts"
+      ]
+    },
+    "conductor": {
+      "cells_completed": 2,
+      "cells_planned_t0": 10,
+      "hidden_pass_rate": 0.0,
+      "mean_wall_s": 1800.051,
+      "timeouts": 2,
+      "tasks": [
+        "retry-ts",
+        "slugify-ts"
+      ]
+    },
+    "doctrine": {
+      "cells_completed": 3,
+      "cells_planned_t0": 10,
+      "hidden_pass_rate": 0.6666666666666666,
+      "mean_wall_s": 378.598,
+      "timeouts": 0,
+      "tasks": [
+        "duration-py",
+        "retry-ts",
+        "slugify-ts"
+      ]
+    }
+  },
+  "cells": [
+    {
+      "cellId": "llamacpp-ornith-9b/none/baseline/duration-py/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "baseline",
+      "taskId": "duration-py",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T17:07:39Z",
+      "outcome": "pass",
+      "passed": true,
+      "exitCode": 0,
+      "wallClockMs": 82636,
+      "tokens": {
+        "prompt": 74726,
+        "completion": 2198,
+        "total": 76924,
+        "partial": false
+      },
+      "routerErrors": 0,
+      "schemaRetries": null,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": null,
+      "stopKind": null,
+      "subSessions": null,
+      "waves": null,
+      "pluginAbsent": null,
+      "timedOut": false,
+      "gauge": {
+        "ran": true,
+        "passed": true,
+        "exitCode": 0
+      },
+      "doctrineDigest": null
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/baseline/retry-ts/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "baseline",
+      "taskId": "retry-ts",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T16:33:42Z",
+      "outcome": "pass",
+      "passed": true,
+      "exitCode": 0,
+      "wallClockMs": 107970,
+      "tokens": {
+        "prompt": 74944,
+        "completion": 2309,
+        "total": 77253,
+        "partial": false
+      },
+      "routerErrors": 0,
+      "schemaRetries": null,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": null,
+      "stopKind": null,
+      "subSessions": null,
+      "waves": null,
+      "pluginAbsent": null,
+      "timedOut": false,
+      "gauge": {
+        "ran": true,
+        "passed": true,
+        "exitCode": 0
+      },
+      "doctrineDigest": null
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/baseline/slugify-ts/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "baseline",
+      "taskId": "slugify-ts",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T15:58:11Z",
+      "outcome": "pass",
+      "passed": true,
+      "exitCode": 0,
+      "wallClockMs": 54881,
+      "tokens": {
+        "prompt": 42306,
+        "completion": 746,
+        "total": 43052,
+        "partial": false
+      },
+      "routerErrors": 0,
+      "schemaRetries": null,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": null,
+      "stopKind": null,
+      "subSessions": null,
+      "waves": null,
+      "pluginAbsent": null,
+      "timedOut": false,
+      "gauge": {
+        "ran": true,
+        "passed": true,
+        "exitCode": 0
+      },
+      "doctrineDigest": null
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/conductor/retry-ts/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "conductor",
+      "taskId": "retry-ts",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T16:37:38Z",
+      "outcome": "timeout",
+      "passed": false,
+      "exitCode": null,
+      "wallClockMs": 1800046,
+      "tokens": {
+        "prompt": 0,
+        "completion": 0,
+        "total": 0,
+        "partial": true
+      },
+      "routerErrors": 13,
+      "schemaRetries": 0,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": 0,
+      "stopKind": null,
+      "subSessions": 0,
+      "waves": 0,
+      "pluginAbsent": false,
+      "timedOut": true,
+      "gauge": {
+        "ran": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "doctrineDigest": "7dc409fd97f78773db9f3a2d1071aeca"
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/conductor/slugify-ts/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "conductor",
+      "taskId": "slugify-ts",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T16:03:42Z",
+      "outcome": "timeout",
+      "passed": false,
+      "exitCode": null,
+      "wallClockMs": 1800056,
+      "tokens": {
+        "prompt": 0,
+        "completion": 0,
+        "total": 0,
+        "partial": true
+      },
+      "routerErrors": 13,
+      "schemaRetries": 0,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": 0,
+      "stopKind": null,
+      "subSessions": 0,
+      "waves": 0,
+      "pluginAbsent": false,
+      "timedOut": true,
+      "gauge": {
+        "ran": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "doctrineDigest": "7dc409fd97f78773db9f3a2d1071aeca"
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/doctrine/duration-py/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "doctrine",
+      "taskId": "duration-py",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T17:09:01Z",
+      "outcome": "fail",
+      "passed": false,
+      "exitCode": 1,
+      "wallClockMs": 733215,
+      "tokens": {
+        "prompt": 71310,
+        "completion": 19628,
+        "total": 90938,
+        "partial": false
+      },
+      "routerErrors": 0,
+      "schemaRetries": null,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": null,
+      "stopKind": null,
+      "subSessions": null,
+      "waves": null,
+      "pluginAbsent": null,
+      "timedOut": false,
+      "gauge": {
+        "ran": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "doctrineDigest": "7dc409fd97f78773db9f3a2d1071aeca"
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/doctrine/retry-ts/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "doctrine",
+      "taskId": "retry-ts",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T16:35:31Z",
+      "outcome": "pass",
+      "passed": true,
+      "exitCode": 0,
+      "wallClockMs": 127258,
+      "tokens": {
+        "prompt": 148500,
+        "completion": 3287,
+        "total": 151787,
+        "partial": false
+      },
+      "routerErrors": 0,
+      "schemaRetries": null,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": null,
+      "stopKind": null,
+      "subSessions": null,
+      "waves": null,
+      "pluginAbsent": null,
+      "timedOut": false,
+      "gauge": {
+        "ran": true,
+        "passed": true,
+        "exitCode": 0
+      },
+      "doctrineDigest": "7dc409fd97f78773db9f3a2d1071aeca"
+    },
+    {
+      "cellId": "llamacpp-ornith-9b/none/doctrine/slugify-ts/r1",
+      "model": "llamacpp/ornith-9b",
+      "capability": "none",
+      "arm": "doctrine",
+      "taskId": "slugify-ts",
+      "tier": "T0",
+      "rep": 1,
+      "startedIso": "2026-08-30T15:59:06Z",
+      "outcome": "pass",
+      "passed": true,
+      "exitCode": 0,
+      "wallClockMs": 275321,
+      "tokens": {
+        "prompt": 216465,
+        "completion": 4987,
+        "total": 221452,
+        "partial": false
+      },
+      "routerErrors": 0,
+      "schemaRetries": null,
+      "reviewFindingsUpheld": null,
+      "overridesUsed": null,
+      "stopKind": null,
+      "subSessions": null,
+      "waves": null,
+      "pluginAbsent": null,
+      "timedOut": false,
+      "gauge": {
+        "ran": true,
+        "passed": true,
+        "exitCode": 0
+      },
+      "doctrineDigest": "7dc409fd97f78773db9f3a2d1071aeca"
+    }
+  ]
+}

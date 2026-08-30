@@ -74,6 +74,34 @@
     "missing_signals": ["run telemetry", "benchmark results", "live factor activity"],
     "note": "Conductor gate suite executed locally: 2050/2052 tests pass (2 failures are host pytest assumptions; 2 skips are the absent-bun leg). Stub scan M5 PASS. See verification-run.log and factor-mapping.json per_factor_provenance."
   },
+  "verification_local_mac_2026_08_30": {
+    "signal_provenance": {
+      "gate_mechanisms": "observed",
+      "benchmark_results": "observed",
+      "run_telemetry": "missing"
+    },
+    "host": "Mac16,7 Apple M4 Pro, 24 GiB RAM",
+    "model": "ornith-9b Q4_K_M (ornith-ai/Ornith-1.0-9B-GGUF)",
+    "llama_leash_commit": "see benchmark-results.json provenance",
+    "gate_suite_node26": "2080/2085 pass; 5 host/env failures (pytest/go/cargo spawn, one opencode wire-contract subtest)",
+    "benchmark": {
+      "task": "merge-ranges",
+      "author_default_calibration_self_minus_objective": 0.0,
+      "artifact": "data/external/llama-leash/benchmark-results.json"
+    },
+    "t0_conductor_bench": {
+      "status": "partial_round_1",
+      "cells_completed": 8,
+      "cells_planned": 30,
+      "artifact": "data/external/llama-leash/t0-arm-results.json",
+      "note": "baseline 3/3 hidden pass; doctrine 2/3; conductor 0/2 (timeouts + Jinja system-message ordering on ornith-9b router path)"
+    },
+    "cross_check": {
+      "status": "measured_round_1_partial",
+      "artifact": "data/external/llama-leash/cross-check.json"
+    },
+    "missing_signals": ["run telemetry", "live factor activity", "complete T0 three-arm sweep"]
+  },
   "goals": [
     "External Level 0 verification target for the AI-Native PDLC Validity Framework",
     "Map conductor gate mechanisms to registry factors (including v1.3 discipline factors)",
