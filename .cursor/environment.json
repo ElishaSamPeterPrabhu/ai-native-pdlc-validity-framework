@@ -1,0 +1,14 @@
+{
+  "name": "AI-Native PDLC Validity Framework",
+  "install": "pip install -e \".[validate]\"",
+  "terminals": [
+    {
+      "name": "dashboard",
+      "command": "python3 dashboard/server.py --port 8600",
+      "description": "Validity dashboard SPA + JSON API (/api/summary, /api/run/<tag>) on http://localhost:8600"
+    }
+  ],
+  "ports": [
+    { "name": "dashboard", "port": 8600 }
+  ]
+}
