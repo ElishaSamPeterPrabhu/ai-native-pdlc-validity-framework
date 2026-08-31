@@ -6,8 +6,10 @@
     "tier": "T0",
     "cells_completed": 8,
     "cells_planned": 30,
-    "status": "partial_round_1",
-    "abort_reason": "Stopped after 8/30 cells; conductor arm hit 30-min tier timeouts and Jinja system-message ordering errors with ornith-9b on llama.cpp router path",
+    "status": "round_1_closed",
+    "closed_at": "2026-08-31T08:46:00Z",
+    "conductor_arm": "not_computable",
+    "abort_reason": "Round 1 closed after 8/30 cells. Conductor arm not_computable: llama.cpp Jinja (Qwen/ornith) rejects any system message that is not messages[0]; conductor appends doctrine as extra system entries. Preflight 2026-08-31: two-system first-turn payload 500s immediately; opencode --agent conductor-orchestrator produced zero tokens in 90s. Remaining T0 cells not run.",
     "server_config_note": "llama-server --parallel 1 --ctx-size 65536 required on 24GB host (default 6-slot config OOMed Metal)",
     "gate_suite_node26": "2080/2085 pass; 5 host/env failures (pytest/go/cargo assumptions, one opencode wire-contract subtest)",
     "llama_leash_commit": "1bbbd0558a0ce7aa73e42dcb3991d1b31aa6d508",
@@ -29,7 +31,8 @@
     "conductor": {
       "cells_completed": 2,
       "cells_planned_t0": 10,
-      "hidden_pass_rate": 0.0,
+      "status": "not_computable",
+      "hidden_pass_rate": null,
       "mean_wall_s": 1800.051,
       "timeouts": 2,
       "tasks": [

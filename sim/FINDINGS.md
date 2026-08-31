@@ -193,14 +193,18 @@ Level 0 verification artifacts live in `data/external/llama-leash/`
 - All four v1.3 discipline factors are live, mechanically enforced controls in
   that harness; under the v1.1 registry the setup would have been
   indistinguishable from a plain tests-exist pipeline.
-- **Measured round 1 (local Mac, 2026-08-30):** benchmark calibration
+- **Measured round 1 closed (local Mac, 2026-08-31):** benchmark calibration
   `self_score − objective` observed at **0.0** on ornith-9b Q4_K_M
   (merge-ranges, author-default preset); see
   `data/external/llama-leash/benchmark-results.json`. T0 three-arm conductor
-  bench is **partial (8/30 cells)** — baseline 3/3 hidden pass, doctrine 2/3,
-  conductor 0/2 (timeouts plus Jinja system-message ordering on the ornith
-  router path); see `t0-arm-results.json`. Direction-level cross-check vs
-  `data/discipline_ablation.json` is in `cross-check.json` with explicit
-  boundaries (one model, one host, no magnitude claims). No sim direction
-  claim is confirmed or refuted on this slice; conductor arm must be fixed
-  before arm contrasts are informative.
+  bench stopped at **8/30 cells** — baseline 3/3 hidden pass, doctrine 2/3.
+  The **conductor arm is not_computable** on this stack: llama.cpp Jinja
+  (Qwen/ornith) allows only one system message, and only as `messages[0]`;
+  conductor appends doctrine as extra system entries. Preflight 2026-08-31
+  reproduced a first-turn Jinja 500 in seconds; `opencode run --agent
+  conductor-orchestrator` produced zero tokens in 90s. Remaining T0 cells
+  were not run. Cross-check vs `data/discipline_ablation.json` is in
+  `cross-check.json` (`round_1_closed`): no magnitude claims, no sim
+  direction claim confirmed or refuted. `score` on this intake still returns
+  **n_scored=0, V\* missing** (no run telemetry). Unblocking conductor is a
+  separate llama-leash/serving change, not this round.

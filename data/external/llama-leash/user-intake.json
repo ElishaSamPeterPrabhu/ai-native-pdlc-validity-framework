@@ -90,17 +90,18 @@
       "artifact": "data/external/llama-leash/benchmark-results.json"
     },
     "t0_conductor_bench": {
-      "status": "partial_round_1",
+      "status": "round_1_closed",
       "cells_completed": 8,
       "cells_planned": 30,
       "artifact": "data/external/llama-leash/t0-arm-results.json",
-      "note": "baseline 3/3 hidden pass; doctrine 2/3; conductor 0/2 (timeouts + Jinja system-message ordering on ornith-9b router path)"
+      "conductor_arm": "not_computable",
+      "note": "baseline 3/3 hidden pass; doctrine 2/3; conductor not_computable (Jinja multi-system reject on ornith-9b). Preflight 2026-08-31: first-turn two-system payload 500s; opencode orchestrator 90s zero tokens. Remaining T0 not run."
     },
     "cross_check": {
-      "status": "measured_round_1_partial",
+      "status": "round_1_closed",
       "artifact": "data/external/llama-leash/cross-check.json"
     },
-    "missing_signals": ["run telemetry", "live factor activity", "complete T0 three-arm sweep"]
+    "missing_signals": ["run telemetry", "live factor activity", "conductor arm (not_computable on this stack)"]
   },
   "goals": [
     "External Level 0 verification target for the AI-Native PDLC Validity Framework",
