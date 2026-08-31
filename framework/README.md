@@ -1,6 +1,6 @@
 # AI-Native PDLC Validity Framework
 
-**Research preview `0.1.0`** — formula `v1.1`, evidence status `simulation-calibrated`.
+**Research preview `0.2.0`** — formula `v1.3`, evidence status `simulation-calibrated`.
 
 Measure whether an AI delivery setup (issue → implement → QA → repair → human PR
 review) is trustworthy by task difficulty, diagnose weak **harness / loop / graph**

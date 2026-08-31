@@ -3,7 +3,7 @@
 Research preview for measuring whether an AI-assisted delivery workflow—from approved
 issue through implementation, QA, repair, and human PR review—deserves trust.
 
-**Status:** research preview `0.1.0` · formula `v1.3` · evidence
+**Status:** research preview `0.2.0` · formula `v1.3` · evidence
 `simulation-calibrated` (live Modus pilot documented; repo-fitted weights pending)
 
 **Maintainers:** [Elisha Sam Peter Prabhu](https://github.com/ElishaSamPeterPrabhu) · [Preethi Rangamma](https://github.com/preethi-rangamma-7)
@@ -75,7 +75,7 @@ PyPI releases use [trusted publishing](docs/PYPI_TRUSTED_PUBLISHING.md). Until t
 one-time setup is complete, install from GitHub:
 
 ```bash
-pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.1.0
+pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.2.0
 ```
 
 ## Research evidence

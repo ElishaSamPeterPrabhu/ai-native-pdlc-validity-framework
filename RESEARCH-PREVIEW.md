@@ -1,6 +1,6 @@
 # Research Preview — AI-Native PDLC Validity Framework
 
-**Version:** framework `0.1.0` · formula `v1.1`  
+**Version:** framework `0.2.0` · formula `v1.3`  
 **Evidence:** simulation-calibrated (live Modus campaign and Phase E pending)
 
 Install: `pip install pdlc-validity`  
