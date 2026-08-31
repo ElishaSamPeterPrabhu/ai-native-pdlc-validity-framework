@@ -17,7 +17,7 @@ this one-time setup on [pypi.org](https://pypi.org) before the first upload succ
 ## Re-run after approval
 
 ```bash
-gh release create v0.1.0 --title "v0.1.0 — research preview" --notes "Research preview"
+gh release create v0.2.0 --title "v0.2.0 — research preview" --notes "Research preview"
 ```
 
 Or re-run the failed **Publish to PyPI** workflow from the Actions tab.
@@ -25,7 +25,7 @@ Or re-run the failed **Publish to PyPI** workflow from the Actions tab.
 ## Local install before PyPI
 
 ```bash
-pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.1.0
+pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.2.0
 ```
 
 ## Add a co-owner on PyPI
