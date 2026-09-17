@@ -3,6 +3,27 @@
 Every revision of the validity model is recorded here with the evidence that forced it.
 The formula is a living hypothesis: v0 is the starting structure, not the conclusion.
 
+## v1.4 — 2026-09-07 — AI-native PDLC context and intake candidates
+
+Evidence: the AI-Native PDLC blueprint and observed Modus delivery setup. No
+simulation ablation or live campaign telemetry exists for these factors. No
+numeric change was made to `D(t)`, existing weights, or any published score.
+
+- Registered two **candidate recovery factors** with placeholder weight `0.08`:
+  - `design_context` (dev/harness): a cited capability check from
+    `custom-elements.json`, the component-docs MCP, component docs, and the
+    component graph before design/implementation handoff.
+  - `chat_intake` (ticket/graph): conversational clarification, duplicate
+    search, human confirmation, and shared issue-service handoff before issue
+    creation.
+- Added construct, telemetry, normalization, and missing-behavior metadata to
+  `framework/factor_catalog.py`.
+- Missing activity is `0`; these candidates support no effect or standing claim
+  until simulation ablation and then real telemetry.
+- The blueprint's Google Chat and designer workflows are operational
+  specifications only. Their existence does not count as observed factor
+  activity.
+
 ## v0 — 2026-07-19 — Initial structure (assumed, not fitted)
 
 Source: the research outline ("Measuring Autonomous Agent Validity") formalized in
