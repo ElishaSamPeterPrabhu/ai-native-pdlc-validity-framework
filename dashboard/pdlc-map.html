@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en" class="dark" data-theme="modus-modern-dark" data-mode="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modus AI-native PDLC setup map</title>
+  <link rel="stylesheet" href="https://unpkg.com/@trimble-oss/moduswebcomponents@1.16.0/modus-wc-styles.css" />
+  <script type="module">
+    const cdn = 'https://unpkg.com/@trimble-oss/moduswebcomponents@1.16.0/modus-wc/modus-wc.esm.js';
+    import(cdn).then(() => {
+      document.documentElement.dataset.modusReady = 'true';
+    }).catch(() => {
+      document.documentElement.dataset.modusReady = 'false';
+    });
+  </script>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #171a21;
+      --panel-raised: #1d2330;
+      --line: #303744;
+      --text: #eef1f6;
+      --muted: #a8b0bf;
+      --blue: #62b0ff;
+      --green: #42d477;
+      --amber: #f3b94f;
+      --purple: #b494ff;
+      --red: #ff7e76;
+      --shadow: 0 18px 48px rgba(0, 0, 0, .24);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 80% -10%, #22385a 0, transparent 34%), var(--bg);
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--blue); }
+    .shell { max-width: 1500px; margin: 0 auto; padding: 28px; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; }
+    h1 { font-size: clamp(24px, 3vw, 40px); line-height: 1.08; margin: 0; letter-spacing: -.03em; }
+    h2 { margin: 0 0 8px; font-size: 19px; }
+    h3 { margin: 0 0 5px; font-size: 16px; }
+    p { margin: 0 0 10px; color: var(--muted); }
+    .eyebrow { color: var(--blue); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .lede { max-width: 760px; margin-top: 12px; font-size: 16px; }
+    .hero-note {
+      max-width: 330px; padding: 15px; border: 1px solid #405779; border-radius: 14px;
+      background: rgba(31, 51, 80, .5); color: #d8e9ff;
+    }
+    .hero-note strong { display: block; color: white; margin-bottom: 4px; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      margin: 28px 0 18px; padding: 12px; border: 1px solid var(--line);
+      border-radius: 14px; background: rgba(23, 26, 33, .9);
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-left: auto; color: var(--muted); font-size: 12px; }
+    .legend-item { display: inline-flex; gap: 6px; align-items: center; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .dot.demo { background: var(--green); }
+    .dot.specified { background: var(--blue); }
+    .dot.partial { background: var(--amber); }
+    .dot.planned { background: var(--purple); }
+    .toolbar modus-wc-button { flex: 0 0 auto; }
+    .flow-wrap { overflow-x: auto; padding: 4px 2px 18px; }
+    .flow-wrap::-webkit-scrollbar { height: 10px; }
+    .flow-wrap::-webkit-scrollbar-track { background: #11151c; border-radius: 8px; }
+    .flow-wrap::-webkit-scrollbar-thumb { background: #4a5668; border-radius: 8px; }
+    .scroll-hint { margin: 0 0 8px 3px; color: var(--muted); font-size: 12px; }
+    .diagram-scroll { overflow-x: auto; padding: 0 0 12px; }
+    .diagram-scroll::-webkit-scrollbar { height: 10px; }
+    .diagram-scroll::-webkit-scrollbar-track { background: #11151c; border-radius: 8px; }
+    .diagram-scroll::-webkit-scrollbar-thumb { background: #49637f; border-radius: 8px; }
+    .phase-row { display: flex; min-width: 1320px; margin-bottom: 8px; }
+    .phase-banner {
+      flex: 1; min-width: 0; height: 48px; padding: 0 24px 0 18px;
+      display: flex; align-items: center; color: #eaf5ff; background: #075d96;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);
+      font-size: 14px; font-weight: 700; letter-spacing: .02em;
+    }
+    .phase-banner + .phase-banner { margin-left: 4px; }
+    .phase-banner span { display: block; color: #9bc5e6; font-size: 11px; margin-left: 7px; font-weight: 500; }
+    .diagram { display: block; width: 1320px; height: 560px; overflow: visible; }
+    .diagram .link { fill: none; stroke: #526274; stroke-width: 2; stroke-dasharray: 7 7; marker-end: url(#arrowFuture); }
+    .diagram .link-demo { stroke: #36b974; stroke-width: 3; marker-end: url(#arrowDemo); animation: march 1.8s linear infinite; }
+    .diagram .link-planned { stroke: #8064bb; opacity: .78; }
+    .diagram .link-context { stroke: #71839a; marker-end: url(#arrowContext); }
+    .diagram .guide { stroke: #2c4359; stroke-width: 1; stroke-dasharray: 4 9; }
+    .diagram .node-group { cursor: pointer; transition: opacity .18s ease; }
+    .diagram .node-group circle, .diagram .node-group rect { fill: #102a42; stroke: #5b7894; stroke-width: 3; transition: transform .18s ease, stroke .18s ease; }
+    .diagram .node-group:hover circle, .diagram .node-group:hover rect,
+    .diagram .node-group:focus circle, .diagram .node-group:focus rect,
+    .diagram .node-group.selected circle, .diagram .node-group.selected rect { stroke: #fff; filter: drop-shadow(0 0 7px rgba(157,213,255,.65)); }
+    .diagram .node-group.selected circle, .diagram .node-group.selected rect { stroke: #86c8ff; }
+    .diagram .node-label { fill: #dce8f4; font-size: 12px; font-weight: 650; text-anchor: middle; }
+    .diagram .node-caption { fill: #91a4b7; font-size: 10px; text-anchor: middle; }
+    .diagram .status-mark { stroke: #0f1115; stroke-width: 2; }
+    .diagram .node-group.demo > circle { stroke: var(--green); }
+    .diagram .node-group.demo > rect { stroke: var(--green); }
+    .diagram .node-group.demo > .status-mark { stroke: #0f1115; fill: var(--green); }
+    .diagram .specified circle { stroke: var(--blue); }
+    .diagram .specified rect { stroke: var(--blue); }
+    .diagram .partial circle { stroke: var(--amber); }
+    .diagram .planned circle { stroke: var(--purple); }
+    .diagram .diamond { fill: #5b3c12; stroke: var(--amber); stroke-width: 3; }
+    .diagram .gate-text { fill: #ffda8b; font-size: 10px; font-weight: 700; text-anchor: middle; }
+    .diagram .hub-label { fill: #eaf5ff; font-size: 11px; font-weight: 800; text-anchor: middle; letter-spacing: .12em; }
+    .diagram .hub-sub { fill: #a9c1d8; font-size: 9px; text-anchor: middle; }
+    @keyframes march { to { stroke-dashoffset: -56; } }
+    .floating-tip {
+      position: fixed; z-index: 20; max-width: 280px; padding: 9px 11px;
+      border: 1px solid #526681; border-radius: 9px; background: #101722;
+      color: #eaf3ff; box-shadow: var(--shadow); pointer-events: none; font-size: 12px;
+    }
+    .status {
+      display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 7px;
+      font-size: 10px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase;
+    }
+    .status.demo { color: #9af2b7; background: rgba(66,212,119,.13); }
+    .status.specified { color: #a9d8ff; background: rgba(98,176,255,.13); }
+    .status.partial { color: #ffda8b; background: rgba(243,185,79,.14); }
+    .status.planned { color: #d7c4ff; background: rgba(180,148,255,.14); }
+    .branches {
+      display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 12px;
+      margin: 18px 0 22px; padding: 18px; border: 1px dashed #3b4657; border-radius: 16px;
+      background: rgba(23, 26, 33, .62);
+    }
+    .branch-heading { grid-column: 1 / -1; }
+    .branch-node {
+      padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel);
+      cursor: pointer; text-align: left; color: var(--text);
+    }
+    .branch-node:hover, .branch-node.selected { border-color: var(--blue); background: var(--panel-raised); }
+    .branch-node strong { display: block; margin: 7px 0 4px; }
+    .details {
+      display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 18px; align-items: start;
+      margin-top: 8px;
+    }
+    .detail-panel, .checklist { min-height: 220px; padding: 22px; border: 1px solid var(--line);
+      border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); }
+    .detail-panel.empty { color: var(--muted); display: grid; place-items: center; text-align: center; }
+    .detail-header { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
+    .detail-copy { max-width: 760px; }
+    .detail-copy p { font-size: 16px; color: #d7dce5; }
+    .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+    .fact { padding: 11px; border-radius: 10px; background: #11151c; border: 1px solid var(--line); }
+    .fact label { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .fact b { display: block; margin-top: 4px; font-size: 13px; }
+    .steps { margin: 14px 0 0; padding-left: 20px; color: #d7dce5; }
+    .steps li { padding: 4px 0; }
+    .source-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .checklist ul { margin: 10px 0 0; padding-left: 19px; color: var(--muted); }
+    .checklist li { margin: 8px 0; }
+    .callout { margin-top: 18px; padding: 13px; border-left: 3px solid var(--amber); background: rgba(243,185,79,.08); color: #f8dda2; }
+    footer { margin-top: 24px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 800px) {
+      .shell { padding: 18px; }
+      header, .details { grid-template-columns: 1fr; display: grid; }
+      .hero-note { max-width: none; }
+      .legend { margin-left: 0; }
+      .facts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">Modus AI-native PDLC</div>
+        <h1>Setup map: from idea to release</h1>
+        <p class="lede">Hover for the short explanation. Click any node to expand what happens, what is built, and what still needs work.</p>
+      </div>
+      <div class="hero-note">
+        <strong>Legacy demo (Chat + n8n)</strong>
+        Gmail/Gemini → Cursor → Apps Script → Chat approval → n8n → Issue Service → GitHub #47.
+        <a href="sheet-pilot-map.html" style="color:#9af2b7">Current sheet pilot →</a>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="Map filters">
+      <modus-wc-button id="showAll" color="primary" variant="filled" size="md" pressed>Show all</modus-wc-button>
+      <modus-wc-button id="showBuilt" color="secondary" variant="outlined" size="md">Built / demo</modus-wc-button>
+      <modus-wc-button id="showFuture" color="tertiary" variant="outlined" size="md">Future work</modus-wc-button>
+      <div class="legend" aria-label="Status legend">
+        <span class="legend-item"><i class="dot demo"></i>Demo verified</span>
+        <span class="legend-item"><i class="dot specified"></i>Specified</span>
+        <span class="legend-item"><i class="dot partial"></i>Partially built</span>
+        <span class="legend-item"><i class="dot planned"></i>Planned</span>
+      </div>
+    </section>
+
+    <section class="flow-wrap" aria-label="Main delivery flow">
+      <div class="scroll-hint">Scroll horizontally to see the complete flow →</div>
+      <div class="diagram-scroll">
+        <div class="phase-row" aria-hidden="true">
+          <div class="phase-banner">Intake <span>meeting and chat</span></div>
+          <div class="phase-banner">Decision <span>human gate</span></div>
+          <div class="phase-banner">Contract <span>issue and design source</span></div>
+          <div class="phase-banner">Build <span>Dev, QA, PR</span></div>
+          <div class="phase-banner">Release <span>close the loop</span></div>
+        </div>
+        <svg class="diagram" viewBox="0 0 1320 560" role="img" aria-label="Interactive AI-native product delivery flow">
+          <defs>
+            <marker id="arrowDemo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#36b974"></path></marker>
+            <marker id="arrowFuture" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8064bb"></path></marker>
+            <marker id="arrowContext" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#71839a"></path></marker>
+          </defs>
+          <path class="guide" d="M264 30V320 M528 30V320 M792 30V320 M1056 30V320"></path>
+
+          <!-- Main flow (left to right, y = 170) -->
+          <path class="link link-demo" d="M118 170 C180 170 235 170 288 170"></path>
+          <path class="link link-demo" d="M368 170 C420 170 470 170 524 170"></path>
+          <path class="link link-planned" d="M590 170 C680 170 770 170 858 170"></path>
+          <path class="link link-planned" d="M924 170 C980 170 1035 170 1089 170"></path>
+
+          <!-- Top satellites feeding the flow -->
+          <path class="link link-demo" d="M150 74 C132 98 118 118 106 143"></path>
+          <path class="link link-demo" d="M842 74 C858 98 870 118 880 142"></path>
+          <path class="link link-demo" d="M912 194 C950 240 990 268 1016 288"></path>
+
+          <!-- Shared context platform connections: parallel stubs, no crossings -->
+          <path class="link link-context" d="M328 330 V204"></path>
+          <path class="link link-context" d="M560 330 V204"></path>
+          <path class="link link-context" d="M894 330 V204"></path>
+          <path class="link link-context" d="M450 330 V295"></path>
+          <path class="link link-planned" d="M450 265 C455 235 485 210 530 195"></path>
+          <path class="link link-context" d="M340 394 V445"></path>
+          <path class="link link-context" d="M840 394 V445"></path>
+
+          <!-- Main flow nodes -->
+          <g class="node-group demo" tabindex="0" data-node="meeting" data-tip="Meeting notes become a classified review card." transform="translate(88 170)">
+            <circle r="29"></circle><circle class="status-mark" r="6" cx="20" cy="-20"></circle><text class="node-label" y="51">Meeting intake</text><text class="node-caption" y="66">Gmail / Gemini</text>
+          </g>
+          <g class="node-group specified" tabindex="0" data-node="decision" data-tip="Separate answers, duplicates, process notes, and real work." transform="translate(328 170)">
+            <path class="diamond" d="M0 -29 L36 0 L0 29 L-36 0 Z"></path><text class="gate-text" y="4">DECIDE</text><text class="node-label" y="51">Work gate</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="issue-service" data-tip="Approved work is validated by the shared Issue Service." transform="translate(560 170)">
+            <circle r="29"></circle><circle class="status-mark" r="6" cx="20" cy="-20"></circle><text class="node-label" y="51">Issue Service</text><text class="node-caption" y="66">approval → issue</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="dev-qa" data-tip="Dev and QA automations handle the delivery loop." transform="translate(894 170)">
+            <circle r="29"></circle><circle class="status-mark" r="6" cx="20" cy="-20"></circle><text class="node-label" y="51">Dev → QA → PR</text><text class="node-caption" y="66">existing loop</text>
+          </g>
+          <g class="node-group planned" tabindex="0" data-node="release" data-tip="Approved changes become release communication." transform="translate(1120 170)">
+            <circle r="24"></circle><text class="node-label" y="46">Release</text><text class="node-caption" y="61">team feedback</text>
+          </g>
+
+          <!-- Top satellites -->
+          <g class="node-group demo" tabindex="0" data-node="ticket" data-tip="Conversational requests enter through a clarify-first flow." transform="translate(160 60)">
+            <circle r="15"></circle><text class="node-label" y="-25">Ticket bot</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="dev-qa" data-tip="QA evidence gates review before merge." transform="translate(832 60)">
+            <circle r="15"></circle><text class="node-label" y="-25">QA evidence</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="dev-qa" data-tip="PR review remains human-owned." transform="translate(1030 300)">
+            <circle r="15"></circle><text class="node-label" y="34">PR review</text>
+          </g>
+
+          <!-- Shared context platform and its lower-zone satellites -->
+          <g class="node-group specified" tabindex="0" data-node="context" data-tip="Shared context (the repo) feeds decisions, issue contracts, design source, and the Dev/QA loop." transform="translate(0 0)">
+            <rect x="250" y="330" width="720" height="64" rx="16"></rect>
+            <text class="hub-label" x="610" y="356">REPO · SHARED CONTEXT</text>
+            <text class="hub-sub" x="610" y="376">manifest · docs · rules · graph · issues · design source</text>
+          </g>
+          <g class="node-group specified" tabindex="0" data-node="design" data-tip="Design source comes from shared context and grounds the issue contract." transform="translate(450 280)">
+            <circle r="15"></circle><text class="node-label" x="-24" y="5" style="text-anchor:end">Design source</text>
+          </g>
+          <g class="node-group specified" tabindex="0" data-node="qa-bot" data-tip="Q&A answers from shared context and can hand off work." transform="translate(340 460)">
+            <circle r="15"></circle><text class="node-label" y="34">Q&amp;A bot</text>
+          </g>
+          <g class="node-group specified" tabindex="0" data-node="backlog" data-tip="Backlog enrichment has artifacts but needs live activation." transform="translate(840 460)">
+            <circle r="15"></circle><text class="node-label" y="34">Backlog</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="branches" aria-label="Intake subflows">
+      <div class="branch-heading">
+        <div class="eyebrow">Built and planned entry points</div>
+        <p>These are the sub-workflows behind the intake stage. They are represented here, not recreated.</p>
+      </div>
+      <button class="branch-node demo" data-node="meeting">
+        <span class="status demo">Demo verified</span>
+        <strong>Gemini meeting intake</strong>
+        <small>Gmail → Cursor → Apps Script review card.</small>
+      </button>
+      <button class="branch-node specified" data-node="ticket">
+        <span class="status specified">Specified</span>
+        <strong>Conversational ticket bot</strong>
+        <small>Clarify, research, confirm, then issue.</small>
+      </button>
+      <button class="branch-node specified" data-node="qa-bot">
+        <span class="status specified">Specified</span>
+        <strong>Q&A bot</strong>
+        <small>Answer from shared context; escalate only when needed.</small>
+      </button>
+      <button class="branch-node partial" data-node="backlog">
+        <span class="status partial">Partially built</span>
+        <strong>Backlog / sprint enrichment</strong>
+        <small>Sheet model and workflow template exist; live activation remains.</small>
+      </button>
+    </section>
+
+    <section class="details">
+      <article id="detailPanel" class="detail-panel empty">
+        <div>
+          <h2>Choose a node</h2>
+          <p>Hover over a node for a one-line explanation, then click it to see the short walkthrough.</p>
+        </div>
+      </article>
+      <aside class="checklist">
+        <div class="eyebrow">Demo boundary</div>
+        <h2>What to say</h2>
+        <ul>
+          <li>Green path: demonstrated end to end.</li>
+          <li>Blue path: designed or already present, but not the new demo.</li>
+          <li>Amber: artifacts exist; live activation is still needed.</li>
+          <li>Purple: future stage in the full Modus PDLC.</li>
+        </ul>
+        <div class="callout">This map explains the setup. It does not run workflows or change external systems.</div>
+      </aside>
+    </section>
+    <footer>Source: <a href="../docs/ai-native-pdlc-blueprint.md">AI-Native PDLC blueprint</a>. Sheet-led pilot (no n8n): <a href="sheet-pilot-map.html">sheet-pilot-map.html</a>.</footer>
+  </main>
+
+  <script>
+    const planBase = 'file:///Users/eprabhu/.cursor/plans/';
+    const links = {
+      cursorMeetingAutomation: 'https://cursor.com/t/trimble/automations/a970221a-ac50-11f1-b532-320a589b8025/runs',
+      n8nIssueServiceWorkflow: 'https://flows.stage.trimble-ai.com/workflow/0xmAlVxooykFyiBv',
+      n8nApprovalWorkflow: 'https://flows.stage.trimble-ai.com/workflow/HQO17i4wM8LLwhd0',
+      n8nCoordinatorWorkflow: 'https://flows.stage.trimble-ai.com/workflow/388xrFr1fPEQtzBt',
+      n8nReviewCallbackWorkflow: 'https://flows.stage.trimble-ai.com/workflow/z0rqXQVawYGaSS0i',
+      githubIssue47: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/issues/47'
+    };
+    const nodes = {
+      meeting: {
+        title: 'Gemini meeting intake',
+        status: 'demo',
+        statusLabel: 'Demo verified',
+        summary: 'Gemini meeting notes enter through Gmail, Cursor classifies every item, and Apps Script delivers the review card to Google Chat.',
+        inputs: 'Gemini email and linked Google Doc',
+        outputs: 'CardsV2 review and fresh reviewId',
+        next: 'Human selects an approval action',
+        steps: ['Gmail coordinator calls the private Cursor meeting-intake automation.', 'Cursor sends one review payload to Apps Script.', 'Apps Script stores the card and posts it to Chat.', 'Approval reaches n8n and Issue Service creates GitHub work.'],
+        source: '../docs/chat-bots/meeting-intake-rubric.md',
+        plan: planBase + 'browser_pilot_setup_45694f0c.plan.md',
+        evidence: 'GitHub Issue #47',
+        links: [
+          { label: 'Open Cursor automation run', url: links.cursorMeetingAutomation },
+          { label: 'Open n8n coordinator workflow', url: links.n8nCoordinatorWorkflow },
+          { label: 'Open n8n approval workflow', url: links.n8nApprovalWorkflow },
+          { label: 'Open n8n Issue Service workflow', url: links.n8nIssueServiceWorkflow },
+          { label: 'Open original review callback', url: links.n8nReviewCallbackWorkflow },
+          { label: 'Open GitHub Issue #47', url: links.githubIssue47 }
+        ]
+      },
+      context: {
+        title: 'Shared repository context',
+        status: 'specified',
+        statusLabel: 'Specified',
+        summary: 'All agents use the Modus repository as the shared context instead of inventing capabilities from a prompt alone.',
+        inputs: 'custom-elements.json, component docs, rules, graph, issues, staged design source',
+        outputs: 'Cited capability and impact context',
+        next: 'Classify the request or ask a targeted question',
+        steps: ['Read current component capability evidence.', 'Check repository rules and component graph.', 'Use GitHub history and design source where relevant.'],
+        source: '../docs/ai-native-pdlc-blueprint.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      },
+      decision: {
+        title: 'Answer, duplicate, or work?',
+        status: 'specified',
+        statusLabel: 'Specified',
+        summary: 'The pipeline distinguishes an answer, an existing issue, process/meta notes, and confirmed product work before creating anything.',
+        inputs: 'Idea, meeting item, or chat question plus repository evidence',
+        outputs: 'Answer, linked duplicate, clarification question, or draft work',
+        next: 'Human confirms real work',
+        steps: ['Research before issue creation.', 'Ask only the missing questions.', 'Preserve non-creating paths in the audit trail.'],
+        source: '../docs/chat-bots/context-resolver.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      },
+      'issue-service': {
+        title: 'Shared Issue Service',
+        status: 'demo',
+        statusLabel: 'Demo verified',
+        summary: 'Approved eligible items pass through one validation, deduplication, and scaffolding contract.',
+        inputs: 'Human-approved repo-work or design-work item',
+        outputs: 'Pending or created GitHub issue with idempotency key',
+        next: 'Issue enters triage and, when needed, design research',
+        steps: ['Validate required issue context.', 'Deduplicate by stable idempotency key.', 'Call private Issue Scaffolding with human approval disabled.', 'Return the issue result to the approval workflow.'],
+        source: '../docs/chat-bots/issue-service.md',
+        plan: planBase + 'approved_intake_dispatch_fda78b94.plan.md',
+        evidence: 'Issue #47',
+        links: [
+          { label: 'Open n8n Issue Service workflow', url: links.n8nIssueServiceWorkflow },
+          { label: 'Open GitHub Issue #47', url: links.githubIssue47 }
+        ]
+      },
+      design: {
+        title: 'Design-Research → Figma',
+        status: 'specified',
+        statusLabel: 'Specified',
+        summary: 'Design work checks existing API and states first, then hands a grounded design brief to the designer/Figma workflow.',
+        inputs: 'Confirmed design-work issue and capability evidence',
+        outputs: 'Design states, tokens, source, and implementation handoff',
+        next: 'Human approves the implementation contract',
+        steps: ['Check existing components and sibling patterns.', 'Identify states, accessibility, responsive behavior, and API impact.', 'Use Figma or staged Drive artifacts as the design source.', 'Return a design-to-issue handoff.'],
+        source: '../docs/design-enablement/README.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      },
+      'dev-qa': {
+        title: 'Dev → QA → PR review',
+        status: 'demo',
+        statusLabel: 'Existing',
+        summary: 'The existing Modus Cursor Dev and QA automations run the engineering loop; this setup map documents them without recreating them.',
+        inputs: 'Approved issue, design source, repository rules, and component graph',
+        outputs: 'PR, QA evidence, verdict, and human review request',
+        next: 'Human reviews and merges the PR',
+        steps: ['Dev handles approval, clarification, refinement, and QA-failed repair.', 'QA runs on explicit labels and separates gates, tests, visual evidence, and coverage.', 'Human owns the final PR review and merge.'],
+        source: '../harness/AUTOMATION-PROMPTS.md',
+        plan: planBase + 'modus_two-agent_pipeline_c39b3b45.plan.md',
+        evidence: 'Existing live Modus Dev/QA loop',
+        links: [
+          { label: 'Open Cursor meeting automation runs', url: links.cursorMeetingAutomation }
+        ]
+      },
+      release: {
+        title: 'Release notification',
+        status: 'planned',
+        statusLabel: 'Planned',
+        summary: 'The full blueprint closes the loop by distributing approved release notes and product context after human merge.',
+        inputs: 'Merged PR, QA verdict, issue context, and release decision',
+        outputs: 'Release communication and durable delivery record',
+        next: 'Feed learnings back into shared context',
+        steps: ['Collect the human-approved change.', 'Publish release communication through the existing team channel.', 'Keep the issue, PR, design, and release context linked.'],
+        source: '../docs/ai-native-pdlc-blueprint.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      },
+      ticket: {
+        title: 'Conversational ticket bot',
+        status: 'specified',
+        statusLabel: 'Specified',
+        summary: 'A clarify-first Chat bot forms an issue only when the request is understood and a human confirms it.',
+        inputs: 'Conversation and shared repository context',
+        outputs: 'Answer, clarification loop, or confirmed issue draft',
+        next: 'Hand confirmed work to the shared Issue Service',
+        steps: ['Resolve existing answers and duplicates.', 'Ask focused clarification questions.', 'Show a human confirmation card.', 'Send only confirmed work to Issue Service.'],
+        source: '../docs/chat-bots/ticket-bot.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      },
+      'qa-bot': {
+        title: 'Q&A bot',
+        status: 'specified',
+        statusLabel: 'Specified',
+        summary: 'The Q&A bot answers from the shared Modus context and offers a controlled handoff when the answer is not enough.',
+        inputs: 'Question, component docs, repository rules, and issue history',
+        outputs: 'Cited answer or optional issue handoff',
+        next: 'Return to the originating Chat thread',
+        steps: ['Resolve the relevant component or workflow context.', 'Answer with evidence and boundaries.', 'Escalate only when a real work item remains.'],
+        source: '../docs/chat-bots/qa-bot.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      },
+      backlog: {
+        title: 'Backlog / sprint enrichment',
+        status: 'partial',
+        statusLabel: 'Partially built',
+        summary: 'The Google Sheet model and sanitized n8n workflow exist, but live OAuth binding and a verified write-back run are still future work.',
+        inputs: 'Modus Backlog and current Sprint sheet tabs',
+        outputs: 'Enriched issue context, dedup result, and issue number/status back to the row',
+        next: 'Bind Google Sheets OAuth and run a dry-run quality gate',
+        steps: ['Read backlog and current sprint rows dynamically.', 'Search GitHub for existing issues and duplicates.', 'Add sheet context to Issue Scaffolding.', 'Write approved enrichment fields back without changing priority or assignment.'],
+        source: '../docs/chat-bots/backlog-enrichment.md',
+        plan: planBase + 'ai_native_pdlc_plan_ebab9da6.plan.md'
+      }
+    };
+
+    const panel = document.querySelector('#detailPanel');
+    const allNodes = [...document.querySelectorAll('[data-node]')];
+    allNodes.forEach((node) => {
+      const item = nodes[node.dataset.node];
+      if (item) node.dataset.status = item.status;
+    });
+    function openNode(key) {
+      const item = nodes[key];
+      if (!item) return;
+      allNodes.forEach((node) => node.classList.toggle('selected', node.dataset.node === key));
+      panel.classList.remove('empty');
+      panel.innerHTML = `
+        <div class="detail-header">
+          <div class="detail-copy">
+            <div class="eyebrow">${item.statusLabel}</div>
+            <h2>${item.title}</h2>
+            <p>${item.summary}</p>
+          </div>
+          <span class="status ${item.status}">${item.statusLabel}</span>
+        </div>
+        <div class="facts">
+          <div class="fact"><label>Input</label><b>${item.inputs}</b></div>
+          <div class="fact"><label>Output</label><b>${item.outputs}</b></div>
+          <div class="fact"><label>Next</label><b>${item.next}</b></div>
+        </div>
+        <h3>What happens</h3>
+        <ol class="steps">${item.steps.map((step) => `<li>${step}</li>`).join('')}</ol>
+        ${item.evidence ? `<div class="callout">Evidence: ${item.evidence}</div>` : ''}
+        <div class="source-links">
+          <modus-wc-button role="button" tabindex="0" color="secondary" variant="outlined" size="sm" data-open="${item.source}">Open source</modus-wc-button>
+          <modus-wc-button role="button" tabindex="0" color="tertiary" variant="borderless" size="sm" data-open="${item.plan}">Open related plan</modus-wc-button>
+          ${(item.links || []).map((link) => `<modus-wc-button role="button" tabindex="0" color="primary" variant="borderless" size="sm" data-open="${link.url}">${link.label}</modus-wc-button>`).join('')}
+        </div>`;
+      panel.querySelectorAll('[data-open]').forEach((button) => {
+        let lastOpenedAt = 0;
+        const open = () => {
+          if (Date.now() - lastOpenedAt < 250) return;
+          lastOpenedAt = Date.now();
+          window.open(button.dataset.open, '_blank', 'noopener');
+        };
+        button.addEventListener('buttonClick', open);
+        button.addEventListener('click', open);
+        button.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
+        });
+      });
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    const floatingTip = document.createElement('div');
+    floatingTip.className = 'floating-tip';
+    floatingTip.hidden = true;
+    document.body.appendChild(floatingTip);
+    allNodes.forEach((node) => {
+      node.addEventListener('mouseenter', () => {
+        floatingTip.textContent = node.dataset.tip || nodes[node.dataset.node]?.summary || '';
+        floatingTip.hidden = !floatingTip.textContent;
+        const rect = node.getBoundingClientRect();
+        floatingTip.style.left = `${Math.max(10, Math.min(window.innerWidth - 300, rect.left))}px`;
+        floatingTip.style.top = `${Math.min(window.innerHeight - 60, rect.bottom + 8)}px`;
+      });
+      node.addEventListener('mouseleave', () => { floatingTip.hidden = true; });
+      node.addEventListener('focus', () => node.dispatchEvent(new MouseEvent('mouseenter')));
+      node.addEventListener('blur', () => { floatingTip.hidden = true; });
+    });
+    allNodes.forEach((node) => {
+      node.addEventListener('click', () => openNode(node.dataset.node));
+      node.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openNode(node.dataset.node); }
+      });
+    });
+    function filterNodes(mode) {
+      document.querySelectorAll('.toolbar modus-wc-button').forEach((button) => {
+        button.pressed = (mode === 'all' && button.id === 'showAll') ||
+          (mode === 'built' && button.id === 'showBuilt') ||
+          (mode === 'future' && button.id === 'showFuture');
+      });
+      allNodes.forEach((node) => {
+        const visible = mode === 'all' || (mode === 'built'
+          ? ['demo', 'partial'].includes(node.dataset.status)
+          : ['specified', 'planned'].includes(node.dataset.status));
+        node.closest('.branch-node')?.classList.toggle('filtered-out', !visible);
+        node.style.opacity = visible ? '1' : '.22';
+      });
+    }
+    document.querySelector('#showAll').addEventListener('click', () => filterNodes('all'));
+    document.querySelector('#showBuilt').addEventListener('click', () => filterNodes('built'));
+    document.querySelector('#showFuture').addEventListener('click', () => filterNodes('future'));
+    document.querySelectorAll('.toolbar modus-wc-button').forEach((button) => {
+      button.addEventListener('buttonClick', () => filterNodes(
+        button.id === 'showBuilt' ? 'built' : button.id === 'showFuture' ? 'future' : 'all'
+      ));
+    });
+  </script>
+</body>
+</html>

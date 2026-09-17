@@ -1,0 +1,454 @@
+{
+  "name": "[PILOT] Meeting Intake Approval Callback (Apps Script)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pilot-meeting-review-approval",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e101",
+      "name": "Meeting Approval Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst reviewId = String(body.reviewId ?? '').trim();\nconst decision = String(body.decision ?? '').trim();\nif (!reviewId || !decision) throw new Error('reviewId and decision are required.');\nif (!['approve_selected', 'reject_selected', 'request_changes', 'discard_review'].includes(decision)) throw new Error('Unsupported review decision.');\nconst items = Array.isArray(body.items) ? body.items.map((item) => ({ ...item, itemId: item.itemId ?? item.id })) : [];\nreturn [{ json: { reviewId, decision, selectedItemIds: Array.isArray(body.selectedItemIds) ? body.selectedItemIds : [], comment: String(body.comment ?? ''), docId: body.docId ?? null, docUrl: body.docUrl ?? null, items, reviewProxyUrl: body.reviewProxyUrl ?? null, updatedAt: new Date().toISOString() } }];"
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e102",
+      "name": "Normalize Approval Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "meeting_review_state",
+        "columns": {
+          "column": [
+            {
+              "name": "reviewId",
+              "type": "string"
+            },
+            {
+              "name": "docId",
+              "type": "string"
+            },
+            {
+              "name": "docUrl",
+              "type": "string"
+            },
+            {
+              "name": "itemsJson",
+              "type": "string"
+            },
+            {
+              "name": "decision",
+              "type": "string"
+            },
+            {
+              "name": "reviewComment",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "lastUpdatedAt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e103",
+      "name": "Ensure Review State Table",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        300
+      ],
+      "notes": "Creates meeting_review_state on first run; later runs reuse it."
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "meeting_review_state",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "reviewId",
+              "condition": "eq",
+              "keyValue": "={{ $('Normalize Approval Payload').item.json.reviewId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reviewId": "={{ $('Normalize Approval Payload').item.json.reviewId }}",
+            "docId": "={{ $('Normalize Approval Payload').item.json.docId }}",
+            "docUrl": "={{ $('Normalize Approval Payload').item.json.docUrl }}",
+            "itemsJson": "={{ JSON.stringify($('Normalize Approval Payload').item.json.items) }}",
+            "decision": "={{ $('Normalize Approval Payload').item.json.decision }}",
+            "reviewComment": "={{ $('Normalize Approval Payload').item.json.comment }}",
+            "status": "={{ $('Normalize Approval Payload').item.json.decision }}",
+            "lastUpdatedAt": "={{ $('Normalize Approval Payload').item.json.updatedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "name": "reviewId",
+              "type": "string"
+            },
+            {
+              "name": "docId",
+              "type": "string"
+            },
+            {
+              "name": "docUrl",
+              "type": "string"
+            },
+            {
+              "name": "itemsJson",
+              "type": "string"
+            },
+            {
+              "name": "decision",
+              "type": "string"
+            },
+            {
+              "name": "reviewComment",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "lastUpdatedAt",
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e104",
+      "name": "Persist Approval State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('Normalize Approval Payload').item.json;\nconst items = input.items || [];\nif (input.decision === 'request_changes') {\n  return [{ json: { route: 'rerun', cursorPayload: { reviewId: input.reviewId, docId: input.docId, docUrl: input.docUrl, previousItems: items, reviewComment: input.comment, reviewProxyUrl: input.reviewProxyUrl, revision: Date.now() } } }];\n}\nif (input.decision !== 'approve_selected') return [{ json: { route: 'no_create', response: { ok: true, status: input.decision, reviewId: input.reviewId, issueCreation: false } } }];\nconst selected = new Set(input.selectedItemIds);\nconst approved = items.filter((item) => selected.has(item.itemId ?? item.id) && item.createEligible && ['repo-work', 'design-work'].includes(item.classification));\nif (!approved.length) return [{ json: { route: 'no_create', response: { ok: true, status: 'no_eligible_items', reviewId: input.reviewId, issueCreation: false } } }];\nreturn approved.map((item) => ({ json: { route: 'create', reviewId: input.reviewId, reviewComment: input.comment, item: { ...item, itemId: item.itemId ?? item.id, rawText: item.rawText ?? item.rawExcerpt ?? '', sourceExcerpt: item.sourceExcerpt ?? item.rawExcerpt ?? item.reason ?? '', idempotencyKey: item.idempotencyKey ?? `gemini:${input.docId}:${item.itemId ?? item.id}` }, docId: input.docId, docUrl: input.docUrl } }));"
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e105",
+      "name": "Build Approved Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "approval-rerun",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "rerun",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e106",
+      "name": "Review Changes?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api2.cursor.sh/automations/webhook/REPLACE_CURSOR_MEETING_INTAKE_AUTOMATION_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_CURSOR_WEBHOOK_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.cursorPayload }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e107",
+      "name": "Re-run Cursor After Review Changes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        160
+      ],
+      "notes": "Async re-review. Cursor sends the next review to Apps Script using reviewProxyUrl."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://flows-webhook.stage.trimble-ai.com/agentic/workflows/v1/webhook/pilot-modus-issue-service",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_ISSUE_SERVICE_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'ElishaSamPeterPrabhu/modus-wc-2.0', title: $json.item.rawText, summary: $json.item.sourceExcerpt || $json.item.reason, type: $json.item.classification === 'design-work' ? 'design' : 'feature', components: $json.item.componentHints || [], labels: $json.item.classification === 'design-work' ? ['needs-scaffolding', 'design-research'] : ['needs-scaffolding'], source: { kind: 'gemini-notes', url: $json.docUrl, meetingDocId: $json.docId }, rawConversation: [{ sender: 'Gemini meeting notes', text: $json.item.rawText }], contextEvidence: $json.item.evidence || [], additionalContext: { reviewComment: $json.reviewComment }, idempotencyKey: $json.item.idempotencyKey, autoApprove: false } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e108",
+      "name": "Dispatch Approved Issues",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response || { ok: true, status: \"accepted\" } }}",
+        "options": {}
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e109",
+      "name": "Acknowledge Review",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "approval-create",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "create",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "g0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e110",
+      "name": "Create Decision?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Meeting Approval Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Approval Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Approval Payload": {
+      "main": [
+        [
+          {
+            "node": "Ensure Review State Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure Review State Table": {
+      "main": [
+        [
+          {
+            "node": "Persist Approval State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Approval State": {
+      "main": [
+        [
+          {
+            "node": "Build Approved Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Approved Items": {
+      "main": [
+        [
+          {
+            "node": "Review Changes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Changes?": {
+      "main": [
+        [
+          {
+            "node": "Re-run Cursor After Review Changes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Decision?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Decision?": {
+      "main": [
+        [
+          {
+            "node": "Dispatch Approved Issues",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acknowledge Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-run Cursor After Review Changes": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch Approved Issues": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "legacy-meeting-approval-callback-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

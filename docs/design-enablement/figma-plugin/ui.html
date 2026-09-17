@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" data-theme="modus-modern-light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Modus Capability Check</title>
+    <!-- The plugin build must provide this pinned Modus bundle. -->
+    <script src="modus-bundle.js"></script>
+    <style>
+      :root {
+        font-family: sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 16px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      #results {
+        display: grid;
+        gap: 8px;
+      }
+
+      .source {
+        color: var(--modus-color-text-secondary);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stack">
+      <modus-wc-typography
+        hierarchy="h5"
+        label="Modus capability check"
+      ></modus-wc-typography>
+      <modus-wc-alert
+        id="source-status"
+        alert-title="Source"
+        alert-description="Loading the official capability manifest…"
+        variant="info"
+        role="status"
+      ></modus-wc-alert>
+      <modus-wc-text-input
+        id="query"
+        label="Component, property, or state"
+        placeholder="Try readonly or modus-wc-select"
+        aria-label="Component, property, or state"
+        include-clear
+      ></modus-wc-text-input>
+      <div class="actions">
+        <modus-wc-button id="search" color="primary" variant="filled">
+          Search
+        </modus-wc-button>
+        <modus-wc-button id="use-selection" color="secondary" variant="outlined">
+          Use selection
+        </modus-wc-button>
+        <modus-wc-button id="refresh" color="tertiary" variant="borderless">
+          Refresh
+        </modus-wc-button>
+      </div>
+      <modus-wc-card id="selection-card">
+        <modus-wc-typography
+          hierarchy="p"
+          label="No Figma layer selected."
+        ></modus-wc-typography>
+      </modus-wc-card>
+      <section id="results" aria-live="polite"></section>
+      <modus-wc-button id="close" color="tertiary" variant="outlined">
+        Close
+      </modus-wc-button>
+    </main>
+
+    <script>
+      /*
+       * Build note: modus-bundle.js must import
+       * @trimble-oss/moduswebcomponents/modus-wc-styles.css and call
+       * defineCustomElements(). The dependency version is intentionally chosen
+       * by the plugin owner and must be locked in the plugin repository.
+       */
+      const MANIFEST_URL =
+        "https://raw.githubusercontent.com/trimble-oss/modus-wc-2.0/main/src/custom-elements.json";
+      const MARKDOWN_URL =
+        "https://raw.githubusercontent.com/trimble-oss/modus-wc-2.0/main/custom-elements.md";
+      const CACHE_KEY = "modus-capability-manifest";
+      const CACHE_TTL_MS = 15 * 60 * 1000;
+      let manifest = null;
+      let selectedNode = null;
+
+      const byId = (id) => document.getElementById(id);
+
+      function setSourceStatus(title, description, variant) {
+        const status = byId("source-status");
+        status.setAttribute("alert-title", title);
+        status.setAttribute("alert-description", description);
+        status.setAttribute("variant", variant);
+      }
+
+      function normalize(value) {
+        return String(value || "").toLowerCase().replace(/[-_]/g, "");
+      }
+
+      function declarations() {
+        return (manifest?.modules || []).flatMap((module, moduleIndex) =>
+          (module.declarations || [])
+            .filter((declaration) => declaration.tagName || declaration.tag)
+            .map((declaration, declarationIndex) => ({
+              ...declaration,
+              tag: declaration.tagName || declaration.tag,
+              source: `src/custom-elements.json#/modules/${moduleIndex}/declarations/${declarationIndex}`,
+            })),
+        );
+      }
+
+      function properties(declaration) {
+        return (declaration.members || [])
+          .filter((member) => member.name && member.kind !== "method")
+          .concat(declaration.attributes || [])
+          .filter((member) => member.name);
+      }
+
+      function matches(query, declaration) {
+        const candidate = normalize(query);
+        const values = [
+          declaration.tag,
+          declaration.name,
+          declaration.description,
+          ...properties(declaration).flatMap((property) => [
+            property.name,
+            property.description,
+          ]),
+        ];
+        return values.some((value) => normalize(value).includes(candidate));
+      }
+
+      function renderResults(query) {
+        const results = byId("results");
+        results.replaceChildren();
+        if (!query) {
+          setSourceStatus("Enter a search", "Search the current manifest before designing a new state.", "info");
+          return;
+        }
+        const found = declarations().filter((declaration) => matches(query, declaration));
+        if (!found.length) {
+          const alert = document.createElement("modus-wc-alert");
+          alert.setAttribute("alert-title", "New API candidate");
+          alert.setAttribute(
+            "alert-description",
+            `No matching manifest entry was found for “${query}”. This is a research gap, not proof that the design is impossible.`,
+          );
+          alert.setAttribute("variant", "warning");
+          alert.setAttribute("role", "status");
+          results.append(alert);
+          return;
+        }
+        found.forEach((declaration) => {
+          const readonly = properties(declaration).some(
+            (property) => normalize(property.name) === "readonly",
+          );
+          const alert = document.createElement("modus-wc-alert");
+          alert.setAttribute("alert-title", `<${declaration.tag}>`);
+          alert.setAttribute(
+            "alert-description",
+            `${declaration.description || "No description in manifest."} Supports readonly: ${readonly ? "yes" : "not listed"}. Source: ${declaration.source}`,
+          );
+          alert.setAttribute("variant", readonly ? "success" : "info");
+          alert.setAttribute("role", "status");
+          results.append(alert);
+        });
+      }
+
+      async function loadManifest(forceRefresh = false) {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+        if (!forceRefresh && cached && Date.now() - cached.savedAt < CACHE_TTL_MS) {
+          manifest = cached.manifest;
+          setSourceStatus("Source ready", "Cached official manifest; refresh to check for updates.", "success");
+          return;
+        }
+        try {
+          const response = await fetch(MANIFEST_URL, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          manifest = await response.json();
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), manifest }));
+          setSourceStatus("Source ready", "Official manifest loaded. Claims are limited to listed properties.", "success");
+        } catch (error) {
+          manifest = null;
+          setSourceStatus("Source unavailable", `${error.message}. The plugin cannot verify capability.`, "error");
+        }
+      }
+
+      function showSelection(node) {
+        selectedNode = node;
+        const card = byId("selection-card");
+        card.replaceChildren();
+        const text = document.createElement("modus-wc-typography");
+        text.setAttribute("hierarchy", "p");
+        text.setAttribute(
+          "label",
+          node
+          ? `Selected: ${node.name} (${node.type})`
+          : "No Figma layer selected.",
+        );
+        card.append(text);
+      }
+
+      byId("search").addEventListener("buttonClick", () => {
+        renderResults(byId("query").value || "");
+      });
+      byId("refresh").addEventListener("buttonClick", async () => {
+        await loadManifest(true);
+        renderResults(byId("query").value || "");
+      });
+      byId("use-selection").addEventListener("buttonClick", () => {
+        if (!selectedNode) return;
+        byId("query").value = selectedNode.name;
+        renderResults(selectedNode.name);
+      });
+      byId("close").addEventListener("buttonClick", () => {
+        parent.postMessage({ pluginMessage: { type: "close" } }, "*");
+      });
+      window.onmessage = (event) => {
+        if (event.data.pluginMessage?.type === "selection") {
+          showSelection(event.data.pluginMessage.node);
+        }
+      };
+
+      loadManifest();
+    </script>
+  </body>
+</html>

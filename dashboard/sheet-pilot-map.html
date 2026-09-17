@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en" class="dark" data-theme="modus-modern-dark" data-mode="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modus sheet pilot — Apps Script + Cursor</title>
+  <link rel="stylesheet" href="https://unpkg.com/@trimble-oss/moduswebcomponents@1.16.0/modus-wc-styles.css" />
+  <script type="module">
+    import('https://unpkg.com/@trimble-oss/moduswebcomponents@1.16.0/modus-wc/modus-wc.esm.js')
+      .then(() => { document.documentElement.dataset.modusReady = 'true'; })
+      .catch(() => { document.documentElement.dataset.modusReady = 'false'; });
+  </script>
+  <style>
+    :root {
+      --bg: #0f1115; --panel: #171a21; --panel-raised: #1d2330; --line: #303744;
+      --text: #eef1f6; --muted: #a8b0bf; --blue: #62b0ff; --green: #42d477;
+      --amber: #f3b94f; --purple: #b494ff; --shadow: 0 18px 48px rgba(0, 0, 0, .24);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 12% -8%, #1f4a3a 0, transparent 32%),
+        radial-gradient(circle at 88% 0%, #22385a 0, transparent 34%), var(--bg);
+      color: var(--text);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--blue); }
+    .shell { max-width: 1480px; margin: 0 auto; padding: 28px; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+    h1 { font-size: clamp(24px, 3vw, 38px); line-height: 1.08; margin: 0; letter-spacing: -.03em; }
+    h2 { margin: 0 0 8px; font-size: 19px; }
+    h3 { margin: 0 0 5px; font-size: 16px; }
+    p { margin: 0 0 10px; color: var(--muted); }
+    .eyebrow { color: var(--blue); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .lede { max-width: 760px; margin-top: 12px; font-size: 16px; }
+    .hero-note {
+      max-width: 360px; padding: 15px; border: 1px solid #3d6b55; border-radius: 14px;
+      background: rgba(31, 64, 48, .45); color: #d8f5e4;
+    }
+    .hero-note strong { display: block; color: white; margin-bottom: 4px; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      margin: 24px 0 16px; padding: 12px; border: 1px solid var(--line);
+      border-radius: 14px; background: rgba(23, 26, 33, .9);
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-left: auto; color: var(--muted); font-size: 12px; }
+    .legend-item { display: inline-flex; gap: 6px; align-items: center; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .dot.demo { background: var(--green); }
+    .dot.specified { background: var(--blue); }
+    .dot.partial { background: var(--amber); }
+    .dot.planned { background: var(--purple); }
+    .dot.existing { background: var(--blue); }
+    .diagram-scroll { overflow-x: auto; padding: 0 0 12px; }
+    .toolbar modus-wc-button { flex: 0 0 auto; }
+    .flow-wrap { overflow-x: auto; padding: 4px 2px 18px; }
+    .scroll-hint { margin: 0 0 8px 3px; color: var(--muted); font-size: 12px; }
+    .phase-row { display: flex; min-width: 1320px; margin-bottom: 8px; }
+    .phase-banner {
+      flex: 1; min-width: 0; height: 48px; padding: 0 24px 0 18px;
+      display: flex; align-items: center; color: #eaf5ff; background: #075d96;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%);
+      font-size: 14px; font-weight: 700; letter-spacing: .02em;
+    }
+    .phase-banner + .phase-banner { margin-left: 4px; }
+    .phase-banner span { display: block; color: #9bc5e6; font-size: 11px; margin-left: 7px; font-weight: 500; }
+    .diagram { display: block; width: 1320px; height: 560px; overflow: visible; }
+    .diagram .link { fill: none; stroke: #526274; stroke-width: 2; stroke-dasharray: 7 7; stroke-linecap: round; marker-end: url(#arrowFuture); }
+    .diagram .link-demo { stroke: #36b974; stroke-width: 3; stroke-dasharray: 8 6; marker-end: url(#arrowDemo); animation: march 1.8s linear infinite; }
+    .diagram .link-writeback { stroke: #62b0ff; stroke-width: 2; stroke-dasharray: 5 6; stroke-linecap: round; marker-end: url(#arrowWrite); opacity: .9; }
+    .diagram .link-context { stroke: #71839a; marker-end: url(#arrowContext); }
+    .diagram .guide { stroke: #2c4359; stroke-width: 1; stroke-dasharray: 4 9; }
+    .diagram .node-group { cursor: pointer; }
+    .diagram .node-group circle, .diagram .node-group rect { fill: #102a42; stroke: #5b7894; stroke-width: 3; }
+    .diagram .node-group:hover circle, .diagram .node-group:hover rect,
+    .diagram .node-group.selected circle, .diagram .node-group.selected rect { stroke: #fff; filter: drop-shadow(0 0 7px rgba(157,213,255,.55)); }
+    .diagram .node-label { fill: #dce8f4; font-size: 12px; font-weight: 650; text-anchor: middle; }
+    .diagram .node-caption { fill: #91a4b7; font-size: 10px; text-anchor: middle; }
+    .diagram .status-mark { stroke: #0f1115; stroke-width: 2; }
+    .diagram .node-group.demo > circle, .diagram .node-group.demo > rect { stroke: var(--green); }
+    .diagram .node-group.demo > .status-mark { fill: var(--green); }
+    .diagram .node-group.specified > circle, .diagram .node-group.specified > rect { stroke: var(--blue); }
+    .diagram .node-group.partial > circle, .diagram .node-group.partial > rect { stroke: var(--amber); }
+    .diagram .node-group.partial > .status-mark { fill: var(--amber); }
+    .diagram .node-group.planned > circle { stroke: var(--purple); }
+    .diagram .diamond { fill: #5b3c12; stroke: var(--amber); stroke-width: 3; }
+    .diagram .gate-text { fill: #ffda8b; font-size: 10px; font-weight: 700; text-anchor: middle; }
+    .diagram .hub-label { fill: #eaf5ff; font-size: 11px; font-weight: 800; text-anchor: middle; letter-spacing: .1em; }
+    .diagram .hub-sub { fill: #a9c1d8; font-size: 9px; text-anchor: middle; }
+    @keyframes march { to { stroke-dashoffset: -56; } }
+    .floating-tip {
+      position: fixed; z-index: 20; max-width: 300px; padding: 9px 11px;
+      border: 1px solid #526681; border-radius: 9px; background: #101722;
+      color: #eaf3ff; box-shadow: var(--shadow); pointer-events: none; font-size: 12px;
+    }
+    .status {
+      display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 7px;
+      font-size: 10px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase;
+    }
+    .status.demo { color: #9af2b7; background: rgba(66,212,119,.13); }
+    .status.specified { color: #a9d8ff; background: rgba(98,176,255,.13); }
+    .status.partial { color: #ffda8b; background: rgba(243,185,79,.14); }
+    .status.planned { color: #d7c4ff; background: rgba(180,148,255,.14); }
+    .cards {
+      display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 12px;
+      margin: 18px 0 22px;
+    }
+    .card {
+      padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel);
+      cursor: pointer; text-align: left; color: var(--text);
+    }
+    .card:hover, .card.selected { border-color: var(--blue); background: var(--panel-raised); }
+    .card strong { display: block; margin: 8px 0 4px; }
+    .details { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
+    .detail-panel, .aside { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); }
+    .detail-panel.empty { color: var(--muted); display: grid; place-items: center; text-align: center; min-height: 220px; }
+    .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+    .fact { padding: 11px; border-radius: 10px; background: #11151c; border: 1px solid var(--line); }
+    .fact label { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+    .fact b { display: block; margin-top: 4px; font-size: 13px; }
+    .steps { margin: 14px 0 0; padding-left: 20px; color: #d7dce5; }
+    .steps li { padding: 4px 0; }
+    .source-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .aside ul { margin: 10px 0 0; padding-left: 19px; color: var(--muted); }
+    .aside li { margin: 8px 0; }
+    .callout { margin-top: 16px; padding: 13px; border-left: 3px solid var(--amber); background: rgba(243,185,79,.08); color: #f8dda2; }
+    footer { margin-top: 24px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 900px) {
+      .shell { padding: 18px; }
+      .details, .cards { grid-template-columns: 1fr; }
+      .facts { grid-template-columns: 1fr; }
+      .legend { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">Private pilot · no n8n on this path</div>
+        <h1>Sheet-led review ledger</h1>
+        <p class="lede">Gemini notes → Apps Script → Cursor automations → Google Sheet → GitHub. Human gates are <strong>Controls!B1</strong> (<code>review</code> / <code>approve</code>). Issue creation goes through Cursor Issue Scaffolding only.</p>
+        <div class="nav-links">
+          <modus-wc-button color="secondary" variant="outlined" size="sm" id="openLegacyMap">Full PDLC map (incl. Chat / n8n)</modus-wc-button>
+          <modus-wc-button color="tertiary" variant="borderless" size="sm" id="openWorkflowDoc">Open workflow doc</modus-wc-button>
+        </div>
+      </div>
+      <div class="hero-note">
+        <strong>Current pilot architecture</strong>
+        Two Apps Script projects (coordinator + orchestrator). Four Cursor automations (Intake, Review, Approve, Scaffolding). No n8n on the sheet approve path.
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="Legend">
+      <modus-wc-button id="showAll" color="primary" variant="filled" size="md" pressed>Show all</modus-wc-button>
+      <modus-wc-button id="showSheet" color="secondary" variant="outlined" size="md">Sheet path only</modus-wc-button>
+      <div class="legend">
+        <span class="legend-item"><i class="dot demo"></i>Demo / wired</span>
+        <span class="legend-item"><i class="dot partial"></i>In progress</span>
+        <span class="legend-item"><i class="dot specified"></i>Existing loop</span>
+        <span class="legend-item"><i class="dot planned"></i>Later</span>
+      </div>
+    </section>
+
+    <section class="flow-wrap" aria-label="Sheet pilot flow">
+      <div class="scroll-hint">Scroll horizontally to see the complete flow →</div>
+      <div class="diagram-scroll">
+        <div class="phase-row" aria-hidden="true">
+          <div class="phase-banner">Intake <span>Gmail · Apps Script · Cursor</span></div>
+          <div class="phase-banner">Review <span>sheet + B1 gate</span></div>
+          <div class="phase-banner">Approve <span>Scaffolding · GitHub</span></div>
+          <div class="phase-banner">Build <span>Dev · QA · PR</span></div>
+          <div class="phase-banner">Release <span>close the loop</span></div>
+        </div>
+        <svg class="diagram" viewBox="0 0 1320 560" role="img" aria-label="Apps Script and Cursor sheet pilot flow">
+          <defs>
+            <marker id="arrowDemo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#36b974"></path></marker>
+            <marker id="arrowFuture" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8064bb"></path></marker>
+            <marker id="arrowWrite" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#62b0ff"></path></marker>
+            <marker id="arrowContext" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#71839a"></path></marker>
+          </defs>
+          <path class="guide" d="M264 30V320 M528 30V320 M792 30V320 M1056 30V320"></path>
+
+          <!-- Main flow — endpoints touch node edges (see node transforms below) -->
+          <path class="link link-demo" d="M160 74 C148 98 128 118 106 143"></path>
+          <path class="link link-demo" d="M117 170 C150 120 210 80 280 75"></path>
+          <path class="link link-demo" d="M280 74 C295 98 312 118 328 141"></path>
+          <path class="link link-demo" d="M364 170 C420 170 470 170 524 170"></path>
+          <path class="link link-demo" d="M524 141 C490 115 460 90 450 75"></path>
+          <path class="link link-demo" d="M596 141 C620 115 650 90 680 75"></path>
+          <path class="link link-demo" d="M596 170 C680 170 770 170 865 170"></path>
+          <path class="link link-demo" d="M695 74 C780 98 850 118 894 141"></path>
+          <path class="link link-demo" d="M923 170 C980 170 1035 170 1096 170"></path>
+          <path class="link link-writeback" d="M450 74 C410 98 385 118 364 143"></path>
+          <path class="link link-writeback" d="M680 74 C620 98 580 118 560 143"></path>
+
+          <!-- Repo context stubs (vertical only, no crossings) -->
+          <path class="link link-context" d="M328 330 V204"></path>
+          <path class="link link-context" d="M560 330 V204"></path>
+          <path class="link link-context" d="M894 330 V204"></path>
+
+          <!-- Main nodes -->
+          <g class="node-group demo" tabindex="0" data-node="intake" data-tip="Classifies Gemini notes; POSTs rows to the sheet orchestrator." transform="translate(88 170)">
+            <circle r="29"></circle><circle class="status-mark" r="6" cx="20" cy="-20"></circle>
+            <text class="node-label" y="51">Meeting Intake</text><text class="node-caption" y="66">Cursor · no issues</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="sheet" data-tip="ReviewItems, Controls!B1, Issues tab." transform="translate(328 170)">
+            <rect x="-36" y="-29" width="72" height="58" rx="12"></rect><circle class="status-mark" r="6" cx="24" cy="-20"></circle>
+            <text class="node-label" y="51">Review ledger</text><text class="node-caption" y="66">Google Sheet</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="controls" data-tip="Type review or approve in Controls!B1 once." transform="translate(560 170)">
+            <path class="diamond" d="M0 -29 L36 0 L0 29 L-36 0 Z"></path><text class="gate-text" y="4">B1</text>
+            <text class="node-label" y="51">Human gate</text><text class="node-caption" y="66">review · approve</text>
+          </g>
+          <g class="node-group demo" tabindex="0" data-node="scaffolding" data-tip="Research-first GitHub draft; only issue creator." transform="translate(894 170)">
+            <circle r="29"></circle><circle class="status-mark" r="6" cx="20" cy="-20"></circle>
+            <text class="node-label" y="51">Issue Scaffolding</text><text class="node-caption" y="66">Cursor · GitHub</text>
+          </g>
+          <g class="node-group specified" tabindex="0" data-node="devqa" data-tip="Existing Modus Dev and QA automations." transform="translate(1120 170)">
+            <circle r="24"></circle><text class="node-label" y="46">Dev → QA → PR</text><text class="node-caption" y="61">existing loop</text>
+          </g>
+
+          <!-- Satellites -->
+          <g class="node-group demo" tabindex="0" data-node="coordinator" data-tip="Gmail watcher → Meeting Intake webhook." transform="translate(160 60)">
+            <circle r="15"></circle><text class="node-label" y="-25">Coordinator</text>
+          </g>
+          <g class="node-group partial" tabindex="0" data-node="review" data-tip="Evidence + cursorComment write-back only." transform="translate(450 60)">
+            <circle r="15"></circle><text class="node-label" y="-25">Review</text>
+          </g>
+          <g class="node-group partial" tabindex="0" data-node="approve" data-tip="POST Scaffolding; write-back issueUrl." transform="translate(680 60)">
+            <circle r="15"></circle><text class="node-label" y="-25">Approve</text>
+          </g>
+          <g class="node-group partial" tabindex="0" data-node="orchestrator" data-tip="Routes B1 to Review or Approve webhooks; accepts write-back." transform="translate(280 60)">
+            <circle r="15"></circle><text class="node-label" y="-25">Orchestrator</text>
+          </g>
+
+          <!-- Shared context -->
+          <g class="node-group specified" tabindex="0" data-node="repo" data-tip="Private pilot repo feeds Intake, Review, and Scaffolding." transform="translate(0 0)">
+            <rect x="250" y="330" width="720" height="64" rx="16"></rect>
+            <text class="hub-label" x="610" y="356">REPO · SHARED CONTEXT</text>
+            <text class="hub-sub" x="610" y="376">custom-elements · rules · issues · design source</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="cards" aria-label="Pilot components">
+      <button class="card demo" data-node="coordinator"><span class="status demo">Wired</span><strong>Gemini coordinator</strong><small>Gmail → Cursor Intake webhook.</small></button>
+      <button class="card demo" data-node="sheet"><span class="status demo">Wired</span><strong>Review ledger sheet</strong><small>Controls!B1 · Issues tab.</small></button>
+      <button class="card partial" data-node="review"><span class="status partial">In progress</span><strong>Review Ledger Round</strong><small>cursorComment write-back only.</small></button>
+      <button class="card partial" data-node="approve"><span class="status partial">In progress</span><strong>Review Ledger Approve</strong><small>→ Scaffolding · no n8n.</small></button>
+    </section>
+
+    <section class="details">
+      <article id="detailPanel" class="detail-panel empty">
+        <div>
+          <h2>Choose a node</h2>
+          <p>Click any step to see roles, tokens, and doc links for this pilot.</p>
+        </div>
+      </article>
+      <aside class="aside">
+        <div class="eyebrow">Not on this map</div>
+        <h2>Explicitly out of scope</h2>
+        <ul>
+          <li>n8n Issue Service on sheet approve</li>
+          <li>Google Chat approval card (legacy demo on full map)</li>
+          <li>Per-row <code>command</code> column triggers</li>
+          <li>Auto-approve / silent issue creation</li>
+        </ul>
+        <div class="callout">Pause point: finish <code>installReviewTrigger()</code> and end-to-end B1=approve test before calling this demo verified.</div>
+      </aside>
+    </section>
+
+    <footer>
+      Source: <a href="../docs/chat-bots/cursor-docs-review-workflow.md">cursor-docs-review-workflow.md</a>.
+      Legacy Chat + n8n path: <a href="pdlc-map.html">pdlc-map.html</a>.
+    </footer>
+  </main>
+
+  <script>
+    const links = {
+      sheet: 'https://docs.google.com/spreadsheets/d/1et7NnaPDzpLjZUitRYrRdIExQ6ay2iEmYtCONTSitZ4/edit',
+      intake: 'https://cursor.com/t/trimble/automations/b1b60664-b000-11f1-bf4b-42ffb4d10ea7',
+      review: 'https://cursor.com/t/trimble/automations/e3195783-b00b-11f1-bf4b-42ffb4d10ea7',
+      approve: 'https://cursor.com/t/trimble/automations/8a65434d-b03e-11f1-bf4b-42ffb4d10ea7',
+      scaffolding: 'https://cursor.com/t/trimble/automations/288c955b-aaad-11f1-b532-320a589b8025',
+      workflowDoc: '../docs/chat-bots/cursor-docs-review-workflow.md',
+      orchestratorDoc: '../docs/chat-bots/apps-script/cursor-sheet-review-orchestrator.gs',
+      coordinatorDoc: '../docs/chat-bots/apps-script/cursor-gemini-meeting-intake-coordinator.gs'
+    };
+
+    const nodes = {
+      coordinator: {
+        title: 'Gemini coordinator Apps Script',
+        status: 'demo', statusLabel: 'Wired',
+        summary: 'Standalone Apps Script replaces the n8n Gmail coordinator for this pilot.',
+        inputs: 'Gemini email + Doc link', outputs: 'POST to Meeting Intake webhook', next: 'Cursor classifies rows',
+        steps: ['Watch Gmail for Gemini notes.', 'POST normalized payload to Cursor Meeting Intake.', 'Does not write the sheet directly — Intake POSTs orchestrator /exec.'],
+        source: links.coordinatorDoc,
+        links: [{ label: 'Open coordinator source', url: links.coordinatorDoc }]
+      },
+      intake: {
+        title: '[Pilot] Meeting Intake',
+        status: 'demo', statusLabel: 'Wired',
+        summary: 'Cursor automation classifies meeting items and POSTs them to the sheet orchestrator. Never creates GitHub issues.',
+        inputs: 'Doc text + meeting metadata', outputs: 'ReviewItems rows (needs-review)', next: 'Human reviews in sheet',
+        steps: ['Apply meeting-intake rubric.', 'Split repo-work, design-work, process/meta, etc.', 'POST items to orchestrator reviewProxyUrl /exec.'],
+        source: '../docs/chat-bots/meeting-intake-rubric.md',
+        links: [{ label: 'Open Intake automation', url: links.intake }]
+      },
+      sheet: {
+        title: 'Modus Review Ledger sheet',
+        status: 'demo', statusLabel: 'Wired',
+        summary: 'Human-facing ledger: ReviewItems, ReviewItemsDetail, Issues, Controls.',
+        inputs: 'Classified intake rows', outputs: 'Review comments, issue URLs, audit trail', next: 'Controls!B1 review or approve',
+        steps: ['ReviewItems = reviewer surface.', 'Controls!B1 is the only trigger (not per-row command).', 'skipIssue=TRUE excludes rows from review and approve.', 'Issues tab stores idempotencyKey + issueUrl.'],
+        source: links.workflowDoc,
+        links: [{ label: 'Open pilot sheet', url: links.sheet }]
+      },
+      controls: {
+        title: 'Controls!B1 human gate',
+        status: 'demo', statusLabel: 'Wired',
+        summary: 'Typing review or approve in B1 is the human confirmation for that round.',
+        inputs: 'Human command in B1', outputs: 'One orchestrator dispatch per typed command', next: 'Matching Cursor webhook',
+        steps: ['review → Review automation only.', 'approve → Approve automation only.', 'Orchestrator clears B1 after claim to prevent double fire.', 'Poll backup: installReviewTrigger() every 1 min.'],
+        source: links.workflowDoc
+      },
+      orchestrator: {
+        title: 'Sheet review orchestrator',
+        status: 'partial', statusLabel: 'In progress',
+        summary: 'Routes B1 commands to Review or Approve webhooks; accepts write-back POSTs.',
+        inputs: 'Intake POST or B1 trigger', outputs: 'Cursor webhook POST + sheet diagnostics', next: 'Async write-back from Cursor',
+        steps: ['Separate CURSOR_REVIEW_* and CURSOR_APPROVE_* callback URLs and ingress tokens.', 'Exclude skipIssue rows from payloads.', 'review_writeback updates cursorComment or issueUrl.', 'Run installReviewTrigger() if poll is stale.'],
+        source: links.orchestratorDoc,
+        links: [{ label: 'Open orchestrator source', url: links.orchestratorDoc }]
+      },
+      review: {
+        title: '[Pilot] Review Ledger Round',
+        status: 'partial', statusLabel: 'In progress',
+        summary: 'Adds evidence-backed cursorComment. Does not call Issue Service or create issues.',
+        inputs: 'Webhook items (rowAction=review)', outputs: 'review_writeback with cursorComment', next: 'Human reads sheet and decides approve',
+        steps: ['Search pilot repo for duplicates and evidence.', 'Write cursorComment (max 320 chars).', 'POST write-back with body.ingressToken (review token).'],
+        source: '../harness/AUTOMATION-PROMPTS.md',
+        links: [{ label: 'Open Review automation', url: links.review }]
+      },
+      approve: {
+        title: '[Pilot] Review Ledger Approve',
+        status: 'partial', statusLabel: 'In progress',
+        summary: 'POSTs Issue Scaffolding directly (no n8n). Write-back issueUrl to sheet.',
+        inputs: 'Webhook items (rowAction=approve), repo-work / design-work only', outputs: 'review_writeback + Issues tab rows', next: 'GitHub draft issue',
+        steps: ['Build idempotencyKey gemini:meetingDocId:itemId.', 'Skip if issueUrl or Issues tab already has key.', 'POST ISSUE_SCAFFOLDING_WEBHOOK_URL with scaffolding token.', 'Write-back with issueNumber, issueUrl, issueResults — no cursorComment.'],
+        source: links.workflowDoc,
+        links: [{ label: 'Open Approve automation', url: links.approve }]
+      },
+      scaffolding: {
+        title: '[PILOT] Modus Issue Scaffolding',
+        status: 'demo', statusLabel: 'Wired',
+        summary: 'Only component that creates/enriches the GitHub issue. Research-first; auto_approve always false.',
+        inputs: 'Scaffolding webhook POST from Approve', outputs: 'Draft issue on pilot repo', next: 'Label router + human triage',
+        steps: ['Research repo before drafting.', 'Structured sections: AC, design notes, test plan.', 'May return NEED CLARIFICATION instead of inventing scope.'],
+        source: '../docs/chat-bots/issue-service.md',
+        links: [{ label: 'Open Scaffolding automation', url: links.scaffolding }]
+      },
+      repo: {
+        title: 'Shared repository context',
+        status: 'specified', statusLabel: 'Specified',
+        summary: 'All Cursor automations on this path read the private pilot repo — not prompt memory alone.',
+        inputs: 'custom-elements, rules, issues, docs', outputs: 'Cited evidence', next: 'Classification or scaffold',
+        steps: ['Intake and Review search for duplicates.', 'Scaffolding fills implementation-ready sections.', 'No unregistered capability claims.'],
+        source: '../docs/ai-native-pdlc-blueprint.md'
+      },
+      devqa: {
+        title: 'Dev → QA → PR (existing)',
+        status: 'specified', statusLabel: 'Existing',
+        summary: 'After the issue exists, the live Modus Dev and QA automations handle delivery. Not part of sheet wiring.',
+        inputs: 'Approved scaffolded issue', outputs: 'PR + QA evidence', next: 'Human merge',
+        steps: ['Dev on /approve or equivalent trigger.', 'QA on explicit labels.', 'Human PR review.'],
+        source: '../harness/AUTOMATION-PROMPTS.md'
+      }
+    };
+
+    const panel = document.querySelector('#detailPanel');
+    const allNodes = [...document.querySelectorAll('[data-node]')];
+    allNodes.forEach((el) => {
+      const item = nodes[el.dataset.node];
+      if (item) el.dataset.status = item.status;
+    });
+
+    function openNode(key) {
+      const item = nodes[key];
+      if (!item) return;
+      allNodes.forEach((el) => el.classList.toggle('selected', el.dataset.node === key));
+      panel.classList.remove('empty');
+      panel.innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:14px;align-items:start">
+          <div>
+            <div class="eyebrow">${item.statusLabel}</div>
+            <h2>${item.title}</h2>
+            <p style="color:#d7dce5;font-size:16px">${item.summary}</p>
+          </div>
+          <span class="status ${item.status}">${item.statusLabel}</span>
+        </div>
+        <div class="facts">
+          <div class="fact"><label>Input</label><b>${item.inputs}</b></div>
+          <div class="fact"><label>Output</label><b>${item.outputs}</b></div>
+          <div class="fact"><label>Next</label><b>${item.next}</b></div>
+        </div>
+        <h3>What happens</h3>
+        <ol class="steps">${item.steps.map((s) => `<li>${s}</li>`).join('')}</ol>
+        <div class="source-links">
+          <modus-wc-button color="secondary" variant="outlined" size="sm" data-open="${item.source}">Open source doc</modus-wc-button>
+          ${(item.links || []).map((l) => `<modus-wc-button color="primary" variant="borderless" size="sm" data-open="${l.url}">${l.label}</modus-wc-button>`).join('')}
+        </div>`;
+      panel.querySelectorAll('[data-open]').forEach((btn) => {
+        const open = () => window.open(btn.dataset.open, '_blank', 'noopener');
+        btn.addEventListener('buttonClick', open);
+        btn.addEventListener('click', open);
+      });
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    const tip = document.createElement('div');
+    tip.className = 'floating-tip';
+    tip.hidden = true;
+    document.body.appendChild(tip);
+    allNodes.forEach((el) => {
+      el.addEventListener('mouseenter', () => {
+        tip.textContent = el.dataset.tip || nodes[el.dataset.node]?.summary || '';
+        tip.hidden = !tip.textContent;
+        const r = el.getBoundingClientRect();
+        tip.style.left = `${Math.max(10, Math.min(window.innerWidth - 310, r.left))}px`;
+        tip.style.top = `${Math.min(window.innerHeight - 60, r.bottom + 8)}px`;
+      });
+      el.addEventListener('mouseleave', () => { tip.hidden = true; });
+      el.addEventListener('click', () => openNode(el.dataset.node));
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openNode(el.dataset.node); }
+      });
+    });
+
+    function wireButton(id, handler) {
+      const btn = document.querySelector(id);
+      if (!btn) return;
+      btn.addEventListener('buttonClick', handler);
+      btn.addEventListener('click', handler);
+    }
+    wireButton('#openLegacyMap', () => window.open('pdlc-map.html', '_self'));
+    wireButton('#openWorkflowDoc', () => window.open(links.workflowDoc, '_blank', 'noopener'));
+
+    function filter(mode) {
+      document.querySelectorAll('.toolbar modus-wc-button').forEach((b) => {
+        b.pressed = (mode === 'all' && b.id === 'showAll') || (mode === 'sheet' && b.id === 'showSheet');
+      });
+      const sheetOnly = new Set(['coordinator', 'orchestrator', 'intake', 'sheet', 'controls', 'review', 'approve', 'scaffolding', 'repo']);
+      allNodes.forEach((el) => {
+        const visible = mode === 'all' || sheetOnly.has(el.dataset.node);
+        el.style.opacity = visible ? '1' : '.18';
+      });
+    }
+    wireButton('#showAll', () => filter('all'));
+    wireButton('#showSheet', () => filter('sheet'));
+  </script>
+</body>
+</html>

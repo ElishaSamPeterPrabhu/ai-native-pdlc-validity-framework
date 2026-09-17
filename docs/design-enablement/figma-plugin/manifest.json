@@ -1,0 +1,15 @@
+{
+  "name": "Modus Capability Check (scaffold)",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://raw.githubusercontent.com"
+    ],
+    "reasoning": "Read the generated Modus custom-elements capability artifact from the official repository. No design or credential data is uploaded."
+  }
+}

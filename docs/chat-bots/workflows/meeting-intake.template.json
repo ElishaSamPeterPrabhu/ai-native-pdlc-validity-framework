@@ -1,0 +1,454 @@
+{
+  "name": "Modus Gemini Meeting Notes Intake (sanitized template)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "from:gemini-notes@google.com subject:\"Notes:\""
+        },
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b001",
+      "name": "Gemini Notes Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        260
+      ],
+      "notes": "Bind a service mailbox credential. This is only a cheap first-pass filter; the calendar series allowlist is authoritative."
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $json;\nconst subject = String(email.subject ?? email.headers?.subject ?? '');\nconst titleMatch = subject.match(/^Notes:\\s*[“\\\"]?(Sprint Planning|Sprint Estimating)[”\\\"]?\\b/i);\nconst dateMatch = subject.match(/(\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}|\\d{4}-\\d{2}-\\d{2})/);\nconst html = String(email.textHtml ?? email.textPlain ?? email.snippet ?? '');\nconst docMatch = html.match(/docs\\.google\\.com\\/document\\/d\\/([a-zA-Z0-9_-]+)/);\nconst docId = docMatch?.[1] ?? email.docId ?? null;\nconst receivedAt = email.internalDate ?? email.date ?? new Date().toISOString();\nreturn [{ json: {\n  subject,\n  title: titleMatch?.[1] ?? null,\n  meetingDate: dateMatch?.[1] ?? receivedAt,\n  docId,\n  docUrl: docId ? `https://docs.google.com/document/d/${docId}/edit` : null,\n  emailId: email.id ?? null,\n  sourceEmail: email,\n} }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b002",
+      "name": "Extract Meeting Identity",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list",
+          "cachedResultName": "Primary calendar"
+        },
+        "returnAll": false,
+        "limit": 10,
+        "timeMin": "={{ $('Extract Meeting Identity').item.json.meetingDate }}",
+        "timeMax": "={{ $('Extract Meeting Identity').item.json.meetingDate }}",
+        "options": {
+          "query": "={{ $('Extract Meeting Identity').item.json.title }}"
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b003",
+      "name": "Verify Calendar Series",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        260
+      ],
+      "notes": "Bind Calendar OAuth. Capture the two Modus recurringEventId/iCalUID values into environment configuration; never ask the model to identify the team."
+    },
+    {
+      "parameters": {
+        "jsCode": "const identity = $('Extract Meeting Identity').item.json;\nconst events = $input.all().map((item) => item.json);\nconst allowed = new Set([\n  $env.MODUS_SPRINT_PLANNING_SERIES_ID,\n  $env.MODUS_SPRINT_ESTIMATING_SERIES_ID,\n].filter(Boolean));\nconst event = events.find((candidate) => {\n  const seriesId = candidate.recurringEventId ?? candidate.iCalUID ?? candidate.iCalUid;\n  return seriesId && allowed.has(seriesId);\n});\nconst staticData = $getWorkflowStaticData('global');\nstaticData.meetingDocs = staticData.meetingDocs || {};\nconst prior = identity.docId ? staticData.meetingDocs[identity.docId] : null;\nconst accepted = Boolean(identity.title && identity.docId && event && !prior);\nif (identity.docId && prior) {\n  return [{ json: { ...identity, route: 'duplicate', reason: `Doc ID already processed with status ${prior.status}.` } }];\n}\nif (!accepted) {\n  return [{ json: { ...identity, route: 'ignore', reason: 'Title, Doc ID, or Modus calendar series allowlist did not match.' } }];\n}\nstaticData.meetingDocs[identity.docId] = { status: 'processing', startedAt: Date.now(), title: identity.title };\nreturn [{ json: { ...identity, route: 'accept', calendarEvent: event } }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b004",
+      "name": "Apply Ceremony and Idempotency Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "meeting-accept",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "accept",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b005",
+      "name": "Accepted Modus Ceremony?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://docs.googleapis.com/v1/documents/{{ $('Extract Meeting Identity').item.json.docId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b006",
+      "name": "Fetch Complete Meeting Doc",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        160
+      ],
+      "notes": "Bind Google Docs/Drive OAuth. The linked Doc, not the email snippet, is the completeness source."
+    },
+    {
+      "parameters": {
+        "jsCode": "const identity = $('Apply Ceremony and Idempotency Gate').item.json;\nconst body = $json.body ?? $json;\nconst text = [];\nfor (const content of body.body?.content ?? []) {\n  for (const element of content.paragraph?.elements ?? []) {\n    if (element.textRun?.content) text.push(element.textRun.content);\n  }\n}\nreturn [{ json: { ...identity, meetingText: text.join('') } }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b007",
+      "name": "Normalize Complete Notes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Classify every candidate item in the meeting notes and return only valid JSON. Do not omit weak or meta items.\\n\\nMeeting: {{ $('Normalize Complete Notes').item.json.title }}\\nDoc: {{ $('Normalize Complete Notes').item.json.docUrl }}\\nNotes:\\n{{ $('Normalize Complete Notes').item.json.meetingText }}\\n\\nFor every extracted item return itemId, rawText, sourceExcerpt, owner, componentHints, links, classification, reason, duplicateCandidates, createEligible. Classification must be exactly one of repo-work, design-work, process/meta, decision-record, already-tracked.\\n\\nRules:\\n- process/meta includes prioritizing, assigning, estimating, creating tickets/sub-issues, and spreadsheet itemization; never create an issue.\\n- decision-record updates an existing issue; do not create a new issue.\\n- already-tracked links an existing issue; do not recreate it.\\n- repo-work and design-work are only candidates; a human review card selects them.\\n- Search shared context and GitHub before claiming a duplicate or capability.\\n- A missing fact becomes a clarification reason, never an invented acceptance criterion.\\n- Return every item so the review card can prove completeness.\\n\\nJSON shape: {\\\"items\\\":[...],\\\"completeness\\\":{\\\"extracted\\\":0,\\\"classified\\\":0}}",
+        "options": {
+          "systemMessage": "You are the Modus meeting-notes intake classifier. Convenience must not reduce completeness or issue accuracy. You classify; a human decides what to create."
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b008",
+      "name": "Classify Notes",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1920,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4"
+        },
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b009",
+      "name": "Trimble Model Gateway",
+      "type": "CUSTOM.lmChatTrimbleGateway",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        400
+      ],
+      "notes": "Bind the Trimble Identity credential after import."
+    },
+    {
+      "parameters": {
+        "jsCode": "const identity = $('Normalize Complete Notes').item.json;\nconst raw = $json.output ?? $json.text ?? $json.response ?? '{}';\nlet classification;\ntry {\n  classification = JSON.parse(String(raw).replace(/^```json\\s*/i, '').replace(/\\s*```$/i, '').trim());\n} catch (error) {\n  classification = { items: [], completeness: { extracted: 0, classified: 0 }, parseError: String(error) };\n}\nconst items = Array.isArray(classification.items) ? classification.items : [];\nconst staticData = $getWorkflowStaticData('global');\nconst reviewId = `meeting-${identity.docId}-${Date.now()}`;\nstaticData.meetingDocs[identity.docId] = {\n  status: 'reviewed',\n  reviewId,\n  updatedAt: Date.now(),\n  items,\n  docUrl: identity.docUrl,\n  title: identity.title,\n};\nconst labels = {\n  'repo-work': 'Repository work',\n  'design-work': 'Design work',\n  'process/meta': 'Process / meta (no issue)',\n  'decision-record': 'Decision record (existing issue)',\n  'already-tracked': 'Already tracked',\n};\nconst sections = Object.keys(labels).map((classificationName) => {\n  const group = items.filter((item) => item.classification === classificationName);\n  if (!group.length) return null;\n  const widgets = group.map((item) => ({ selectionInput: { name: 'itemIds', type: 'CHECK_BOX', items: [{ text: `[${item.itemId}] ${item.rawText} — ${item.reason}`, value: item.itemId, selected: Boolean(item.createEligible && (classificationName === 'repo-work' || classificationName === 'design-work')) }] } }));\n  return { header: labels[classificationName], widgets };\n}).filter(Boolean);\nsections.push({ widgets: [{ textParagraph: { text: `Completeness: ${items.length} extracted and ${items.length} classified. Every item is displayed.\\nDoc: <a href=\\\"${identity.docUrl}\\\">open notes</a>` } }, { buttonList: { buttons: [{ text: 'Create selected drafts', onClick: { action: { actionMethodName: 'meeting_create_selected', parameters: [{ key: 'reviewId', value: reviewId }] } } }, { text: 'Discard review', onClick: { action: { actionMethodName: 'meeting_discard', parameters: [{ key: 'reviewId', value: reviewId }] } } }] } }] });\nreturn [{ json: { reviewId, docId: identity.docId, reviewCard: { cardsV2: [{ cardId: reviewId, card: { header: { title: `${identity.title} notes review`, subtitle: 'Human selection required' }, sections } }] } } }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b010",
+      "name": "Build Complete Review Card",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODUS_REVIEW_CHAT_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.reviewCard }}",
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b011",
+      "name": "Send Review Card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        160
+      ],
+      "notes": "Use a credential-backed Google Chat URL or service account. Never export a key/token in this workflow."
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "modus-meeting-intake-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b012",
+      "name": "Review Card Interaction Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        760
+      ],
+      "webhookId": "modus-meeting-intake-review"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event = $json.body ?? $json;\nconst action = event.action ?? event.common?.invokedFunction ?? {};\nconst parameters = Object.fromEntries((action.parameters ?? []).map((p) => [p.key, p.value]));\nconst selected = event.common?.formInputs?.itemIds?.stringInputs?.value ?? event.action?.formInputs?.itemIds?.stringInputs?.value ?? [];\nconst reviewId = parameters.reviewId;\nconst staticData = $getWorkflowStaticData('global');\nconst review = Object.values(staticData.meetingDocs || {}).find((entry) => entry.reviewId === reviewId);\nif (!review) throw new Error('Review not found or expired.');\nif (action.actionMethodName === 'meeting_discard') {\n  review.status = 'discarded';\n  return [{ json: { route: 'discard', reviewId } }];\n}\nif (action.actionMethodName !== 'meeting_create_selected') {\n  return [{ json: { route: 'invalid', reviewId } }];\n}\nconst selectedSet = new Set(selected);\nconst candidates = review.items.filter((item) => selectedSet.has(item.itemId) && ['repo-work', 'design-work'].includes(item.classification));\nreturn candidates.map((item) => ({ json: { route: 'create', reviewId, docUrl: review.docUrl, item } }));"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b013",
+      "name": "Load Selected Meeting Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ISSUE_SERVICE_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.ISSUE_SERVICE_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'trimble-oss/modus-wc-2.0', title: $json.item.rawText, summary: $json.item.sourceExcerpt, type: $json.item.classification === 'design-work' ? 'design' : 'feature', components: $json.item.componentHints || [], labels: $json.item.classification === 'design-work' ? ['needs-scaffolding', 'design-research'] : ['needs-scaffolding'], source: { kind: 'gemini-notes', url: $json.docUrl, meetingDocId: $json.docUrl?.split('/document/d/')[1]?.split('/')[0] || null }, rawConversation: [{ sender: 'Gemini meeting notes', text: $json.item.rawText }], contextEvidence: [{ claim: $json.item.reason, source: $json.docUrl }], idempotencyKey: `gemini:${$json.docUrl}:${$json.item.itemId}`, autoApprove: false } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b014",
+      "name": "Create Selected Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        700
+      ],
+      "notes": "One request is sent per selected item. Shared service duplicate search remains authoritative."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"text\":\"Selected meeting items were sent to the shared issue service for draft scaffolding. Process/meta and already-tracked items were not created.\"}",
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b015",
+      "name": "Respond to Review Action",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        700
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gemini Notes Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Meeting Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Meeting Identity": {
+      "main": [
+        [
+          {
+            "node": "Verify Calendar Series",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Calendar Series": {
+      "main": [
+        [
+          {
+            "node": "Apply Ceremony and Idempotency Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Ceremony and Idempotency Gate": {
+      "main": [
+        [
+          {
+            "node": "Accepted Modus Ceremony?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accepted Modus Ceremony?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Complete Meeting Doc",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Fetch Complete Meeting Doc": {
+      "main": [
+        [
+          {
+            "node": "Normalize Complete Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Complete Notes": {
+      "main": [
+        [
+          {
+            "node": "Classify Notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Notes": {
+      "main": [
+        [
+          {
+            "node": "Build Complete Review Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trimble Model Gateway": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify Notes",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Complete Review Card": {
+      "main": [
+        [
+          {
+            "node": "Send Review Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Card Interaction Webhook": {
+      "main": [
+        [
+          {
+            "node": "Load Selected Meeting Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Selected Meeting Items": {
+      "main": [
+        [
+          {
+            "node": "Create Selected Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Selected Draft": {
+      "main": [
+        [
+          {
+            "node": "Respond to Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "sanitized-meeting-intake-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

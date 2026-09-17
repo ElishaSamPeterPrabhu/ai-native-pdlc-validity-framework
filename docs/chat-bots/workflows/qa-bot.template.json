@@ -1,0 +1,405 @@
+{
+  "name": "Modus Q&A Bot (sanitized template)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "modus-qa-bot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c001",
+      "name": "Google Chat Q&A Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "modus-qa-bot"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event = $json.body ?? $json;\nconst message = event.message ?? {};\nconst action = event.action ?? event.common?.invokedFunction ?? {};\nconst parameters = Object.fromEntries((action.parameters ?? []).map((p) => [p.key, p.value]));\nconst threadName = message.thread?.name ?? event.thread?.name ?? `${event.space?.name ?? 'unknown'}:${message.name ?? Date.now()}`;\nconst messages = event.threadMessages ?? event.messages ?? [];\nreturn [{ json: {\n  eventType: event.type ?? (event.action ? 'CARD_CLICK' : 'MESSAGE'),\n  actionName: action.actionMethodName ?? action.function ?? parameters.action ?? null,\n  actionToken: parameters.confirmationToken ?? parameters.token ?? null,\n  threadName,\n  spaceName: event.space?.name ?? null,\n  sender: event.user?.displayName ?? message.sender?.displayName ?? null,\n  text: String(message.argumentText ?? message.text ?? event.text ?? '').trim(),\n  threadMessages: messages.slice(-20),\n  sourceUrl: message.name ? `https://chat.google.com/room/${encodeURIComponent(event.space?.name ?? '')}/${encodeURIComponent(message.name)}` : null,\n} }];"
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c002",
+      "name": "Normalize Q&A Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://chat.googleapis.com/v1/{{ $('Normalize Q&A Event').item.json.threadName }}/messages?pageSize=20&orderBy=createTime%20desc",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c011",
+      "name": "Fetch Q&A Thread",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        120
+      ],
+      "notes": "Bind Google Chat API OAuth. Keep the thread read bounded to the latest 20 messages."
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize Q&A Event').item.json;\nconst messages = Array.isArray($json.messages) ? $json.messages.slice(-20) : [];\nreturn [{ json: { ...normalized, threadMessages: messages } }];"
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c012",
+      "name": "Attach Q&A Thread Window",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "1Z2lxvx1oYxfFTnO",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/1Z2lxvx1oYxfFTnO"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c013",
+      "name": "Call '[PILOT] Private Modus Context Resolver'",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        120
+      ],
+      "notes": "Resolver-first evidence boundary. Keep this node on the main path before the Q&A Agent."
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Return only valid JSON.\\n\\nQuestion and thread context:\\n{{ JSON.stringify($('Normalize Q&A Event').item.json) }}\\n\\nAuthoritative repository evidence from the Context Resolver:\\n{{ JSON.stringify($json) }}\\n\\nReturn this shape:\\n{\\\"answer\\\":\\\"string\\\",\\\"confidence\\\":\\\"high|medium|low\\\",\\\"evidence\\\":[{\\\"claim\\\":\\\"string\\\",\\\"source\\\":\\\"string\\\"}],\\\"status\\\":\\\"answered|needs_clarification|work_implied|not_found\\\",\\\"followUpQuestion\\\":null,\\\"issueDraft\\\":null}\\n\\nRules:\\n- The resolver payload above is the only authority for component capabilities.\\n- Do not use internet knowledge, model memory, older Modus versions, or aliases.\\n- Use only component tags and properties present in resolver.matches.\\n- If resolver.matches is empty, return status not_found and say the capability is not verified.\\n- Never substitute modus-text-input for modus-wc-text-input.\\n- Cite repository, manifest, commit, and declaration source for every capability claim.\\n- Answer first. Do not create an issue for a question.\\n- Use work_implied only when a concrete repository/design change is justified by the answer.\\n- For work_implied, include a complete draft with title, summary, type, components, labels, acceptanceCriteria, and designNeeded.\\n- If source is missing, disclose the gap rather than guessing.",
+        "options": {
+          "systemMessage": "You are the Modus shared-context Q&A bot. Your primary job is accurate, cited answers. The Context Resolver payload is the authoritative evidence boundary. Issue creation is an explicit secondary escalation only after human confirmation."
+        }
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c003",
+      "name": "Shared Context Q&A Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4"
+        },
+        "options": {}
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c004",
+      "name": "Trimble Model Gateway",
+      "type": "CUSTOM.lmChatTrimbleGateway",
+      "typeVersion": 1,
+      "position": [
+        560,
+        520
+      ],
+      "notes": "Bind Trimble Identity after import. No credential is stored in this template."
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize Q&A Event').item.json;\nconst raw = $json.output ?? $json.text ?? $json.response ?? $json.message?.content ?? '{}';\nlet answer;\ntry {\n  answer = JSON.parse(String(raw).replace(/^```json\\s*/i, '').replace(/\\s*```$/i, '').trim());\n} catch (error) {\n  answer = { answer: 'I could not safely parse the research response.', confidence: 'low', evidence: [], status: 'needs_clarification', followUpQuestion: 'Please retry or ask a human to inspect the bot execution.', issueDraft: null };\n}\nconst staticData = $getWorkflowStaticData('global');\nstaticData.threads = staticData.threads || {};\nconst prior = staticData.threads[normalized.threadName] || {};\nconst confirmed = normalized.actionName === 'confirm_issue'\n  && prior.phase === 'offered'\n  && prior.confirmationToken === normalized.actionToken\n  && prior.issueDraft;\nif (confirmed) {\n  delete staticData.threads[normalized.threadName];\n  return [{ json: { ...normalized, route: 'create', issuePayload: { repo: 'trimble-oss/modus-wc-2.0', title: prior.issueDraft.title, summary: prior.issueDraft.summary, type: prior.issueDraft.type, components: prior.issueDraft.components || [], labels: prior.issueDraft.labels || ['needs-scaffolding'], source: { kind: 'google-chat', url: normalized.sourceUrl, threadName: normalized.threadName }, rawConversation: normalized.threadMessages || [], contextEvidence: prior.evidence || [], idempotencyKey: `qa:${normalized.threadName}:${prior.confirmationToken}`, autoApprove: false } } }];\n}\nif (answer.status === 'work_implied' && answer.issueDraft) {\n  const confirmationToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;\n  staticData.threads[normalized.threadName] = { phase: 'offered', updatedAt: Date.now(), issueDraft: answer.issueDraft, evidence: answer.evidence || [], confirmationToken };\n  return [{ json: { ...normalized, route: 'reply', answer, confirmationToken } }];\n}\nif (answer.status === 'needs_clarification') {\n  staticData.threads[normalized.threadName] = { phase: 'clarifying', updatedAt: Date.now(), evidence: answer.evidence || [] };\n}\nreturn [{ json: { ...normalized, route: 'reply', answer, confirmationToken: null } }];"
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c005",
+      "name": "Validate Answer and Escalation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        984,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "qa-create-route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "create",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c006",
+      "name": "Confirmed Issue Draft?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ISSUE_SERVICE_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.ISSUE_SERVICE_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.issuePayload }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c007",
+      "name": "Call Shared Issue Service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        180
+      ],
+      "notes": "The shared service performs duplicate search and calls Issue Scaffolding with autoApprove false."
+    },
+    {
+      "parameters": {
+        "jsCode": "const issueUrl = $json.issueUrl ?? $json.url ?? $json.issue?.html_url ?? null;\nreturn [{ json: { chatResponse: { text: issueUrl ? `I created a draft request for Issue Scaffolding: ${issueUrl}` : 'The request was accepted by the shared service. A human should inspect the n8n execution for the draft URL before retrying.' } } }];"
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c008",
+      "name": "Build Escalation Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const answer = $json.answer || {};\nconst evidence = (answer.evidence || []).map((item) => `${item.claim} (<a href=\\\"${item.source}\\\">source</a>)`).join('<br>');\nconst widgets = [{ textParagraph: { text: answer.answer || 'I could not find an answer in the shared context.' } }];\nif (answer.followUpQuestion) widgets.push({ textParagraph: { text: `<b>Question:</b> ${answer.followUpQuestion}` } });\nif (evidence) widgets.push({ textParagraph: { text: `<b>Evidence</b><br>${evidence}` } });\nif (answer.status === 'work_implied' && answer.issueDraft) {\n  widgets.push({ textParagraph: { text: `<b>Possible work:</b> ${answer.issueDraft.title}<br>${answer.issueDraft.summary || ''}` } });\n  widgets.push({ buttonList: { buttons: [\n    { text: 'Draft an issue', onClick: { action: { actionMethodName: 'confirm_issue', parameters: [{ key: 'confirmationToken', value: $json.confirmationToken }] } } },\n    { text: 'Not now', onClick: { action: { actionMethodName: 'discard_issue' } } },\n  ] } });\n}\nreturn [{ json: { chatResponse: { cardsV2: [{ cardId: `qa-${Date.now()}`, card: { header: { title: 'Modus Q&A', subtitle: answer.status || 'answer' }, sections: [{ widgets }] } }] } } }];"
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c009",
+      "name": "Build Q&A Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.chatResponse }}",
+        "options": {}
+      },
+      "id": "d0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9c010",
+      "name": "Respond to Google Chat",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Chat Q&A Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Q&A Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Q&A Event": {
+      "main": [
+        [
+          {
+            "node": "Fetch Q&A Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Q&A Thread": {
+      "main": [
+        [
+          {
+            "node": "Attach Q&A Thread Window",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Q&A Thread Window": {
+      "main": [
+        [
+          {
+            "node": "Call '[PILOT] Private Modus Context Resolver'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '[PILOT] Private Modus Context Resolver'": {
+      "main": [
+        [
+          {
+            "node": "Shared Context Q&A Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shared Context Q&A Agent": {
+      "main": [
+        [
+          {
+            "node": "Validate Answer and Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trimble Model Gateway": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Shared Context Q&A Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Answer and Escalation": {
+      "main": [
+        [
+          {
+            "node": "Confirmed Issue Draft?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmed Issue Draft?": {
+      "main": [
+        [
+          {
+            "node": "Call Shared Issue Service",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Q&A Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Shared Issue Service": {
+      "main": [
+        [
+          {
+            "node": "Build Escalation Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Escalation Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Google Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Q&A Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Google Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "sanitized-qa-bot-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

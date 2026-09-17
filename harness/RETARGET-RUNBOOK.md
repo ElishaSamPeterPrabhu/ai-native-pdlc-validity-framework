@@ -1,4 +1,10 @@
-# Runbook: retarget the automations onto the modus fork
+# Historical runbook: retarget the experimental fork
+
+> This document describes the older ablation fork and is not the canonical
+> official-repository setup. For the current `trimble-oss/modus-wc-2.0` loop,
+> use [`AUTOMATION-PROMPTS.md`](AUTOMATION-PROMPTS.md) and
+> [`CONSOLE-TRIGGERS.md`](CONSOLE-TRIGGERS.md). The official loop keeps Fix
+> Agent inactive, runs QA from labels only, and lets Dev repair `qa-failed`.
 
 The five automations (Issue Scaffolding, Dev Agent, QA Agent, Fix Agent, Project
 Onboarding) are Cursor cloud objects edited at cursor.com/automations — they cannot be

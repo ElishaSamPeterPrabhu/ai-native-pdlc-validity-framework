@@ -1,0 +1,285 @@
+{
+  "name": "Modus Backlog Enrichment (sanitized template)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d001",
+      "name": "Scheduled Enrichment",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "modus-enrich-backlog",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d002",
+      "name": "On Demand Enrichment",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        380
+      ],
+      "webhookId": "modus-enrich-backlog"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.MODUS_SHEET_ID }}/values/Modus%20Backlog!A:K",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d003",
+      "name": "Read Modus Backlog",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        300
+      ],
+      "notes": "Bind Google Sheets OAuth. The tab name is stable; sprint tabs are resolved separately by date."
+    },
+    {
+      "parameters": {
+        "jsCode": "const values = $json.values || [];\nconst [header = [], ...rows] = values;\nconst columns = header.map((value) => String(value || '').trim());\nconst index = Object.fromEntries(columns.map((name, column) => [name, column]));\nconst normalized = rows.map((row, offset) => {\n  const get = (name) => row[index[name]] ?? '';\n  return {\n    rowKey: `Modus Backlog:${offset + 2}`,\n    rowNumber: offset + 2,\n    title: String(get('Name')).trim(),\n    issueNumber: String(get('Issue #')).trim() || null,\n    category: get('Category'),\n    type: get('Type'),\n    product: get('Product'),\n    priority: get('Priority'),\n    size: get('PM/Team Est. Size'),\n    assignedTo: get('Assigned To'),\n    designSource: get('Design Source'),\n    ready: get('Ready?'),\n    blocker: get('Blocker'),\n  };\n}).filter((row) => row.title && ['yes', 'in refinement'].includes(String(row.ready).toLowerCase()));\nconst quality = normalized.filter((row) => row.ready.toLowerCase() === 'yes' && (!row.priority || !row.size || !row.designSource || row.designSource.toLowerCase() === 'tbd'));\nconst candidates = normalized.map((row) => ({\n  ...row,\n  action: row.issueNumber ? 'verify-or-enrich' : 'scaffold-after-review',\n  flags: [\n    !row.issueNumber && 'missing issue number',\n    !row.priority && 'missing priority',\n    !row.size && 'missing size',\n    String(row.designSource).toLowerCase() === 'tbd' && 'design source TBD',\n  ].filter(Boolean),\n}));\nconst staticData = $getWorkflowStaticData('global');\nconst reviewId = `backlog-${Date.now()}`;\nstaticData.backlogReviews = staticData.backlogReviews || {};\nstaticData.backlogReviews[reviewId] = { createdAt: Date.now(), rows: candidates, quality };\nreturn [{ json: { reviewId, candidates, quality } }];"
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d004",
+      "name": "Normalize and Quality Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $json.candidates || [];\nconst reviewId = $json.reviewId;\nconst widgets = rows.slice(0, 100).map((row) => ({ selectionInput: { name: 'rowKeys', type: 'CHECK_BOX', items: [{ text: `[${row.rowKey}] ${row.title} — ${row.action}${row.flags.length ? ` (${row.flags.join(', ')})` : ''}`, value: row.rowKey, selected: false }] } }));\nwidgets.push({ textParagraph: { text: `Quality flags: ${($json.quality || []).length}. Remaining Team-tab capacity is attached by the production workflow as read-only context. This template never assigns or reorders work.` } });\nwidgets.push({ buttonList: { buttons: [{ text: 'Enrich selected rows', onClick: { action: { actionMethodName: 'backlog_enrich_selected', parameters: [{ key: 'reviewId', value: reviewId }] } } }] } });\nreturn [{ json: { reviewId, reviewCard: { cardsV2: [{ cardId: reviewId, card: { header: { title: 'Modus backlog enrichment review', subtitle: 'Human selection required' }, sections: [{ widgets }] } }] } } }];"
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d005",
+      "name": "Build Backlog Review Card",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODUS_REVIEW_CHAT_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.reviewCard }}",
+        "options": {}
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d006",
+      "name": "Send Backlog Review Card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "modus-enrich-backlog-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d007",
+      "name": "Backlog Review Interaction",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        760
+      ],
+      "webhookId": "modus-enrich-backlog-review"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event = $json.body ?? $json;\nconst action = event.action ?? event.common?.invokedFunction ?? {};\nconst parameters = Object.fromEntries((action.parameters ?? []).map((p) => [p.key, p.value]));\nconst selected = event.common?.formInputs?.rowKeys?.stringInputs?.value ?? [];\nconst staticData = $getWorkflowStaticData('global');\nconst review = staticData.backlogReviews?.[parameters.reviewId];\nif (!review) throw new Error('Backlog review not found or expired.');\nconst keys = new Set(selected);\nconst rows = review.rows.filter((row) => keys.has(row.rowKey));\nreturn rows.map((row) => ({ json: { row, reviewId: parameters.reviewId } }));"
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d008",
+      "name": "Load Selected Backlog Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ISSUE_SERVICE_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.ISSUE_SERVICE_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'trimble-oss/modus-wc-2.0', title: $json.row.title, summary: `Sheet intake: ${$json.row.title}`, type: String($json.row.type).toLowerCase().includes('design') ? 'design' : 'feature', components: [], labels: ['needs-scaffolding'], source: { kind: 'backlog-sheet', url: `https://docs.google.com/spreadsheets/d/${$env.MODUS_SHEET_ID}`, sheetId: $env.MODUS_SHEET_ID, sheetTab: 'Modus Backlog', sheetRow: $json.row.rowNumber }, rawConversation: [{ sender: 'Modus backlog sheet', text: $json.row.title }], contextEvidence: [], additionalContext: { sheetIntake: $json.row }, idempotencyKey: `sheet:${$env.MODUS_SHEET_ID}:Modus Backlog:${$json.row.rowNumber}`, autoApprove: false } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d009",
+      "name": "Call Shared Issue Service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        760,
+        700
+      ],
+      "notes": "Production flow must write the returned issue number/link to column B only after a successful response, using the exact row number. Do not overwrite planning columns."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"text\":\"Selected backlog rows were sent to the shared issue service. Issue numbers should be written back only after each response is confirmed.\"}",
+        "options": {}
+      },
+      "id": "e0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9d010",
+      "name": "Respond to Backlog Review",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        700
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Scheduled Enrichment": {
+      "main": [
+        [
+          {
+            "node": "Read Modus Backlog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On Demand Enrichment": {
+      "main": [
+        [
+          {
+            "node": "Read Modus Backlog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Modus Backlog": {
+      "main": [
+        [
+          {
+            "node": "Normalize and Quality Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize and Quality Gate": {
+      "main": [
+        [
+          {
+            "node": "Build Backlog Review Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Backlog Review Card": {
+      "main": [
+        [
+          {
+            "node": "Send Backlog Review Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backlog Review Interaction": {
+      "main": [
+        [
+          {
+            "node": "Load Selected Backlog Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Selected Backlog Rows": {
+      "main": [
+        [
+          {
+            "node": "Call Shared Issue Service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Shared Issue Service": {
+      "main": [
+        [
+          {
+            "node": "Respond to Backlog Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "sanitized-backlog-enrichment-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

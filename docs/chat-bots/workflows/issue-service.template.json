@@ -1,0 +1,228 @@
+{
+  "name": "[PILOT] Modus Shared Issue Service (sanitized template)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pilot-modus-issue-service",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e001",
+      "name": "Pilot Issue Service Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "pilot-modus-issue-service"
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $json.body ?? $json;\nconst required = ['repo', 'title', 'summary', 'type', 'source'];\nconst missing = required.filter((key) => request[key] === undefined || request[key] === null || request[key] === '');\nif (missing.length) throw new Error(`Missing required fields: ${missing.join(', ')}`);\nif (request.repo !== 'ElishaSamPeterPrabhu/modus-wc-2.0') throw new Error('Pilot service only accepts the private pilot repository.');\nif (request.autoApprove === true || request.auto_approve === true) throw new Error('Pilot issue service never auto-approves.');\nconst source = request.source || {};\nconst idempotencyKey = request.idempotencyKey || request.idempotency_key;\nif (!idempotencyKey) throw new Error('idempotencyKey is required.');\nconst staticData = $getWorkflowStaticData('global');\nstaticData.requests = staticData.requests || {};\nconst prior = staticData.requests[idempotencyKey];\nif (prior) return [{ json: { route: 'existing', response: prior } }];\nconst normalized = {\n  repo: request.repo,\n  title: String(request.title).slice(0, 200),\n  summary: String(request.summary).slice(0, 12000),\n  type: request.type,\n  components: Array.isArray(request.components) ? request.components : [],\n  labels: Array.isArray(request.labels) ? request.labels : ['needs-scaffolding'],\n  source,\n  rawConversation: Array.isArray(request.rawConversation) ? request.rawConversation.slice(-100) : [],\n  contextEvidence: Array.isArray(request.contextEvidence) ? request.contextEvidence.slice(-100) : [],\n  additionalContext: request.additionalContext || request.additional_context || {},\n  idempotencyKey,\n  autoApprove: false,\n};\nstaticData.requests[idempotencyKey] = { status: 'processing', idempotencyKey, startedAt: Date.now() };\nreturn [{ json: { route: 'create', normalized } }];"
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e002",
+      "name": "Validate and Deduplicate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "pilot-existing",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "existing",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e003",
+      "name": "Existing Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PILOT_ISSUE_SCAFFOLDING_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PILOT_ISSUE_SCAFFOLDING_WEBHOOK_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { prompt: 'Research and scaffold this private pilot issue using the pilot Issue Scaffolding instructions.', issue_url: $json.normalized.additionalContext?.issueUrl || null, repo: $json.normalized.repo, labels: $json.normalized.labels, additional_context: { normalized_request: $json.normalized, source: $json.normalized.source, context_evidence: $json.normalized.contextEvidence, raw_conversation: $json.normalized.rawConversation }, auto_approve: false, idempotency_key: $json.normalized.idempotencyKey } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e004",
+      "name": "Call Private Issue Scaffolding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        180
+      ],
+      "notes": "Bind only the new private pilot Issue Scaffolding webhook. Do not point this at the official repository."
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $json;\nconst source = $('Validate and Deduplicate').item.json.normalized;\nconst response = { ok: true, status: result.issueUrl || result.url ? 'created' : 'pending', issueUrl: result.issueUrl || result.url || result.issue?.html_url || null, idempotencyKey: source.idempotencyKey, scaffolding: result.status || 'pending' };\nconst staticData = $getWorkflowStaticData('global');\nstaticData.requests[source.idempotencyKey] = response;\nreturn [{ json: { response } }];"
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e005",
+      "name": "Normalize Created Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { response: $json.response || { ok: true, status: 'existing', ...$json.response } } }];"
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e006",
+      "name": "Return Existing Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response }}",
+        "options": {}
+      },
+      "id": "a0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9e007",
+      "name": "Respond to Caller",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Pilot Issue Service Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate and Deduplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and Deduplicate": {
+      "main": [
+        [
+          {
+            "node": "Existing Request?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existing Request?": {
+      "main": [
+        [
+          {
+            "node": "Return Existing Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Private Issue Scaffolding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Private Issue Scaffolding": {
+      "main": [
+        [
+          {
+            "node": "Normalize Created Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Created Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Existing Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "sanitized-pilot-issue-service-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
