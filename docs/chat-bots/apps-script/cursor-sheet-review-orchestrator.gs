@@ -1128,7 +1128,18 @@ function isolateSingleRowForApprove(itemId) {
   const snapshot = {};
   readTableRows(spreadsheet, TAB_REVIEW_ITEMS).forEach((row) => {
     const id = String(row.itemId || row._itemId || '').trim();
-    if (!id || id === only || isSkipIssue(row)) return;
+    if (!id) return;
+    const skipped = isSkipIssue(row);
+    if (id === only) {
+      // A previous isolated test may have left this target skipped. Re-arm it
+      // while preserving its current value for cleanup.
+      snapshot[id] = skipped;
+      if (skipped) {
+        applyItemUpdates(spreadsheet, [{ itemId: id, skipIssue: false }], round);
+      }
+      return;
+    }
+    if (skipped) return;
     snapshot[id] = false;
     applyItemUpdates(spreadsheet, [{ itemId: id, skipIssue: true }], round);
   });
