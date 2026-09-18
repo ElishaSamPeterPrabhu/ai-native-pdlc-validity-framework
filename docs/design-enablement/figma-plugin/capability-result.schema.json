@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble-oss.github.io/modus-capability-result.schema.json",
+  "title": "Modus designer capability result",
+  "type": "object",
+  "required": [
+    "query",
+    "modusCapability",
+    "standards",
+    "sources"
+  ],
+  "properties": {
+    "query": { "type": "string" },
+    "selectedNode": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "modusCapability": {
+      "type": "object",
+      "required": ["status", "matches"],
+      "properties": {
+        "status": {
+          "enum": ["existing", "new-api-candidate", "ambiguous", "source-stale"]
+        },
+        "tag": { "type": ["string", "null"] },
+        "property": { "type": ["string", "null"] },
+        "state": { "type": ["string", "null"] },
+        "matches": { "type": "array" },
+        "context": { "type": ["object", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "standards": {
+      "type": "object",
+      "required": ["status", "rules"],
+      "properties": {
+        "status": { "enum": ["compatible", "warning", "unsupported", "unknown"] },
+        "rules": { "type": "array" },
+        "alternatives": { "type": "array" }
+      },
+      "additionalProperties": true
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "markdown": { "type": "string" },
+        "json": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "sources": { "type": "array" },
+    "sourceCommit": { "type": ["string", "null"] },
+    "generatedAt": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": true
+}

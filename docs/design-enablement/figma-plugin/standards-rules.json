@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "registryVersion": "2026-09-18",
+  "sourcePolicy": "Curated rules are reviewed in-repo and link to authoritative standards.",
+  "rules": [
+    {
+      "id": "html.select.readonly",
+      "nativeElements": ["select"],
+      "modusTags": ["modus-wc-select"],
+      "properties": ["readonly", "readOnly"],
+      "severity": "warning",
+      "status": "unsupported",
+      "title": "Native select does not support readonly",
+      "message": "The HTML readonly attribute is not relevant to select. Do not model this as native readonly support.",
+      "alternatives": [
+        {
+          "id": "controlled-select",
+          "title": "Keep the select enabled and control changes",
+          "description": "Preserves focus and normal form semantics, but requires an explicit product and interaction decision for preventing changes.",
+          "requiresReview": true
+        },
+        {
+          "id": "readonly-display",
+          "title": "Use a read-only display with a submitted value",
+          "description": "Show the selected value as non-editable content and preserve submission with an explicitly managed hidden value when required.",
+          "requiresReview": true
+        },
+        {
+          "id": "disabled-select",
+          "title": "Use disabled only when its semantics are acceptable",
+          "description": "Disabled controls cannot be interacted with and have different focus and form-submission behavior; it is not an unconditional readonly replacement.",
+          "requiresReview": true
+        }
+      ],
+      "sources": [
+        {
+          "title": "MDN: readonly HTML attribute",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/readonly"
+        },
+        {
+          "title": "MDN: select HTML element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select"
+        },
+        {
+          "title": "WHATWG HTML Standard: form elements",
+          "url": "https://html.spec.whatwg.org/dev/form-elements.html"
+        }
+      ],
+      "lastVerified": "2026-09-18"
+    }
+  ]
+}

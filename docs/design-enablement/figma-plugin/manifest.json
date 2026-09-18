@@ -10,6 +10,6 @@
     "allowedDomains": [
       "https://raw.githubusercontent.com"
     ],
-    "reasoning": "Read the generated Modus custom-elements capability artifact from the official repository. No design or credential data is uploaded."
+    "reasoning": "Read generated Modus manifest and designer-context capability artifacts from the official repository. No design or credential data is uploaded."
   }
 }

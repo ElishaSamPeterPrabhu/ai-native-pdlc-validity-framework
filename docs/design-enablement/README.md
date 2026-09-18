@@ -8,6 +8,7 @@ using Cursor.
 | Artifact | Use |
 | --- | --- |
 | [`custom-elements.md`](custom-elements.md) | Derived distribution contract for the capability matrix |
+| `designer-context.json` | Shared component, state, token, precedent, impact, and source-link context bundle |
 | [`render_custom_elements.py`](render_custom_elements.py) | Deterministic manifest-to-Markdown renderer |
 | [`figma-plugin-spec.md`](figma-plugin-spec.md) | Plugin behavior, security, and publishing contract |
 | [`figma-plugin/`](figma-plugin/) | Vanilla Figma plugin scaffold using Modus elements in its UI |
@@ -18,11 +19,14 @@ using Cursor.
 
 1. The official Modus repository generates `custom-elements.md` from
    `src/custom-elements.json` in CI.
-2. The generated file is committed and available at a raw GitHub URL.
-3. The Figma plugin fetches the raw JSON/Markdown from an allowlisted host.
-4. Chat bots and Cursor agents use the manifest/MCP as authority and the
+2. The official Modus repository generates and checks `designer-context.json`
+   from the manifest, checked-in component sources, styles, stories, and graph
+   or README impact fallback.
+3. The generated files are committed and available at raw GitHub URLs.
+4. The Figma plugin fetches the raw JSON/context from an allowlisted host.
+5. Chat bots and Cursor agents use the manifest/MCP as authority and the
    Markdown as a readable index.
-5. A stale, missing, or malformed artifact is shown as a gap; it is never
+6. A stale, missing, or malformed artifact is shown as a gap; it is never
    treated as evidence that a capability exists.
 
 The renderer in this kit is a portable starting point. The target repository

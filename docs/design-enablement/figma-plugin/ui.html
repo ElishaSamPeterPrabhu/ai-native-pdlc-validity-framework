@@ -5,6 +5,7 @@
     <title>Modus Capability Check</title>
     <!-- The plugin build must provide this pinned Modus bundle. -->
     <script src="modus-bundle.js"></script>
+    <script src="capability-engine.js"></script>
     <style>
       :root {
         font-family: sans-serif;
@@ -67,6 +68,9 @@
         <modus-wc-button id="refresh" color="tertiary" variant="borderless">
           Refresh
         </modus-wc-button>
+      <modus-wc-button id="copy-handoff" color="secondary" variant="outlined">
+        Copy handoff
+      </modus-wc-button>
       </div>
       <modus-wc-card id="selection-card">
         <modus-wc-typography
@@ -75,6 +79,10 @@
         ></modus-wc-typography>
       </modus-wc-card>
       <section id="results" aria-live="polite"></section>
+      <modus-wc-card id="handoff-card" hidden>
+        <span slot="title">Design handoff</span>
+        <pre id="handoff"></pre>
+      </modus-wc-card>
       <modus-wc-button id="close" color="tertiary" variant="outlined">
         Close
       </modus-wc-button>
@@ -89,12 +97,16 @@
        */
       const MANIFEST_URL =
         "https://raw.githubusercontent.com/trimble-oss/modus-wc-2.0/main/src/custom-elements.json";
-      const MARKDOWN_URL =
-        "https://raw.githubusercontent.com/trimble-oss/modus-wc-2.0/main/custom-elements.md";
-      const CACHE_KEY = "modus-capability-manifest";
+      const CONTEXT_URL =
+        "https://raw.githubusercontent.com/trimble-oss/modus-wc-2.0/main/designer-context.json";
+      const RULES_URL = "standards-rules.json";
+      const CACHE_KEY = "modus-capability-sources";
       const CACHE_TTL_MS = 15 * 60 * 1000;
       let manifest = null;
+      let context = null;
+      let rules = null;
       let selectedNode = null;
+      let latestResult = null;
 
       const byId = (id) => document.getElementById(id);
 
@@ -105,95 +117,170 @@
         status.setAttribute("variant", variant);
       }
 
-      function normalize(value) {
-        return String(value || "").toLowerCase().replace(/[-_]/g, "");
+      function appendAlert(parent, title, description, variant) {
+        const alert = document.createElement("modus-wc-alert");
+        alert.setAttribute("alert-title", title);
+        alert.setAttribute("alert-description", description);
+        alert.setAttribute("variant", variant);
+        alert.setAttribute("role", "status");
+        parent.append(alert);
       }
 
-      function declarations() {
-        return (manifest?.modules || []).flatMap((module, moduleIndex) =>
-          (module.declarations || [])
-            .filter((declaration) => declaration.tagName || declaration.tag)
-            .map((declaration, declarationIndex) => ({
-              ...declaration,
-              tag: declaration.tagName || declaration.tag,
-              source: `src/custom-elements.json#/modules/${moduleIndex}/declarations/${declarationIndex}`,
-            })),
-        );
+      function appendContextCard(parent, title, value) {
+        const card = document.createElement("modus-wc-card");
+        const heading = document.createElement("modus-wc-typography");
+        heading.setAttribute("slot", "title");
+        heading.setAttribute("hierarchy", "h6");
+        heading.setAttribute("label", title);
+        const content = document.createElement("pre");
+        content.textContent = value;
+        card.append(heading, content);
+        parent.append(card);
       }
 
-      function properties(declaration) {
-        return (declaration.members || [])
-          .filter((member) => member.name && member.kind !== "method")
-          .concat(declaration.attributes || [])
-          .filter((member) => member.name);
+      function sourceUrl(source) {
+        if (String(source).startsWith("http")) return source;
+        const filePath = String(source).split("#")[0];
+        return `https://github.com/trimble-oss/modus-wc-2.0/blob/main/${filePath}`;
       }
 
-      function matches(query, declaration) {
-        const candidate = normalize(query);
-        const values = [
-          declaration.tag,
-          declaration.name,
-          declaration.description,
-          ...properties(declaration).flatMap((property) => [
-            property.name,
-            property.description,
-          ]),
-        ];
-        return values.some((value) => normalize(value).includes(candidate));
+      function appendSourceCard(parent, sources) {
+        if (!sources.length) return;
+        const card = document.createElement("modus-wc-card");
+        const heading = document.createElement("modus-wc-typography");
+        heading.setAttribute("slot", "title");
+        heading.setAttribute("hierarchy", "h6");
+        heading.setAttribute("label", "Sources");
+        const list = document.createElement("ul");
+        sources.forEach((source) => {
+          const item = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = sourceUrl(source);
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = source;
+          item.append(link);
+          list.append(item);
+        });
+        card.append(heading, list);
+        parent.append(card);
       }
 
       function renderResults(query) {
         const results = byId("results");
         results.replaceChildren();
+        byId("handoff-card").hidden = true;
         if (!query) {
-          setSourceStatus("Enter a search", "Search the current manifest before designing a new state.", "info");
+          latestResult = null;
+          setSourceStatus("Enter a search", "Search the current Modus context before designing a new state.", "info");
           return;
         }
-        const found = declarations().filter((declaration) => matches(query, declaration));
-        if (!found.length) {
-          const alert = document.createElement("modus-wc-alert");
-          alert.setAttribute("alert-title", "New API candidate");
-          alert.setAttribute(
-            "alert-description",
-            `No matching manifest entry was found for “${query}”. This is a research gap, not proof that the design is impossible.`,
-          );
-          alert.setAttribute("variant", "warning");
-          alert.setAttribute("role", "status");
-          results.append(alert);
-          return;
-        }
-        found.forEach((declaration) => {
-          const readonly = properties(declaration).some(
-            (property) => normalize(property.name) === "readonly",
-          );
-          const alert = document.createElement("modus-wc-alert");
-          alert.setAttribute("alert-title", `<${declaration.tag}>`);
-          alert.setAttribute(
-            "alert-description",
-            `${declaration.description || "No description in manifest."} Supports readonly: ${readonly ? "yes" : "not listed"}. Source: ${declaration.source}`,
-          );
-          alert.setAttribute("variant", readonly ? "success" : "info");
-          alert.setAttribute("role", "status");
-          results.append(alert);
+        latestResult = window.ModusCapabilityEngine.buildResult({
+          query,
+          selectedNode,
+          manifest,
+          context,
+          rules,
         });
+        const capability = latestResult.modusCapability;
+        const standards = latestResult.standards;
+        const capabilityVariant =
+          capability.status === "existing" ? "success" :
+          capability.status === "source-stale" ? "error" : "warning";
+        appendAlert(
+          results,
+          `Modus capability: ${capability.status}`,
+          capability.matches.length
+            ? capability.matches.map((match) => `${match.tag}${match.property ? ` / ${match.property}` : ""} (${match.source})`).join("; ")
+            : "No exact manifest entry was found. This is a research gap, not proof that the design is impossible.",
+          capabilityVariant,
+        );
+        if (standards.status !== "unknown") {
+          const ruleText = standards.rules.map((rule) => `${rule.title}: ${rule.message}`).join(" ");
+          appendAlert(
+            results,
+            `Standards/design constraint: ${standards.status}`,
+            ruleText || "No curated standards constraint matched this request.",
+            standards.status === "unsupported" ? "warning" : "info",
+          );
+        }
+        if (capability.context) {
+          appendContextCard(
+            results,
+            "Repository context",
+            JSON.stringify({
+              sourceCommit: capability.context.sourceCommit,
+              stateMatrix: capability.context.stateMatrix,
+              tokenHints: capability.context.tokenHints,
+              precedent: capability.context.precedent,
+              impact: capability.context.impact,
+            }, null, 2),
+          );
+        }
+        if (standards.alternatives.length) {
+          appendContextCard(
+            results,
+            "Suggested options",
+            standards.alternatives.map((alternative) => `${alternative.title}: ${alternative.description}`).join("\n"),
+          );
+        }
+        appendSourceCard(results, latestResult.sources);
+        const handoff = byId("handoff");
+        handoff.textContent = latestResult.handoff.markdown;
+        byId("handoff-card").hidden = false;
       }
 
       async function loadManifest(forceRefresh = false) {
         const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
         if (!forceRefresh && cached && Date.now() - cached.savedAt < CACHE_TTL_MS) {
           manifest = cached.manifest;
-          setSourceStatus("Source ready", "Cached official manifest; refresh to check for updates.", "success");
+          context = cached.context;
+          rules = cached.rules;
+          setSourceStatus("Source ready", "Cached Modus context; refresh to check for updates.", "success");
           return;
         }
         try {
-          const response = await fetch(MANIFEST_URL, { cache: "no-store" });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          manifest = await response.json();
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), manifest }));
-          setSourceStatus("Source ready", "Official manifest loaded. Claims are limited to listed properties.", "success");
+          const [manifestResult, contextResult, rulesResult] = await Promise.allSettled([
+            fetch(MANIFEST_URL, { cache: "no-store" }),
+            fetch(CONTEXT_URL, { cache: "no-store" }),
+            fetch(RULES_URL, { cache: "no-store" }),
+          ]);
+          if (manifestResult.status !== "fulfilled" || !manifestResult.value.ok) {
+            throw new Error(
+              manifestResult.status === "fulfilled"
+                ? `Manifest HTTP ${manifestResult.value.status}`
+                : manifestResult.reason?.message || "Manifest unavailable",
+            );
+          }
+          manifest = await manifestResult.value.json();
+          context = contextResult.status === "fulfilled" && contextResult.value.ok
+            ? await contextResult.value.json()
+            : null;
+          rules = rulesResult.status === "fulfilled" && rulesResult.value.ok
+            ? await rulesResult.value.json()
+            : { rules: [] };
+          localStorage.setItem(CACHE_KEY, JSON.stringify({
+            savedAt: Date.now(),
+            manifest,
+            context,
+            rules,
+          }));
+          const missingSources = [
+            context ? "" : "shared context",
+            rules.rules.length ? "" : "standards rules",
+          ].filter(Boolean);
+          setSourceStatus(
+            missingSources.length ? "Source partially available" : "Source ready",
+            missingSources.length
+              ? `Manifest loaded, but ${missingSources.join(" and ")} could not be verified.`
+              : `Manifest and shared context loaded at commit ${context.sourceCommit || "unknown"}.`,
+            missingSources.length ? "warning" : "success",
+          );
         } catch (error) {
           manifest = null;
-          setSourceStatus("Source unavailable", `${error.message}. The plugin cannot verify capability.`, "error");
+          context = null;
+          rules = { rules: [] };
+          setSourceStatus("Source unavailable", `${error.message}. The plugin cannot verify capability or suggest options.`, "error");
         }
       }
 
@@ -218,6 +305,15 @@
       byId("refresh").addEventListener("buttonClick", async () => {
         await loadManifest(true);
         renderResults(byId("query").value || "");
+      });
+      byId("copy-handoff").addEventListener("buttonClick", async () => {
+        if (!latestResult) return;
+        try {
+          await navigator.clipboard.writeText(latestResult.handoff.markdown);
+          setSourceStatus("Handoff copied", "Paste the cited handoff into the sheet design notes or issue context.", "success");
+        } catch (error) {
+          setSourceStatus("Copy unavailable", `${error.message}. Select the handoff text manually.`, "warning");
+        }
       });
       byId("use-selection").addEventListener("buttonClick", () => {
         if (!selectedNode) return;

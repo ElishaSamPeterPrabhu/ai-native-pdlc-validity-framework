@@ -28,13 +28,17 @@ GitHub issues; the human confirms and files (or routes through Issue Scaffolding
 4. Specify relevant happy, loading, empty, error, disabled, focus/keyboard,
    responsive, and accessibility states.
 5. Use only tokens and Modus primitives documented in the repository/MCP/code.
-6. State whether the work reuses an existing API or proposes a new one.
-7. In **Technical notes**, cite inspected source files (tsx/scss/spec/stories)
-   and direct graph impact; do not paraphrase without paths.
-8. If a cloud QA agent will consume the design, provide a staged Drive folder
+6. When a native control or semantic state is involved, include the standards
+   constraint, authoritative source link, and conditional alternatives with
+   focus, submission, and accessibility tradeoffs.
+7. State whether the work reuses an existing API or proposes a new one.
+8. In **Technical notes**, cite inspected source files (tsx/scss/spec/stories),
+   state matrix/token evidence, and direct graph impact or README impact
+   fallback; do not paraphrase without paths.
+9. If a cloud QA agent will consume the design, provide a staged Drive folder
    with `manifest.json`, the matching variant, `variable-defs.json`,
    `design-context.md`, and required screenshots.
-9. If a necessary decision is missing, ask one numbered question at a time and
+10. If a necessary decision is missing, ask one numbered question at a time and
    stop without a final draft.
 
 ## Draft format
@@ -63,6 +67,8 @@ GitHub issues; the human confirms and files (or routes through Issue Scaffolding
 - Existing implementation / sibling precedent:
 - Likely files:
 - Direct reverse impact:
+- State matrix and token evidence:
+- Standards constraints and alternatives:
 - Compatibility and migration:
 
 ## Test plan
@@ -73,6 +79,8 @@ GitHub issues; the human confirms and files (or routes through Issue Scaffolding
 
 ## Sources
 - Capability manifest:
+- Designer context bundle:
+- Standards registry:
 - MCP / custom-elements.md:
 - Component source:
 - Related issues/PRs:
