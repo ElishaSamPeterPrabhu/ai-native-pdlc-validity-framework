@@ -52,8 +52,20 @@ After Save:
 1. **One-line seed** — paste a short issue; scaffolding should add Context, AC,
    Design notes, Technical notes, Test plan, Sources with manifest/MCP cites.
 2. **Ambiguous scope** — scaffolding comments `## NEED CLARIFICATION`; no PR.
-3. **Sheet approve row** — approve a reviewed row; webhook fires scaffolding;
-   writeback shows issue URL or clarification (pilot path unchanged).
+3. **Sheet approve row** — run Apps Script test suite (see below).
+
+Sheet path uses **`[PILOT] Modus Issue Scaffolding`** (`288c955b`), not official `80b1f7a5`.
+
+**Execute:** [`docs/pilot/scaffolding-sheet-test-execution.md`](../pilot/scaffolding-sheet-test-execution.md)
+
+In orchestrator Apps Script editor (after deploy):
+
+```javascript
+runScaffoldingSheetTestPhaseAWithPoll();  // ~2 min — expect need_clarification
+runScaffoldingSheetTestPhaseBWithPoll();  // ~2 min — expect issue_created
+runScaffoldingSheetTestPhaseC_T4aIdempotency();
+runScaffoldingSheetTestCleanup();
+```
 
 ## 5. Not in scope (deferred)
 

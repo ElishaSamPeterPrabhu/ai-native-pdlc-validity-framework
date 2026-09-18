@@ -1585,6 +1585,184 @@ function safeError(error) {
   return String(error && error.message ? error.message : error).slice(0, 500);
 }
 
+/** Public pilot Issue Scaffolding webhook (Bearer token is a secret — set in Script Properties or Approve env). */
+const PILOT_ISSUE_SCAFFOLDING_WEBHOOK_URL =
+  'https://api2.cursor.sh/automations/webhook/288c955b-aaad-11f1-b532-320a589b8025';
+
+function scaffoldingResultFileName(idempotencyKey) {
+  const slug = String(idempotencyKey || '')
+    .replace(/:/g, '-')
+    .replace(/[^\w-]/g, '');
+  return `scaffolding-result-${slug}.json`;
+}
+
+function readScaffoldingResult(idempotencyKey) {
+  const folder = getWritebackPendingFolder();
+  const name = scaffoldingResultFileName(idempotencyKey);
+  const files = folder.getFilesByName(name);
+  if (!files.hasNext()) return null;
+  return JSON.parse(files.next().getBlob().getDataAsString());
+}
+
+/**
+ * Poll Drive for scaffolding-result-*.json (Approve automation primary signal).
+ * Default: 8 attempts × 15s (~2 min).
+ */
+function pollScaffoldingResult(idempotencyKey, maxAttempts, sleepMs) {
+  const attempts = Number(maxAttempts || 8);
+  const pause = Number(sleepMs || 15000);
+  const expectedFile = scaffoldingResultFileName(idempotencyKey);
+  for (let i = 0; i < attempts; i += 1) {
+    const result = readScaffoldingResult(idempotencyKey);
+    if (result) {
+      return { ok: true, attempt: i + 1, expectedFile, result };
+    }
+    Utilities.sleep(pause);
+  }
+  return { ok: false, error: 'timeout', idempotencyKey, expectedFile, attempts };
+}
+
+/** Set ISSUE_SCAFFOLDING_WEBHOOK_URL on the orchestrator (token must be added separately). */
+function configureScaffoldingWebhookUrl() {
+  PropertiesService.getScriptProperties().setProperty(
+    'ISSUE_SCAFFOLDING_WEBHOOK_URL',
+    PILOT_ISSUE_SCAFFOLDING_WEBHOOK_URL
+  );
+  Logger.log(`Set ISSUE_SCAFFOLDING_WEBHOOK_URL. Add ISSUE_SCAFFOLDING_WEBHOOK_TOKEN in Script Properties.`);
+  return readScaffoldingSheetTestPreflight();
+}
+
+/**
+ * Preflight for Issue Scaffolding v2 sheet-pilot test (see docs/pilot/scaffolding-sheet-test-execution.md).
+ */
+function readScaffoldingSheetTestPreflight() {
+  const config = readConfigStatus();
+  const folderId = getWritebackPendingFolderId();
+  return {
+    ok: config.configured && Boolean(folderId),
+    orchestratorConfigured: config.configured,
+    dispatchInFlight: (() => {
+      try {
+        return isDispatchInFlight(readDispatch(openConfiguredSpreadsheet()));
+      } catch (_) {
+        return null;
+      }
+    })(),
+    writebackFolderId: folderId || '',
+    issueScaffoldingUrlSet: config.issueScaffoldingUrlSet,
+    issueScaffoldingTokenSet: config.issueScaffoldingTokenSet,
+    approveEnvFallback:
+      'If Script Properties are unset, Approve Cloud Agent env ISSUE_SCAFFOLDING_WEBHOOK_* must be set.',
+    pilotWebhookUrl: PILOT_ISSUE_SCAFFOLDING_WEBHOOK_URL,
+    missing: config.missing,
+  };
+}
+
+/** Phase A — T3b clarification: seed pilot rows, isolate spinner row, dispatch approve. */
+function runScaffoldingSheetTestPhaseA_T3bClarify() {
+  seedPilotTestRows();
+  const itemId = `${PILOT_MEETING_DOC_ID}:ReviewItems:3`;
+  isolateSingleRowForApprove(itemId);
+  resetCursorDispatch();
+  triggerApproveFromScript();
+  const idempotencyKey = buildIdempotencyKey(PILOT_REVIEW_ID, itemId);
+  Logger.log(
+    `Phase A dispatched. Poll with pollScaffoldingResult('${idempotencyKey}'). ` +
+    `Expect verdict need_clarification.`
+  );
+  return { phase: 'A', itemId, idempotencyKey, expectedFile: scaffoldingResultFileName(idempotencyKey) };
+}
+
+/** Phase B — T3a happy path on pilot meeting doc (ReviewItems:2). */
+function runScaffoldingSheetTestPhaseB_T3aHappy() {
+  seedPilotTestRows();
+  const itemId = `${PILOT_MEETING_DOC_ID}:ReviewItems:2`;
+  isolateSingleRowForApprove(itemId);
+  resetCursorDispatch();
+  triggerApproveFromScript();
+  const idempotencyKey = buildIdempotencyKey(PILOT_REVIEW_ID, itemId);
+  Logger.log(
+    `Phase B dispatched. Poll with pollScaffoldingResult('${idempotencyKey}'). ` +
+    `Expect verdict issue_created and GitHub issue with Sources.`
+  );
+  return { phase: 'B', itemId, idempotencyKey, expectedFile: scaffoldingResultFileName(idempotencyKey) };
+}
+
+/** Phase B alt — T1 happy-path row (ReviewItems:3) after Phase A passes. */
+function runScaffoldingSheetTestPhaseB_T1Happy() {
+  seedT1HappyPathRow();
+  const itemId = `${T1_MEETING_DOC_ID}:ReviewItems:3`;
+  isolateSingleRowForApprove(itemId);
+  resetCursorDispatch();
+  triggerApproveFromScript();
+  const idempotencyKey = buildIdempotencyKey(T1_REVIEW_ID, itemId);
+  Logger.log(`Phase B (T1) dispatched. Poll idempotencyKey=${idempotencyKey}`);
+  return { phase: 'B-T1', itemId, idempotencyKey, expectedFile: scaffoldingResultFileName(idempotencyKey) };
+}
+
+/** Phase C — re-approve same row; Approve should skip second Scaffolding POST (T4a). */
+function runScaffoldingSheetTestPhaseC_T4aIdempotency() {
+  const itemId = `${PILOT_MEETING_DOC_ID}:ReviewItems:2`;
+  isolateSingleRowForApprove(itemId);
+  resetCursorDispatch();
+  triggerApproveFromScript();
+  Logger.log('Phase C dispatched. Expect Approve skip (no new issue). Check Approve run log.');
+  return { phase: 'C', itemId, note: 'Verify Approve skipped POST when issueUrl already set' };
+}
+
+function runScaffoldingSheetTestCleanup() {
+  return restoreIsolatedApproveSkips();
+}
+
+/** After approve dispatch, run from editor: poll + relay write-back. */
+function pollScaffoldingResultAndRelayWriteback(idempotencyKey) {
+  const polled = pollScaffoldingResult(idempotencyKey);
+  if (polled.ok) {
+    scanWritebackPendingRelay();
+  }
+  return polled;
+}
+
+function assertScaffoldingVerdict(polled, expectedVerdict) {
+  if (!polled.ok) {
+    throw new Error(`Poll failed: ${JSON.stringify(polled)}`);
+  }
+  const verdict = String(polled.result.verdict || '').trim();
+  if (verdict !== expectedVerdict) {
+    throw new Error(`Expected verdict ${expectedVerdict}, got ${verdict}: ${JSON.stringify(polled.result)}`);
+  }
+  return polled;
+}
+
+/**
+ * Phase A with poll (~2 min blocking). Run from editor after deploying orchestrator.
+ * Logs PASS/FAIL to Execution log.
+ */
+function runScaffoldingSheetTestPhaseAWithPoll() {
+  const dispatched = runScaffoldingSheetTestPhaseA_T3bClarify();
+  const polled = pollScaffoldingResultAndRelayWriteback(dispatched.idempotencyKey);
+  assertScaffoldingVerdict(polled, 'need_clarification');
+  if (polled.result.issueUrl) {
+    throw new Error('Clarification path must not set issueUrl');
+  }
+  Logger.log(`PASS Phase A T3b clarification: ${JSON.stringify(polled.result)}`);
+  return { pass: true, phase: 'A', polled };
+}
+
+/**
+ * Phase B with poll (~2 min blocking). Run after Phase A passes.
+ */
+function runScaffoldingSheetTestPhaseBWithPoll() {
+  const dispatched = runScaffoldingSheetTestPhaseB_T3aHappy();
+  const polled = pollScaffoldingResultAndRelayWriteback(dispatched.idempotencyKey);
+  assertScaffoldingVerdict(polled, 'issue_created');
+  if (!polled.result.issueUrl) {
+    throw new Error('Happy path must set issueUrl');
+  }
+  Logger.log(`PASS Phase B T3a happy: ${JSON.stringify(polled.result)}`);
+  return { pass: true, phase: 'B', polled };
+}
+
 function formatCellValue(value) {
   if (value === null || value === undefined) return '';
   if (typeof value === 'boolean') return value;
