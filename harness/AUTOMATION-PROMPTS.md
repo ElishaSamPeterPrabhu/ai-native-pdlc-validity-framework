@@ -33,6 +33,7 @@ HARD RULES (not duplicated in skills):
 - On /refine with docs.google.com/document: read comparison doc via Drive MCP before patch; QA-source-kind: comparison-doc.
 - Do not run Playwright as QA. Do not claim QA passed. Do not create .cursor/rules/architecture.mdc.
 - Google Drive MCP for figma-staged catalog (manifest.json first). Never Figma MCP in cloud.
+- Before every push or Open PR: merge-gate checklist — tailwind:build, embed:css, embed:component-css, npm run test:coverage, npm run lint (not bare npm test).
 
 DISPATCH — do only the matching branch:
 - /approve on issue → implement, Open PR, routing comment, STOP (no subscribe).
@@ -63,7 +64,7 @@ HARD RULES:
 - Google Drive MCP for figma-staged (manifest.json first). Never Figma MCP in cloud.
 - Trust docs/component-graph/component-graph.json reverseImpact over Dev QA-graph if they disagree.
 
-Label-added wake only (qa-full, qa-rerun, qa-skip). Run gates, then graph-aware Storybook per modus-qa-automation skill. Post one verdict comment; STOP.
+Label-added wake only (qa-full, qa-rerun, qa-skip). On qa-full and qa-rerun run full gates including npm run test:coverage (merge-gate command, not bare npm test), then graph-aware Storybook per modus-qa-automation skill. Post one verdict comment; STOP.
 ```
 
 ---
@@ -124,7 +125,7 @@ IF /approve on an issue:
   Feasibility: if UNCLEAR comment ## NEED CLARIFICATION (PR if it exists, else issue) and STOP. If NOT FEASIBLE comment ## NOT FEASIBLE and STOP. Action attaches needs-human.
   Branch exp/<issue-number>-<short-slug> from main of trimble-oss/modus-wc-2.0.
   Commit after each logical AC: feat(component): … or fix(component): …
-  Before Open PR: npm run tailwind:build, embed:css, embed:component-css, npm test, npm run lint.
+  Before Open PR: npm run tailwind:build, embed:css, embed:component-css, npm run test:coverage, npm run lint.
   PR body: use the repo template. Work Item must be Closes #<issue-number>. Do not write Issue #. Stop-boundary check: yes|no plus a command table. Check off AC when satisfied.
   Open PR. Do not run Playwright as a substitute for QA.
   Routing: qa-skip ONLY if ALL files are .scss, .tailwind.ts, .stories.ts, docs, or .md; else qa-full.
@@ -206,7 +207,7 @@ GATES (always, unless skip):
   npm run tailwind:build
   npm run embed:css
   npm run embed:component-css
-  npm test
+  npm run test:coverage
   npm run lint
 Gate fail → overall ## QA FAILED — functional. Table: visual = not-evaluated. STOP. Do not open Storybook.
 

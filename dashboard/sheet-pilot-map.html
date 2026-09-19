@@ -250,6 +250,7 @@
       <button class="card demo" data-node="sheet"><span class="status demo">Wired</span><strong>Review ledger sheet</strong><small>Controls!B1 · Issues tab.</small></button>
       <button class="card partial" data-node="review"><span class="status partial">In progress</span><strong>Review Ledger Round</strong><small>cursorComment write-back only.</small></button>
       <button class="card partial" data-node="approve"><span class="status partial">In progress</span><strong>Review Ledger Approve</strong><small>→ Scaffolding · no n8n.</small></button>
+      <button class="card demo" data-node="figma"><span class="status demo">Wired</span><strong>Figma Agents skills</strong><small>/modus-design-assist · a11y · states.</small></button>
     </section>
 
     <section class="details">
@@ -274,6 +275,7 @@
 
     <footer>
       Source: <a href="../docs/chat-bots/cursor-docs-review-workflow.md">cursor-docs-review-workflow.md</a>.
+      Figma pilot skills: <a href="../docs/design-enablement/figma-agent/README.md">figma-agent/README.md</a>.
       Legacy Chat + n8n path: <a href="pdlc-map.html">pdlc-map.html</a>.
     </footer>
   </main>
@@ -287,7 +289,8 @@
       scaffolding: 'https://cursor.com/t/trimble/automations/288c955b-aaad-11f1-b532-320a589b8025',
       workflowDoc: '../docs/chat-bots/cursor-docs-review-workflow.md',
       orchestratorDoc: '../docs/chat-bots/apps-script/cursor-sheet-review-orchestrator.gs',
-      coordinatorDoc: '../docs/chat-bots/apps-script/cursor-gemini-meeting-intake-coordinator.gs'
+      coordinatorDoc: '../docs/chat-bots/apps-script/cursor-gemini-meeting-intake-coordinator.gs',
+      figmaAgentDoc: '../docs/design-enablement/figma-agent/README.md'
     };
 
     const nodes = {
@@ -377,6 +380,15 @@
         inputs: 'Approved scaffolded issue', outputs: 'PR + QA evidence', next: 'Human merge',
         steps: ['Dev on /approve or equivalent trigger.', 'QA on explicit labels.', 'Human PR review.'],
         source: '../harness/AUTOMATION-PROMPTS.md'
+      },
+      figma: {
+        title: 'Figma Agents · Modus designer skills',
+        status: 'demo', statusLabel: 'Wired',
+        summary: 'Upload custom skills from the repo; slash commands in Figma Agents (no separate design automation required for the pilot demo).',
+        inputs: 'Selected frame or component', outputs: 'Clarifiers, capability evidence, a11y guidance', next: 'Designer applies changes in Figma',
+        steps: ['Upload modus-*.skill.md from docs/design-enablement/figma-agent/.', 'Run /modus-design-assist for intake or /modus-accessibility-check for readonly demo.', 'Optional: Cursor design-capability-check for cited repo research.'],
+        source: links.figmaAgentDoc,
+        links: [{ label: 'Open Figma skills README', url: links.figmaAgentDoc }]
       }
     };
 

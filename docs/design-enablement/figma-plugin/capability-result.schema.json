@@ -45,6 +45,50 @@
       },
       "additionalProperties": true
     },
+    "suggestions": {
+      "type": "array",
+      "description": "Grounded design suggestions from the copilot. Every item must cite pack fields.",
+      "items": {
+        "type": "object",
+        "required": ["kind", "text", "rationale", "citations", "grounding"],
+        "properties": {
+          "kind": {
+            "enum": [
+              "existing",
+              "new-api-candidate",
+              "standards-warning",
+              "token-hint",
+              "state-matrix",
+              "precedent",
+              "impact",
+              "gap"
+            ]
+          },
+          "text": { "type": "string" },
+          "rationale": { "type": "string" },
+          "citations": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "grounding": {
+            "enum": [
+              "existing",
+              "new-api-candidate",
+              "ambiguous",
+              "source-stale",
+              "compatible",
+              "warning",
+              "unsupported",
+              "unknown",
+              "observed",
+              "missing"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "handoff": {
       "type": "object",
       "properties": {
@@ -55,7 +99,11 @@
     },
     "sources": { "type": "array" },
     "sourceCommit": { "type": ["string", "null"] },
-    "generatedAt": { "type": ["string", "null"], "format": "date-time" }
+    "generatedAt": { "type": ["string", "null"], "format": "date-time" },
+    "annotation": {
+      "type": "string",
+      "description": "Short on-canvas annotation text derived from suggestions"
+    }
   },
   "additionalProperties": true
 }

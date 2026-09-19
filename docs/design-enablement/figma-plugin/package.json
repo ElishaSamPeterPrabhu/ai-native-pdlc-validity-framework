@@ -1,13 +1,11 @@
 {
-  "name": "modus-capability-check-figma-plugin",
+  "name": "modus-designer-copilot-figma-plugin",
   "private": true,
   "scripts": {
-    "build:bundle": "esbuild modus-bundle.entry.js --bundle --format=iife --platform=browser --loader:.css=text --outfile=modus-bundle.js"
-  },
-  "dependencies": {
-    "@trimble-oss/moduswebcomponents": "1.17.0"
-  },
-  "devDependencies": {
-    "esbuild": "0.25.12"
+    "build:index": "node build-component-index.cjs",
+    "build:code": "node build-plugin-code.cjs",
+    "build": "npm run build:index && npm run build:code",
+    "copilot": "node copilot-server.cjs",
+    "test": "node --test capability-engine.test.cjs copilot-suggest.test.cjs"
   }
 }

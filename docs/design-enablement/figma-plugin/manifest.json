@@ -1,15 +1,22 @@
 {
-  "name": "Modus Capability Check (scaffold)",
+  "name": "Modus Designer Copilot",
   "api": "1.0.0",
   "main": "code.js",
-  "ui": "ui.html",
+  "ui": "handoff.html",
   "editorType": [
     "figma"
   ],
+  "parameters": [
+    {
+      "name": "Component or query",
+      "key": "query",
+      "description": "Modus tag, property, state, or phrase (e.g. modus-wc-select / readonly)"
+    }
+  ],
   "networkAccess": {
     "allowedDomains": [
-      "https://raw.githubusercontent.com"
+      "none"
     ],
-    "reasoning": "Read generated Modus manifest and designer-context capability artifacts from the official repository. No design or credential data is uploaded."
+    "reasoning": "Figma captures the query and hands off to Cursor. The interactive agent runs in the design-capability-check skill with the shared context pack."
   }
 }

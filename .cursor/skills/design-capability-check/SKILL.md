@@ -6,7 +6,27 @@ description: Research Modus component capabilities from manifest, MCP, code, and
 # Design capability check
 
 Use before proposing new component work or drafting an issue in Cursor. Replaces
-the Chat ticket-bot research step for IDE users.
+the Chat ticket-bot research step for IDE users. Uses the same shared pack and
+result vocabulary as the Figma-native Modus designer copilot.
+
+## Shared pack (same contract as Figma plugin)
+
+Read from the target repository or the research snapshot under
+`docs/design-enablement/figma-plugin/`:
+
+| Artifact | Purpose |
+| --- | --- |
+| `custom-elements.json` | Manifest facts |
+| `designer-context.json` | State matrix, tokens, precedent, impact |
+| `standards-rules.json` | HTML/ARIA constraints |
+| `capability-result.schema.json` | Result + `suggestions[]` vocabulary |
+
+Deterministic facts come from `capability-engine.js` (`existing`,
+`new-api-candidate`, `ambiguous`, `source-stale`, standards status). Structured
+`suggestions[]` items must use schema kinds (`existing`, `new-api-candidate`,
+`standards-warning`, `token-hint`, `state-matrix`, `precedent`, `impact`,
+`gap`) with `text`, `rationale`, `citations[]`, and `grounding`. Never invent
+APIs when the pack has no fact — emit a `gap` suggestion instead.
 
 ## Procedure
 
@@ -32,6 +52,9 @@ the Chat ticket-bot research step for IDE users.
 9. Search GitHub issues and PRs for duplicates and prior decisions.
 10. Record the result as `existing`, `new-api-candidate`, or
    `not-found-in-inspected-source`.
+11. Emit grounded `suggestions[]` in the shared schema — design next steps, not
+   canned chat replies. Each suggestion cites manifest paths, context bundle
+   keys, or standards rule ids.
 
 ## Required output
 
@@ -45,6 +68,10 @@ the Chat ticket-bot research step for IDE users.
 ### Capability check
 | Requested capability | Result | Source |
 | --- | --- | --- |
+
+### Grounded suggestions
+| Kind | Suggestion | Rationale | Citations |
+| --- | --- | --- | --- |
 
 ### Standards and design guardrail
 - Compatibility:
@@ -80,8 +107,8 @@ the Chat ticket-bot research step for IDE users.
 Every “supports” or “does not support” statement must cite a manifest path,
 MCP response, component source file, spec, Storybook source, or
 context-bundle entry. Every standards constraint must cite its registry entry
-and authoritative documentation. If sources cannot answer a required question,
-stop with:
+and authoritative documentation. Every suggestion row must cite pack fields.
+If sources cannot answer a required question, stop with:
 
 ```markdown
 ## NEED CLARIFICATION
