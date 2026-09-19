@@ -1,0 +1,14 @@
+{
+  "name": "modus-capability-check-figma-plugin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:bundle": "esbuild modus-bundle.entry.js --bundle --format=iife --platform=browser --loader:.css=text --outfile=modus-bundle.js"
+  },
+  "dependencies": {
+    "@trimble-oss/moduswebcomponents": "1.17.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}

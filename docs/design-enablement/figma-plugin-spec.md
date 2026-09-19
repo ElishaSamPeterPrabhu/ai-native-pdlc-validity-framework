@@ -44,7 +44,8 @@ GitHub token and does not create an issue directly.
 
 ## Data and security
 
-- Fetch only an allowlisted raw GitHub origin configured at build time.
+- For local designer testing, load the pinned bundled snapshots. For release,
+  fetch only an allowlisted raw GitHub origin configured at build time.
 - Prefer `custom-elements.json` plus `designer-context.json`; use
   `custom-elements.md` for human-readable details.
 - Show source commit and generated time.
