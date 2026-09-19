@@ -43451,6 +43451,23 @@ modus-wc-utility-panel {
         card.append(text);
       }
 
+      async function copyText(text) {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.append(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        textarea.remove();
+        if (!copied) throw new Error("Figma clipboard access is unavailable");
+      }
+
       byId("search").addEventListener("buttonClick", async () => {
         await sourcesReady;
         renderResults(byId("query").value || "");
@@ -43463,7 +43480,7 @@ modus-wc-utility-panel {
       byId("copy-handoff").addEventListener("buttonClick", async () => {
         if (!latestResult) return;
         try {
-          await navigator.clipboard.writeText(latestResult.handoff.markdown);
+          await copyText(latestResult.handoff.markdown);
           setSourceStatus("Handoff copied", "Paste the cited handoff into the sheet design notes or issue context.", "success");
         } catch (error) {
           setSourceStatus("Copy unavailable", `${error.message}. Select the handoff text manually.`, "warning");
