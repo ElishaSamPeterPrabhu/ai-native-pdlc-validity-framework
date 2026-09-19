@@ -36,9 +36,17 @@
         font-size: 12px;
         overflow-wrap: anywhere;
       }
+
+      #runtime-status {
+        border: 1px solid #b3261e;
+        border-radius: 4px;
+        color: #b3261e;
+        padding: 8px;
+      }
     </style>
   </head>
   <body>
+    <div id="runtime-status" hidden></div>
     <main class="stack">
       <modus-wc-typography
         hierarchy="h5"
@@ -107,6 +115,28 @@
       let latestResult = null;
 
       const byId = (id) => document.getElementById(id);
+
+      function showRuntimeError(message) {
+        const status = byId("runtime-status");
+        status.hidden = false;
+        status.textContent = message;
+      }
+
+      function checkModusRuntime() {
+        if (!customElements.get("modus-wc-button")) {
+          showRuntimeError(
+            "Modus UI did not initialize. Rebuild modus-bundle.js and reload the development plugin.",
+          );
+        }
+      }
+
+      window.addEventListener("modus-capability-ui-error", (event) => {
+        showRuntimeError(`Modus UI bootstrap failed: ${event.detail}`);
+      });
+      window.addEventListener("modus-capability-ui-ready", () => {
+        byId("runtime-status").hidden = true;
+      });
+      window.setTimeout(checkModusRuntime, 1500);
 
       function setSourceStatus(title, description, variant) {
         const status = byId("source-status");

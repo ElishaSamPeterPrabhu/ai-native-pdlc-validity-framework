@@ -31521,7 +31521,14 @@ More information: https://stenciljs.com/docs/properties#prop-mutability`
   var style = document.createElement("style");
   style.textContent = modus_wc_styles_default;
   document.head.append(style);
-  defineCustomElements();
+  defineCustomElements().then(() => {
+    window.dispatchEvent(new Event("modus-capability-ui-ready"));
+  }).catch((error) => {
+    console.error("Modus custom-element bootstrap failed", error);
+    window.dispatchEvent(
+      new CustomEvent("modus-capability-ui-error", { detail: String(error) })
+    );
+  });
 })();
 /*! Bundled license information:
 
