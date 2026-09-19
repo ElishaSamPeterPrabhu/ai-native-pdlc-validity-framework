@@ -43220,6 +43220,7 @@ modus-wc-utility-panel {
       let rules = null;
       let selectedNode = null;
       let latestResult = null;
+      let sourcesReady = null;
 
       const byId = (id) => document.getElementById(id);
 
@@ -43450,11 +43451,13 @@ modus-wc-utility-panel {
         card.append(text);
       }
 
-      byId("search").addEventListener("buttonClick", () => {
+      byId("search").addEventListener("buttonClick", async () => {
+        await sourcesReady;
         renderResults(byId("query").value || "");
       });
       byId("refresh").addEventListener("buttonClick", async () => {
-        await loadManifest(true);
+        sourcesReady = loadManifest(true);
+        await sourcesReady;
         renderResults(byId("query").value || "");
       });
       byId("copy-handoff").addEventListener("buttonClick", async () => {
@@ -43466,8 +43469,9 @@ modus-wc-utility-panel {
           setSourceStatus("Copy unavailable", `${error.message}. Select the handoff text manually.`, "warning");
         }
       });
-      byId("use-selection").addEventListener("buttonClick", () => {
+      byId("use-selection").addEventListener("buttonClick", async () => {
         if (!selectedNode) return;
+        await sourcesReady;
         byId("query").value = selectedNode.name;
         renderResults(selectedNode.name);
       });
@@ -43480,7 +43484,7 @@ modus-wc-utility-panel {
         }
       };
 
-      loadManifest();
+      sourcesReady = loadManifest();
     </script>
   </body>
 </html>

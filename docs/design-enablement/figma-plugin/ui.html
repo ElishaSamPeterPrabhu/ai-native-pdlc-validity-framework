@@ -113,6 +113,7 @@
       let rules = null;
       let selectedNode = null;
       let latestResult = null;
+      let sourcesReady = null;
 
       const byId = (id) => document.getElementById(id);
 
@@ -259,6 +260,22 @@
       }
 
       async function loadManifest(forceRefresh = false) {
+        if (
+          !forceRefresh &&
+          window.__MODUS_MANIFEST__ &&
+          window.__MODUS_CONTEXT__ &&
+          window.__MODUS_RULES__
+        ) {
+          manifest = window.__MODUS_MANIFEST__;
+          context = window.__MODUS_CONTEXT__;
+          rules = window.__MODUS_RULES__;
+          setSourceStatus(
+            "Source ready",
+            `Embedded Modus context loaded at commit ${context.sourceCommit || "unknown"}.`,
+            "success",
+          );
+          return;
+        }
         const cached = sourceCache;
         if (!forceRefresh && cached && Date.now() - cached.savedAt < CACHE_TTL_MS) {
           manifest = cached.manifest;
@@ -327,11 +344,13 @@
         card.append(text);
       }
 
-      byId("search").addEventListener("buttonClick", () => {
+      byId("search").addEventListener("buttonClick", async () => {
+        await sourcesReady;
         renderResults(byId("query").value || "");
       });
       byId("refresh").addEventListener("buttonClick", async () => {
-        await loadManifest(true);
+        sourcesReady = loadManifest(true);
+        await sourcesReady;
         renderResults(byId("query").value || "");
       });
       byId("copy-handoff").addEventListener("buttonClick", async () => {
@@ -343,8 +362,9 @@
           setSourceStatus("Copy unavailable", `${error.message}. Select the handoff text manually.`, "warning");
         }
       });
-      byId("use-selection").addEventListener("buttonClick", () => {
+      byId("use-selection").addEventListener("buttonClick", async () => {
         if (!selectedNode) return;
+        await sourcesReady;
         byId("query").value = selectedNode.name;
         renderResults(selectedNode.name);
       });
@@ -357,7 +377,7 @@
         }
       };
 
-      loadManifest();
+      sourcesReady = loadManifest();
     </script>
   </body>
 </html>
