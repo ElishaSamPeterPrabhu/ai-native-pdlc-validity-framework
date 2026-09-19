@@ -106,8 +106,8 @@
       const MANIFEST_URL = "custom-elements.json";
       const CONTEXT_URL = "designer-context.json";
       const RULES_URL = "standards-rules.json";
-      const CACHE_KEY = "modus-capability-sources";
       const CACHE_TTL_MS = 15 * 60 * 1000;
+      let sourceCache = null;
       let manifest = null;
       let context = null;
       let rules = null;
@@ -259,7 +259,7 @@
       }
 
       async function loadManifest(forceRefresh = false) {
-        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+        const cached = sourceCache;
         if (!forceRefresh && cached && Date.now() - cached.savedAt < CACHE_TTL_MS) {
           manifest = cached.manifest;
           context = cached.context;
@@ -287,12 +287,12 @@
           rules = rulesResult.status === "fulfilled" && rulesResult.value.ok
             ? await rulesResult.value.json()
             : { rules: [] };
-          localStorage.setItem(CACHE_KEY, JSON.stringify({
+          sourceCache = {
             savedAt: Date.now(),
             manifest,
             context,
             rules,
-          }));
+          };
           const missingSources = [
             context ? "" : "shared context",
             rules.rules.length ? "" : "standards rules",
