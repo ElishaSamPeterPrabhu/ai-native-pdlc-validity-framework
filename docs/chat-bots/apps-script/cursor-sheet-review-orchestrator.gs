@@ -29,6 +29,8 @@
  *   2. Run installDryRunPolling once
  *   3. Type review or approve in Controls!B1 and wait up to ~1 minute
  *
+ * Presenter polish (run once, not during a demo): applyDemoPresentationFormatting()
+ *
  * Trigger: Controls!B1 only (review | approve | reject). Per-row command column
  * is leftover storage; it does not trigger.
  *
@@ -690,14 +692,30 @@ function ensureControlsTab(spreadsheet) {
   let sheet = spreadsheet.getSheetByName(TAB_CONTROLS);
   if (!sheet) sheet = spreadsheet.insertSheet(TAB_CONTROLS);
   sheet.getRange('A1').setValue('Cursor Trigger');
+  sheet.getRange('B1').setNote('Type review or approve, then press Enter. Do not run Apps Script during a demo.');
   sheet.getRange('A2').setValue('Commands: review · approve · reject');
-  sheet.getRange('B2').setValue('Type review or approve in B1. skipIssue rows are excluded.');
+  sheet.getRange('B2').setValue('Type review or approve in B1, then Enter. skipIssue rows are excluded. Do not re-approve a row that already has issueUrl.');
+  sheet.getRange('A3').setValue('Demo');
+  sheet.getRange('B3').setValue('Walk completed rows to show what happened. Use a new row only if you need to watch B1 fire live.');
   sheet.getRange('A4').setValue('Last scan');
   sheet.getRange('A5').setValue('Detail');
   sheet.getRange('A6').setValue('At');
+  sheet.getRange('A1:A6').setFontWeight('bold');
+  sheet.getRange('B1').setBackground('#e8f5e9');
   sheet.setFrozenRows(0);
   sheet.setColumnWidth(1, 160);
-  sheet.setColumnWidth(2, 380);
+  sheet.setColumnWidth(2, 480);
+}
+
+/**
+ * One-click presenter polish. Run from the Apps Script editor once (not during the demo).
+ * Hides ops columns/tabs; does not change webhooks or B1 routing.
+ */
+function applyDemoPresentationFormatting() {
+  const spreadsheet = getReviewSpreadsheet();
+  ensureLedgerTabs(spreadsheet);
+  applySheetFormatting(spreadsheet);
+  Logger.log('Demo presentation formatting applied.');
 }
 
 function ensureTab(spreadsheet, name, headers) {
@@ -716,19 +734,108 @@ function ensureTab(spreadsheet, name, headers) {
 function applySheetFormatting(spreadsheet) {
   const reviewSheet = spreadsheet.getSheetByName(TAB_REVIEW_ITEMS);
   if (!reviewSheet) return;
-  const lastRow = Math.max(reviewSheet.getLastRow(), 100);
+  const lastCol = Math.max(reviewSheet.getLastColumn(), REVIEW_SURFACE_HEADERS.length);
+  const lastRow = Math.max(reviewSheet.getLastRow(), 2);
+  const headerRange = reviewSheet.getRange(1, 1, 1, lastCol);
+  headerRange.setFontWeight('bold');
+  headerRange.setBackground('#e8eaed');
+  reviewSheet.setFrozenRows(1);
+  reviewSheet.setRowHeight(1, 28);
+
   const skipIndex = getHeaderIndex(reviewSheet, 'skipIssue') + 1;
   if (skipIndex > 0) {
-    reviewSheet.getRange(2, skipIndex, lastRow - 1, 1)
+    reviewSheet.getRange(2, skipIndex, Math.max(lastRow, 100) - 1, 1)
       .setDataValidation(SpreadsheetApp.newDataValidation().requireCheckbox().build());
   }
   const commandIndex = getHeaderIndex(reviewSheet, 'command') + 1;
   if (commandIndex > 0) {
-    reviewSheet.getRange(2, commandIndex, lastRow - 1, 1).setNote(
+    reviewSheet.getRange(2, commandIndex, Math.max(lastRow, 100) - 1, 1).setNote(
       'Leftover storage only. Trigger is Controls!B1 (review | approve | reject).'
     );
   }
-  reviewSheet.setColumnWidths(1, reviewSheet.getLastColumn(), 120);
+
+  const widthByHeader = {
+    itemId: 80,
+    round: 60,
+    title: 280,
+    classification: 130,
+    status: 140,
+    skipIssue: 90,
+    reviewerComment: 220,
+    cursorComment: 280,
+    command: 90,
+    iterationCount: 90,
+    issueNumber: 90,
+    issueUrl: 280,
+    updatedAt: 140,
+  };
+  REVIEW_SURFACE_HEADERS.forEach((name, idx) => {
+    reviewSheet.setColumnWidth(idx + 1, widthByHeader[name] || 120);
+  });
+  reviewSheet.getRange(2, 1, Math.max(lastRow, 100) - 1, lastCol).setWrap(true);
+
+  applyStatusConditionalFormat(reviewSheet);
+  linkifyIssueUrls(reviewSheet);
+  hideDemoOpsColumns(reviewSheet);
+
+  const detail = spreadsheet.getSheetByName(TAB_REVIEW_DETAIL);
+  if (detail) detail.hideSheet();
+
+  const issues = spreadsheet.getSheetByName(TAB_ISSUES);
+  if (issues) {
+    issues.setFrozenRows(1);
+    issues.getRange(1, 1, 1, ISSUE_HEADERS.length).setFontWeight('bold').setBackground('#e8eaed');
+    issues.setColumnWidth(5, 280);
+  }
+}
+
+function applyStatusConditionalFormat(reviewSheet) {
+  const statusCol = getHeaderIndex(reviewSheet, 'status') + 1;
+  if (statusCol <= 0) return;
+  const lastRow = Math.max(reviewSheet.getLastRow(), 100);
+  const range = reviewSheet.getRange(2, statusCol, lastRow - 1, 1);
+  const paints = [
+    { texts: ['needs-review', 'changes-requested', 'creating'], bg: '#fce8b2' },
+    { texts: ['clarification'], bg: '#d2e3fc' },
+    { texts: ['approved', 'created'], bg: '#ceead6' },
+    { texts: ['rejected', 'failed', 'duplicate'], bg: '#f6d0d0' },
+  ];
+  const rules = paints.flatMap((paint) => paint.texts.map((text) => (
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo(text)
+      .setBackground(paint.bg)
+      .setRanges([range])
+      .build()
+  )));
+  reviewSheet.setConditionalFormatRules(rules);
+}
+
+function linkifyIssueUrls(reviewSheet) {
+  const urlCol = getHeaderIndex(reviewSheet, 'issueUrl') + 1;
+  if (urlCol <= 0) return;
+  const lastRow = reviewSheet.getLastRow();
+  if (lastRow < 2) return;
+  const values = reviewSheet.getRange(2, urlCol, lastRow - 1, 1).getValues();
+  values.forEach((row, idx) => {
+    const url = String(row[0] || '').trim();
+    if (!/^https:\/\//i.test(url)) return;
+    const rich = SpreadsheetApp.newRichTextValue()
+      .setText(url)
+      .setLinkUrl(url)
+      .build();
+    reviewSheet.getRange(idx + 2, urlCol).setRichTextValue(rich);
+  });
+}
+
+function hideDemoOpsColumns(reviewSheet) {
+  const hideNames = [
+    'itemId', 'round', 'command', 'iterationCount',
+    'skipIssue', 'issueNumber', 'updatedAt',
+  ];
+  hideNames.forEach((name) => {
+    const col = getHeaderIndex(reviewSheet, name) + 1;
+    if (col > 0) reviewSheet.hideColumns(col);
+  });
 }
 
 function upsertItems(spreadsheet, items, round) {

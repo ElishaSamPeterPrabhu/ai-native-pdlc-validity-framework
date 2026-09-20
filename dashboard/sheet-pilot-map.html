@@ -146,9 +146,9 @@
           <modus-wc-button color="tertiary" variant="borderless" size="sm" id="openWorkflowDoc">Open workflow doc</modus-wc-button>
         </div>
       </div>
-      <div class="hero-note">
+        <div class="hero-note">
         <strong>Current pilot architecture</strong>
-        Two Apps Script projects (coordinator + orchestrator). Four Cursor automations (Intake, Review, Approve, Scaffolding). No n8n on the sheet approve path.
+        Two Apps Script projects (coordinator + orchestrator). Four Cursor automations (Intake, Review, Approve, Scaffolding). Figma Agents skills are a parallel designer track — not triggered by the sheet. No n8n on the sheet approve path.
       </div>
     </header>
 
@@ -225,13 +225,13 @@
           <g class="node-group demo" tabindex="0" data-node="coordinator" data-tip="Gmail watcher → Meeting Intake webhook." transform="translate(160 60)">
             <circle r="15"></circle><text class="node-label" y="-25">Coordinator</text>
           </g>
-          <g class="node-group partial" tabindex="0" data-node="review" data-tip="Evidence + cursorComment write-back only." transform="translate(450 60)">
+          <g class="node-group demo" tabindex="0" data-node="review" data-tip="Evidence + cursorComment write-back only." transform="translate(450 60)">
             <circle r="15"></circle><text class="node-label" y="-25">Review</text>
           </g>
-          <g class="node-group partial" tabindex="0" data-node="approve" data-tip="POST Scaffolding; write-back issueUrl." transform="translate(680 60)">
+          <g class="node-group demo" tabindex="0" data-node="approve" data-tip="POST Scaffolding; write-back issueUrl." transform="translate(680 60)">
             <circle r="15"></circle><text class="node-label" y="-25">Approve</text>
           </g>
-          <g class="node-group partial" tabindex="0" data-node="orchestrator" data-tip="Routes B1 to Review or Approve webhooks; accepts write-back." transform="translate(280 60)">
+          <g class="node-group demo" tabindex="0" data-node="orchestrator" data-tip="Routes B1 to Review or Approve webhooks; accepts write-back." transform="translate(280 60)">
             <circle r="15"></circle><text class="node-label" y="-25">Orchestrator</text>
           </g>
 
@@ -241,6 +241,11 @@
             <text class="hub-label" x="610" y="356">REPO · SHARED CONTEXT</text>
             <text class="hub-sub" x="610" y="376">custom-elements · rules · issues · design source</text>
           </g>
+          <g class="node-group demo" tabindex="0" data-node="figma" data-tip="Parallel designer track. Slash skills in Figma Agents — not triggered by Controls!B1." transform="translate(160 450)">
+            <circle r="15"></circle>
+            <text class="node-label" y="32">Figma Agents</text>
+            <text class="node-caption" y="47">parallel · not B1</text>
+          </g>
         </svg>
       </div>
     </section>
@@ -248,9 +253,9 @@
     <section class="cards" aria-label="Pilot components">
       <button class="card demo" data-node="coordinator"><span class="status demo">Wired</span><strong>Gemini coordinator</strong><small>Gmail → Cursor Intake webhook.</small></button>
       <button class="card demo" data-node="sheet"><span class="status demo">Wired</span><strong>Review ledger sheet</strong><small>Controls!B1 · Issues tab.</small></button>
-      <button class="card partial" data-node="review"><span class="status partial">In progress</span><strong>Review Ledger Round</strong><small>cursorComment write-back only.</small></button>
-      <button class="card partial" data-node="approve"><span class="status partial">In progress</span><strong>Review Ledger Approve</strong><small>→ Scaffolding · no n8n.</small></button>
-      <button class="card demo" data-node="figma"><span class="status demo">Wired</span><strong>Figma Agents skills</strong><small>/modus-design-assist · a11y · states.</small></button>
+      <button class="card demo" data-node="review"><span class="status demo">Wired</span><strong>Review Ledger Round</strong><small>cursorComment write-back only.</small></button>
+      <button class="card demo" data-node="approve"><span class="status demo">Wired</span><strong>Review Ledger Approve</strong><small>→ Scaffolding · no n8n.</small></button>
+      <button class="card demo" data-node="figma"><span class="status demo">Wired</span><strong>Figma Agents skills</strong><small>Parallel track · not B1.</small></button>
     </section>
 
     <section class="details">
@@ -268,14 +273,16 @@
           <li>Google Chat approval card (legacy demo on full map)</li>
           <li>Per-row <code>command</code> column triggers</li>
           <li>Auto-approve / silent issue creation</li>
+          <li>Official Issue Scaffolding <code>80b1f7a5</code> / Design-Research automation</li>
         </ul>
-        <div class="callout">Pause point: finish <code>installReviewTrigger()</code> and end-to-end B1=approve test before calling this demo verified.</div>
+        <div class="callout">Before the room: Figma skills uploaded, one completed sheet row (and B1 empty), orchestrator <code>configured: true</code>. In the room: type <code>review</code> or <code>approve</code> in Controls!B1 only if you need a live fire — otherwise walk the completed row. Figma is a parallel skill track.</div>
       </aside>
     </section>
 
     <footer>
       Source: <a href="../docs/chat-bots/cursor-docs-review-workflow.md">cursor-docs-review-workflow.md</a>.
       Figma pilot skills: <a href="../docs/design-enablement/figma-agent/README.md">figma-agent/README.md</a>.
+      Operator script: <a href="../docs/pilot/interactive-demo-runbook.md">interactive-demo-runbook.md</a>.
       Legacy Chat + n8n path: <a href="pdlc-map.html">pdlc-map.html</a>.
     </footer>
   </main>
@@ -331,7 +338,7 @@
       },
       orchestrator: {
         title: 'Sheet review orchestrator',
-        status: 'partial', statusLabel: 'In progress',
+        status: 'demo', statusLabel: 'Wired',
         summary: 'Routes B1 commands to Review or Approve webhooks; accepts write-back POSTs.',
         inputs: 'Intake POST or B1 trigger', outputs: 'Cursor webhook POST + sheet diagnostics', next: 'Async write-back from Cursor',
         steps: ['Separate CURSOR_REVIEW_* and CURSOR_APPROVE_* callback URLs and ingress tokens.', 'Exclude skipIssue rows from payloads.', 'review_writeback updates cursorComment or issueUrl.', 'Run installReviewTrigger() if poll is stale.'],
@@ -340,7 +347,7 @@
       },
       review: {
         title: '[Pilot] Review Ledger Round',
-        status: 'partial', statusLabel: 'In progress',
+        status: 'demo', statusLabel: 'Wired',
         summary: 'Adds evidence-backed cursorComment. Does not call Issue Service or create issues.',
         inputs: 'Webhook items (rowAction=review)', outputs: 'review_writeback with cursorComment', next: 'Human reads sheet and decides approve',
         steps: ['Search pilot repo for duplicates and evidence.', 'Write cursorComment (max 320 chars).', 'POST write-back with body.ingressToken (review token).'],
@@ -349,7 +356,7 @@
       },
       approve: {
         title: '[Pilot] Review Ledger Approve',
-        status: 'partial', statusLabel: 'In progress',
+        status: 'demo', statusLabel: 'Wired',
         summary: 'POSTs Issue Scaffolding directly (no n8n). Write-back issueUrl to sheet.',
         inputs: 'Webhook items (rowAction=approve), repo-work / design-work only', outputs: 'review_writeback + Issues tab rows', next: 'GitHub draft issue',
         steps: ['Build idempotencyKey gemini:meetingDocId:itemId.', 'Skip if issueUrl or Issues tab already has key.', 'POST ISSUE_SCAFFOLDING_WEBHOOK_URL with scaffolding token.', 'Write-back with issueNumber, issueUrl, issueResults — no cursorComment.'],
@@ -384,7 +391,7 @@
       figma: {
         title: 'Figma Agents · Modus designer skills',
         status: 'demo', statusLabel: 'Wired',
-        summary: 'Upload custom skills from the repo; slash commands in Figma Agents (no separate design automation required for the pilot demo).',
+        summary: 'Upload custom skills from the repo; slash commands in Figma Agents. Parallel track — not triggered by Controls!B1.',
         inputs: 'Selected frame or component', outputs: 'Clarifiers, capability evidence, a11y guidance', next: 'Designer applies changes in Figma',
         steps: ['Upload modus-*.skill.md from docs/design-enablement/figma-agent/.', 'Run /modus-design-assist for intake or /modus-accessibility-check for readonly demo.', 'Optional: Cursor design-capability-check for cited repo research.'],
         source: links.figmaAgentDoc,

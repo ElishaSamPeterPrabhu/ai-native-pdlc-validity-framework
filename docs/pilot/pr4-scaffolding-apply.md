@@ -1,5 +1,7 @@
 # PR 4 — Apply Issue Scaffolding v2 (console)
 
+**Not this audience demo.** Keep sheet approve on [PILOT] `288c955b`. Do not apply this official `80b1f7a5` / Design-Research checklist until after the show. See [`interactive-demo-runbook.md`](interactive-demo-runbook.md).
+
 Fork PRs **#52** (custom-elements.md) and **#53** (MCP `component-capabilities` tests)
 are merged. Complete PR 4 in the Cursor Automations console — no repo token required.
 

@@ -6,7 +6,8 @@ layer around `trimble-oss/modus-wc-2.0`.
 The pilot replacement path is documented in
 [`cursor-docs-review-workflow.md`](cursor-docs-review-workflow.md) and visualized in
 [`../dashboard/sheet-pilot-map.html`](../dashboard/sheet-pilot-map.html) (Apps Script +
-Cursor only — no n8n on sheet approve). Gemini coordinator Apps Script feeds Meeting
+Cursor only — no n8n on sheet approve). Audience operator script:
+[`../pilot/interactive-demo-runbook.md`](../pilot/interactive-demo-runbook.md). Gemini coordinator Apps Script feeds Meeting
 Intake (Drive JSON + UrlFetchApp relay). The sheet orchestrator routes `Controls!B1=review` and `B1=approve` to two
 Cursor webhooks. Approve calls Issue Scaffolding directly (no n8n). The n8n/Chat exports
 remain available for migration parity and fallback.

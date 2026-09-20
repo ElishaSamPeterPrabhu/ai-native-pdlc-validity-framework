@@ -12,5 +12,8 @@ Modus designers get interactive help from **Figma Agents + custom skills** (prim
 
 ## Recommended pilot demo
 
-1. **Figma Agents** — select component → `/modus-design-assist` (intake) or `/modus-accessibility-check` (readonly demo) → conversational clarifiers → actionable answer.
-2. **Cursor** — same question with full pack citations when they need repo proof or an issue draft.
+Operator script: [`../pilot/interactive-demo-runbook.md`](../pilot/interactive-demo-runbook.md). Hub: [`../../dashboard/sheet-pilot-map.html`](../../dashboard/sheet-pilot-map.html).
+
+1. **Figma Agents** (parallel track, not sheet-triggered) — select component → `/modus-design-assist` or `/modus-accessibility-check`.
+2. **Sheet ledger** — walk a completed row, or type `review` / `approve` in `Controls!B1` on a **new** row. Do not re-approve a row that already has `issueUrl`.
+3. **Cursor** (optional) — `design-capability-check` when they need repo citations or an issue draft. No Design-Research cloud automation.

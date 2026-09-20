@@ -39,6 +39,8 @@ All skills instruct the agent to **ask upfront questions**, **use web search** f
 
 ## Pilot demo flows
 
+Audience script: [interactive-demo-runbook.md](../../pilot/interactive-demo-runbook.md). Parallel to the sheet — not triggered by `Controls!B1`.
+
 ### Flow A — Primary assist (recommended opener)
 
 1. Select any component (tagged or not).

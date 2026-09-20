@@ -1,5 +1,7 @@
 # Console apply checklist — trimble-oss/modus-wc-2.0 (v2)
 
+**Not this audience demo.** Sheet-led pilot uses [PILOT] Issue Scaffolding `288c955b` and Figma Agents skills. Do not retarget the review ledger to official `80b1f7a5` or create Design-Research for the show. Operator script: [`docs/pilot/interactive-demo-runbook.md`](../docs/pilot/interactive-demo-runbook.md).
+
 Apply in https://cursor.com/t/trimble/automations then **Save**. Do not leave new comment triggers on Anyone.
 
 Automations (existing IDs if still current):

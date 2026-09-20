@@ -85,8 +85,10 @@ Expected files per phase:
 
 Prior baseline (pre-v2 paste): see [`pilot-test-runbook.md`](../chat-bots/pilot-test-runbook.md) §Pass/fail ledger (2026-09-15).
 
-## Exit — move to next work
+## Exit — this pilot show
 
 All of: Phase A pass, Phase B pass, write-back relay, cleanup done.
 
-Then: Design-Research automation (PR3) → upstream PR `upstream/pr1-pr2-capabilities`.
+**This demo is closed here.** Do not retarget sheet approve to official Issue Scaffolding `80b1f7a5`. Do not create a Design-Research automation for this show. Figma Agents skills cover the designer track.
+
+Operator script: [`interactive-demo-runbook.md`](interactive-demo-runbook.md). Official retarget remains later work in [`pr4-scaffolding-apply.md`](pr4-scaffolding-apply.md).
