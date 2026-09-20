@@ -1,6 +1,6 @@
 # Interactive pilot demo (operator script)
 
-**Deep links:** [`demo-workflow-links.md`](demo-workflow-links.md)
+**Presenter narrative + run URLs:** [`demo-workflow-links.md`](demo-workflow-links.md)
 
 **Branch:** `cursor/cloud-agent-1787121861002-xrufz`  
 **Repo:** https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework  
