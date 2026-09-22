@@ -1,0 +1,123 @@
+:root {
+  color-scheme: dark;
+  font-family: Open Sans, system-ui, sans-serif;
+  background: #0f1115;
+  color: #eef1f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: radial-gradient(circle at 20% 0%, #1b3147, transparent 34%), #0f1115;
+}
+
+.prototype-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+
+.prototype-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.prototype-header h1 {
+  margin: 6px 0;
+  font-size: clamp(28px, 5vw, 48px);
+}
+
+.prototype-header p {
+  max-width: 680px;
+  margin: 0;
+  color: #a8b0bf;
+}
+
+.prototype-header a {
+  color: #62b0ff;
+  white-space: nowrap;
+}
+
+.prototype-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prototype-eyebrow {
+  color: #62b0ff !important;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.prototype-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.prototype-card {
+  display: block;
+}
+
+.prototype-canvas {
+  height: min(58vw, 430px);
+  min-height: 300px;
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid #303744;
+  border-radius: 14px;
+  background: #11151c;
+}
+
+.prototype-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.prototype-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.prototype-caption span {
+  padding: 6px 10px;
+  border: 1px solid;
+  border-radius: 999px;
+  color: #dce8f4;
+  font-size: 12px;
+}
+
+.prototype-caption .prototype-booster {
+  border-color: #f3b94f;
+  color: #ffda8b;
+}
+
+.prototype-note {
+  margin: 12px 0 0;
+  color: #a8b0bf;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .prototype-header {
+    flex-direction: column;
+  }
+
+  .prototype-header a {
+    white-space: normal;
+  }
+}

@@ -1,0 +1,29 @@
+.physics-boost-shell {
+  background: radial-gradient(circle at 75% 35%, rgba(243, 185, 79, 0.12), transparent 32%);
+}
+
+.physics-boost-canvas {
+  border-color: rgba(243, 185, 79, 0.45);
+  box-shadow: 0 0 32px rgba(243, 185, 79, 0.08);
+}
+
+.boost-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.boost-legend span {
+  padding: 6px 10px;
+  border: 1px solid #536275;
+  border-radius: 999px;
+  color: #dce8f4;
+  font-size: 12px;
+}
+
+.boost-legend span:nth-child(2),
+.boost-legend span:nth-child(3) {
+  border-color: #f3b94f;
+  color: #ffda8b;
+}

@@ -5,6 +5,7 @@
 **Branch:** `cursor/cloud-agent-1787121861002-xrufz`  
 **Repo:** https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework  
 **Hub:** [`dashboard/sheet-pilot-map.html`](../../dashboard/sheet-pilot-map.html)
+**Story hub:** [`dashboard/demo-story/`](../../dashboard/demo-story/) (`npm run dev` from that directory)
 
 Out of scope: official Issue Scaffolding `80b1f7a5`, Design-Research automation, n8n, Apps Script editor during the show.
 
