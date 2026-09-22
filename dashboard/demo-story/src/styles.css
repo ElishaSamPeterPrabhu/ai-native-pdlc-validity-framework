@@ -68,6 +68,22 @@ body {
   min-height: 520px;
 }
 
+.official-physics-track {
+  width: 100%;
+  height: min(36vw, 330px);
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid var(--story-line);
+  border-radius: 14px;
+  background: #11151c;
+}
+
+.official-physics-track canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .graph-intro {
   flex-shrink: 0;
 }

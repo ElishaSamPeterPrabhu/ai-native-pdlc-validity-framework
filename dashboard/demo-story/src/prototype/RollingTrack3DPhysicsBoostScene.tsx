@@ -8,6 +8,9 @@ const RAMP_LENGTH = 2.5;
 const TRANSFER_GAP = 0.14;
 const VERTICAL_DROP = 0.18;
 const BALL_RADIUS = 0.23;
+const BASE_DAMPING = 0.35;
+const ENGINEERING_DAMPING = 0.9;
+const ACCELERATED_DAMPING = 0.01;
 const rampAngles = [-0.18, -0.28, -0.38];
 const rampNames = ['Product', 'Design', 'Engineering'];
 const rampColors = ['#62b0ff', '#b494ff', '#42d477'];
@@ -38,14 +41,14 @@ for (let index = 0; index < rampAngles.length; index += 1) {
   ramps.push({
     name: rampNames[index],
     position,
-    rotation: [0, 0, angle],
+    rotation: index === 2 ? [0, 0, - 0.12] : [0, 0, angle],
     color: rampColors[index],
   });
   const exit = endpoint(position, angle);
   nextStart = { x: exit.x + TRANSFER_GAP, y: exit.y - VERTICAL_DROP };
 }
 
-const engineeringExit = endpoint(ramps[2].position, rampAngles[2]);
+const engineeringExit = endpoint(ramps[2].position, rampAngles[2] + .2);
 const bucketPosition: [number, number, number] = [engineeringExit.x + 2.0, engineeringExit.y - 1.25, 0];
 const boostTriggerX = engineeringExit.x - 0.3;
 
@@ -73,7 +76,7 @@ function AcceleratorGate() {
         <boxGeometry args={[0.55, 0.12, 1.25]} />
         <meshStandardMaterial color="#f3b94f" emissive="#f3b94f" emissiveIntensity={0.7} metalness={0.45} />
       </mesh>
-      <Text position={[.8, 0.65, 1.0]} fontSize={0.18} color="#ffda8b" anchorX="center">ACCELERATE</Text>
+      <Text position={[.8, 0.65, 1.0]} fontSize={0.18} color="#ffda8b" anchorX="center">AI ACCELERATION</Text>
     </group>
   );
 }
@@ -105,11 +108,25 @@ function BoostBall() {
     const body = bodyRef.current;
     if (!body) return;
     const position = body.translation();
+    const engineeringStartX = ramps[2].position[0] - RAMP_LENGTH / 2;
+    const inEngineering = position.x >= engineeringStartX && position.x <= engineeringExit.x;
+    body.setLinearDamping(
+      boostApplied.current
+        ? ACCELERATED_DAMPING
+        : inEngineering
+          ? ENGINEERING_DAMPING
+          : BASE_DAMPING,
+    );
     if (!boostApplied.current && position.x > boostTriggerX && position.y < engineeringExit.y + 0.5) {
       body.setLinvel({ x: 3.9, y: -0.55, z: 0 }, true);
       boostApplied.current = true;
     }
-    if (position.y < -2.5 || position.x > bucketPosition[0] + 1) {
+    const velocity = body.linvel();
+    const inBucket = position.x > bucketPosition[0] - 0.85 &&
+      position.x < bucketPosition[0] + 0.85 &&
+      position.y < bucketPosition[1] + 0.45;
+    const settled = inBucket && Math.abs(velocity.x) + Math.abs(velocity.y) < 0.35;
+    if (position.y < -2.5 || position.x > bucketPosition[0] + 1 || settled) {
       resetTimer.current += delta;
       if (resetTimer.current > 0.8) {
         body.setTranslation(spawn, true);
@@ -124,7 +141,7 @@ function BoostBall() {
   });
 
   return (
-    <RigidBody ref={bodyRef} colliders={false} position={[spawn.x, spawn.y, spawn.z]} restitution={0.08} friction={1} linearDamping={0.55}>
+    <RigidBody ref={bodyRef} colliders={false} position={[spawn.x, spawn.y, spawn.z]} restitution={0.08} friction={1} linearDamping={BASE_DAMPING}>
       <BallCollider args={[BALL_RADIUS]} />
       <mesh castShadow>
         <sphereGeometry args={[BALL_RADIUS, 32, 20]} />

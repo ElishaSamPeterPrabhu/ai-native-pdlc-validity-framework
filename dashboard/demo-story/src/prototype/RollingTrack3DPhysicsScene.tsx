@@ -9,7 +9,7 @@ const TRANSFER_GAP = 0.14;
 const VERTICAL_DROP = 0.18;
 const BALL_RADIUS = 0.23;
 const rampAngles = [-0.18, -0.28, -0.38];
-const rampNames = ['Product · flat', 'Design · tilted', 'Engineering'];
+const rampNames = ['Product', 'Design', 'Engineering'];
 const rampColors = ['#62b0ff', '#b494ff', '#42d477'];
 
 type RampConfig = {
@@ -38,7 +38,7 @@ for (let index = 0; index < rampAngles.length; index += 1) {
   ramps.push({
     name: rampNames[index],
     position,
-    rotation: [0, 0, angle],
+    rotation: index === 2 ? [0, 0, - 0.08] : [0, 0, angle],
     color: rampColors[index],
   });
   const exit = endpoint(position, angle, 1);
@@ -58,7 +58,7 @@ function Ramp({ ramp }: { ramp: typeof ramps[number] }) {
         </mesh>
         <CuboidCollider args={[1.25, 0.09, 0.9]} />
       </RigidBody>
-      <Text position={[ramp.position[0], ramp.position[1] + 0.25, ramp.position[2]]} rotation={[0, 0, -ramp.rotation[2]]} fontSize={0.2} color="#eef1f6" anchorX="center">
+      <Text position={[ramp.position[0], ramp.position[1] + 0.55, ramp.position[2]]} rotation={[0, 0, 0]} fontSize={0.2} color="#eef1f6" anchorX="center">
         {ramp.name}
       </Text>
     </>
@@ -94,7 +94,12 @@ function PhysicsBall() {
     const body = bodyRef.current;
     if (!body) return;
     const position = body.translation();
-    if (position.y < -2.5 || position.x > bucketPosition[0] + 1) {
+    const velocity = body.linvel();
+    const inBucket = position.x > bucketPosition[0] - 0.85 &&
+      position.x < bucketPosition[0] + 0.85 &&
+      position.y < bucketPosition[1] + 0.45;
+    const settled = inBucket && Math.abs(velocity.x) + Math.abs(velocity.y) < 0.35;
+    if (position.y < -2.5 || position.x > bucketPosition[0] + 1 || settled) {
       resetTimer.current += delta;
       if (resetTimer.current > 0.8) {
         body.setTranslation(spawnPosition, true);
@@ -113,7 +118,7 @@ function PhysicsBall() {
       position={[spawnPosition.x, spawnPosition.y, spawnPosition.z]}
       restitution={0.12}
       friction={1}
-      linearDamping={0.2}
+      linearDamping={0.7}
     >
       <BallCollider args={[BALL_RADIUS]} />
       <mesh castShadow>

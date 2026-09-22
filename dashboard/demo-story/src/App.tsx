@@ -1,7 +1,7 @@
 import { ModusWcBadge, ModusWcButton, ModusWcCard } from '@trimble-oss/moduswebcomponents-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DeliveryPipelineMap } from './components/DeliveryPipelineMap';
-import { RollingTrack } from './components/RollingTrack';
+import { PhysicsTrack } from './components/PhysicsTrack';
 import { LegendBar } from './components/LegendBar';
 import { WorkflowGraph } from './components/WorkflowGraph';
 
@@ -58,7 +58,7 @@ export default function App() {
             <p>Product, Design, and Engineering only create momentum when each part depends on the others.</p>
           
           </div>
-          <RollingTrack variant="coupled" reducedMotion={reducedMotion} />
+          <PhysicsTrack variant="coupled" reducedMotion={reducedMotion} />
         </section>
 
         <section className="story-panel story-panel-engine" aria-labelledby="beat-two-title">
@@ -68,7 +68,7 @@ export default function App() {
             <p>AI does not just make one function faster. It changes the relationship and puts pressure on the parts that have not adapted.</p>
           
           </div>
-          <RollingTrack variant="aiBoost" reducedMotion={reducedMotion} />
+          <PhysicsTrack variant="aiBoost" reducedMotion={reducedMotion} />
         </section>
 
         <section className="story-panel story-panel-pressure" aria-labelledby="beat-three-title">
