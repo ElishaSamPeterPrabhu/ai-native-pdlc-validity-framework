@@ -29,24 +29,24 @@ export const statusLabels: Record<NodeStatus, string> = {
 };
 
 const SHEET = 'https://docs.google.com/spreadsheets/d/1et7NnaPDzpLjZUitRYrRdIExQ6ay2iEmYtCONTSitZ4/edit';
-const COORDINATOR_SRC =
-  'https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework/blob/main/docs/chat-bots/apps-script/cursor-gemini-meeting-intake-coordinator.gs';
+const GEMINI_DEMO_DOC =
+  'https://docs.google.com/document/d/1kAzZm9NxdWsvCKuGvai_HZbM9eiuH7dWRZp2Tt0XmAQ/edit?usp=sharing';
 
 export const sheetPilotNodes: WorkflowNode[] = [
   {
     id: 'coordinator',
-    label: 'Gemini Coordinator',
-    shortLabel: 'Coordinator',
+    label: 'Source data',
+    shortLabel: 'Source',
     role: 'product',
     status: 'demo',
     summary: 'Watches Gmail and POSTs to Meeting Intake; relays intake JSON to the ledger.',
-    links: [{ kind: 'asset', label: 'Source', url: COORDINATOR_SRC }],
+    links: [{ kind: 'asset', label: 'Source notes', url: GEMINI_DEMO_DOC }],
     x: 80,
-    y: 72,
+    y: 56,
   },
   {
     id: 'intake',
-    label: 'Meeting Intake',
+    label: 'Intake Node',
     shortLabel: 'Intake',
     role: 'product',
     status: 'demo',
@@ -65,33 +65,33 @@ export const sheetPilotNodes: WorkflowNode[] = [
       },
     ],
     x: 220,
-    y: 72,
+    y: 56,
   },
   {
     id: 'orchestrator',
-    label: 'Sheet Orchestrator',
+    label: 'Orchestrator Node',
     shortLabel: 'Orchestrator',
     role: 'shared',
     status: 'demo',
     summary: 'Routes Controls!B1=review|approve and applies Drive write-backs.',
     links: [{ kind: 'asset', label: 'Ledger', url: SHEET }],
     x: 360,
-    y: 72,
+    y: 56,
   },
   {
     id: 'ledger',
-    label: 'Review Ledger',
+    label: 'Ledger Node',
     shortLabel: 'Ledger',
     role: 'shared',
     status: 'demo',
     summary: 'ReviewItems is the human queue; ReviewItemsDetail holds intake JSON.',
     links: [{ kind: 'asset', label: 'Open sheet', url: SHEET }],
     x: 360,
-    y: 168,
+    y: 300,
   },
   {
     id: 'figma',
-    label: 'Figma Agents',
+    label: 'Design Node',
     shortLabel: 'Design',
     role: 'design',
     status: 'demo',
@@ -99,16 +99,16 @@ export const sheetPilotNodes: WorkflowNode[] = [
     links: [
       {
         kind: 'asset',
-        label: 'Skills doc',
-        url: 'https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework/blob/main/docs/design-enablement/figma-agent/README.md',
+        label: 'Figma design',
+        url: 'https://www.figma.com/design/yvTG6AGUtzB1vBqgOuCYe5/Untitled?timeline=keyframe&node-id=0-1&p=f&t=s0RKZ9PCOMalCkR5-0',
       },
     ],
-    x: 500,
-    y: 72,
+    x: 360,
+    y: 400,
   },
   {
     id: 'review',
-    label: 'Pilot Review',
+    label: 'Review Node',
     shortLabel: 'Review',
     role: 'engineering',
     status: 'demo',
@@ -132,11 +132,11 @@ export const sheetPilotNodes: WorkflowNode[] = [
       },
     ],
     x: 500,
-    y: 168,
+    y: 150,
   },
   {
     id: 'approve',
-    label: 'Human Gate',
+    label: 'Approve Node',
     shortLabel: 'Approve',
     role: 'engineering',
     status: 'demo',
@@ -160,11 +160,11 @@ export const sheetPilotNodes: WorkflowNode[] = [
       },
     ],
     x: 640,
-    y: 168,
+    y: 300,
   },
   {
     id: 'scaffolding',
-    label: 'Issue Scaffolding',
+    label: 'Scaffold Node',
     shortLabel: 'Scaffold',
     role: 'engineering',
     status: 'demo',
@@ -183,12 +183,12 @@ export const sheetPilotNodes: WorkflowNode[] = [
       },
     ],
     x: 780,
-    y: 168,
+    y: 300,
   },
   {
     id: 'issue49',
-    label: 'GitHub issue #49',
-    shortLabel: 'Issue #49',
+    label: 'Ticket Node',
+    shortLabel: 'Ticket',
     role: 'engineering',
     status: 'demo',
     summary: 'Sheet-approved scaffold: disabled prop on modus-wc-button.',
@@ -200,7 +200,7 @@ export const sheetPilotNodes: WorkflowNode[] = [
       },
     ],
     x: 920,
-    y: 168,
+    y: 300,
   },
 ];
 
@@ -217,17 +217,17 @@ export const sheetPilotEdges: Array<[string, string]> = [
 
 export const engineeringNodes: WorkflowNode[] = [
   {
-    id: 'issue49',
-    label: 'GitHub issue #49',
-    shortLabel: 'Issue #49',
+    id: 'issue28',
+    label: 'Issue Node #28',
+    shortLabel: 'Issue #28',
     role: 'engineering',
     status: 'demo',
-    summary: 'Output of sheet pilot scaffolding—engineering picks up from here.',
+    summary: 'Engineering work item closed by PR #42.',
     links: [
       {
         kind: 'asset',
-        label: 'Issue #49',
-        url: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/issues/49',
+        label: 'Issue #28',
+        url: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/issues/28',
       },
     ],
     x: 120,
@@ -235,7 +235,7 @@ export const engineeringNodes: WorkflowNode[] = [
   },
   {
     id: 'dev',
-    label: 'Dev Agent',
+    label: 'Dev Node',
     shortLabel: 'Dev',
     role: 'engineering',
     status: 'specified',
@@ -263,11 +263,11 @@ export const engineeringNodes: WorkflowNode[] = [
   },
   {
     id: 'qa',
-    label: 'QA Agent',
+    label: 'QA Node',
     shortLabel: 'QA',
     role: 'engineering',
     status: 'specified',
-    summary: 'Verification agent—pass after repair or fail as baseline.',
+    summary: 'Verification cycle after Dev; sends the same context to PR #42.',
     automation: 'QA Agent',
     links: [
       {
@@ -291,11 +291,11 @@ export const engineeringNodes: WorkflowNode[] = [
   },
   {
     id: 'pr42',
-    label: 'PR #42 closed loop',
+    label: 'PR Node #42',
     shortLabel: 'PR #42',
     role: 'engineering',
     status: 'demo',
-    summary: 'Dev → QA fail → repair → QA pass on exp/28-checkbox.',
+    summary: 'Human review happens on the PR. Comments loop back into Dev/QA; merge output ships outward.',
     links: [
       {
         kind: 'asset',
@@ -304,37 +304,16 @@ export const engineeringNodes: WorkflowNode[] = [
       },
     ],
     x: 720,
-    y: 72,
-  },
-  {
-    id: 'pr34',
-    label: 'PR #34 baseline fail',
-    shortLabel: 'PR #34',
-    role: 'engineering',
-    status: 'specified',
-    summary: 'Intentional QA FAILED before picture (no repair).',
-    links: [
-      {
-        kind: 'asset',
-        label: 'PR #34',
-        url: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/pull/34',
-      },
-      {
-        kind: 'run',
-        label: 'QA fail',
-        url: 'https://cursor.com/t/trimble/agents/bc-fdcb9904-68dc-4abe-9671-2e94197ff1de',
-      },
-    ],
-    x: 720,
-    y: 168,
+    y: 125,
   },
 ];
 
 export const engineeringEdges: Array<[string, string]> = [
-  ['issue49', 'dev'],
+  ['issue28', 'dev'],
   ['dev', 'qa'],
+  ['qa', 'dev'],
   ['qa', 'pr42'],
-  ['qa', 'pr34'],
+  ['pr42', 'dev'],
 ];
 
 /** @deprecated use sheetPilotNodes */

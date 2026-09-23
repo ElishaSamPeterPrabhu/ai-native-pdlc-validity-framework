@@ -38,7 +38,7 @@ for (let index = 0; index < rampAngles.length; index += 1) {
   ramps.push({
     name: rampNames[index],
     position,
-    rotation: index === 2 ? [0, 0, - 0.08] : [0, 0, angle],
+    rotation: [0, 0, angle],
     color: rampColors[index],
   });
   const exit = endpoint(position, angle, 1);
@@ -118,7 +118,7 @@ function PhysicsBall() {
       position={[spawnPosition.x, spawnPosition.y, spawnPosition.z]}
       restitution={0.12}
       friction={1}
-      linearDamping={0.7}
+      linearDamping={2.5}
     >
       <BallCollider args={[BALL_RADIUS]} />
       <mesh castShadow>

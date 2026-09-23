@@ -8,8 +8,8 @@ const RAMP_LENGTH = 2.5;
 const TRANSFER_GAP = 0.14;
 const VERTICAL_DROP = 0.18;
 const BALL_RADIUS = 0.23;
-const BASE_DAMPING = 0.35;
-const ENGINEERING_DAMPING = 0.9;
+const BASE_DAMPING = 2.5;
+const ENGINEERING_DAMPING = 2.7;
 const ACCELERATED_DAMPING = 0.01;
 const rampAngles = [-0.18, -0.28, -0.38];
 const rampNames = ['Product', 'Design', 'Engineering'];
@@ -41,7 +41,7 @@ for (let index = 0; index < rampAngles.length; index += 1) {
   ramps.push({
     name: rampNames[index],
     position,
-    rotation: index === 2 ? [0, 0, - 0.12] : [0, 0, angle],
+    rotation: [0, 0, angle],
     color: rampColors[index],
   });
   const exit = endpoint(position, angle);
@@ -49,7 +49,7 @@ for (let index = 0; index < rampAngles.length; index += 1) {
 }
 
 const engineeringExit = endpoint(ramps[2].position, rampAngles[2] + .2);
-const bucketPosition: [number, number, number] = [engineeringExit.x + 2.0, engineeringExit.y - 1.25, 0];
+const bucketPosition: [number, number, number] = [engineeringExit.x + 1.6, engineeringExit.y - 1.25, 0];
 const boostTriggerX = engineeringExit.x - 0.3;
 
 function FixedTrack({ track, accent = false }: { track: RampConfig; accent?: boolean }) {
@@ -71,12 +71,12 @@ function FixedTrack({ track, accent = false }: { track: RampConfig; accent?: boo
 
 function AcceleratorGate() {
   return (
-    <group position={[boostTriggerX, engineeringExit.y + 0.16, 0]}>
+    <group position={[boostTriggerX, engineeringExit.y - 0.05, 0]}>
       <mesh rotation={[0, 0, -0.25]} castShadow>
         <boxGeometry args={[0.55, 0.12, 1.25]} />
         <meshStandardMaterial color="#f3b94f" emissive="#f3b94f" emissiveIntensity={0.7} metalness={0.45} />
       </mesh>
-      <Text position={[.8, 0.65, 1.0]} fontSize={0.18} color="#ffda8b" anchorX="center">AI ACCELERATION</Text>
+      <Text position={[.8, 0.5, 1.0]} fontSize={0.18} color="#ffda8b" anchorX="center">AI ACCELERATION</Text>
     </group>
   );
 }

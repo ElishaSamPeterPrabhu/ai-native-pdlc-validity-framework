@@ -97,19 +97,19 @@ export default function App() {
             <h2 id="beat-four-title">The answer is not another faster part.</h2>
             <p>Expand the workflow across Product and Design, then connect every handoff to a repeatable automation.</p>
           </div>
-          <WorkflowGraph variant="sheet" progress={1} initialSelectedId="intake" />
+          <WorkflowGraph variant="sheet" progress={1} initialSelectedId="intake" showDetail={false} />
         </section>
 
         <section className="story-panel story-panel-graph" aria-labelledby="beat-five-title">
           <div className="graph-intro">
             <span className="beat-kicker">05 · Engineering loop</span>
-            <h2 id="beat-five-title">Dev, QA, and PR runs you can open.</h2>
+            <h2 id="beat-five-title">Dev, QA, PR review, and output.</h2>
             <p>
-              Click a sub-node (<strong>Automation</strong> or <strong>Run</strong>) to open Cursor in a new tab. Select the main
-              node for context—the sheet pilot human gate stays on beat 04.
+              Click a sub-node (<strong>Automation</strong> or <strong>Run</strong>) to open Cursor in a new tab. Review happens on
+              the PR—comments loop back into Dev/QA; merged work flows out as output. Sheet ledger review stays on beat 04.
             </p>
           </div>
-          <WorkflowGraph variant="engineering" progress={1} initialSelectedId="dev" />
+          <WorkflowGraph variant="engineering" progress={1} initialSelectedId="dev" showDetail={false} />
         </section>
       </div>
 
