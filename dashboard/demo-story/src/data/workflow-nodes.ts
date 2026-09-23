@@ -218,16 +218,16 @@ export const sheetPilotEdges: Array<[string, string]> = [
 export const engineeringNodes: WorkflowNode[] = [
   {
     id: 'issue28',
-    label: 'Issue Node #28',
-    shortLabel: 'Issue #28',
+    label: 'Issue Node #1409',
+    shortLabel: 'Issue #1409',
     role: 'engineering',
     status: 'demo',
-    summary: 'Engineering work item closed by PR #42.',
+    summary: 'Official Modus work item closed by PR #1457.',
     links: [
       {
         kind: 'asset',
-        label: 'Issue #28',
-        url: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/issues/28',
+        label: 'Issue #1409',
+        url: 'https://github.com/trimble-oss/modus-wc-2.0/issues/1409',
       },
     ],
     x: 120,
@@ -239,7 +239,7 @@ export const engineeringNodes: WorkflowNode[] = [
     shortLabel: 'Dev',
     role: 'engineering',
     status: 'specified',
-    summary: 'Stop-boundary implementation on the pilot fork (PR #42).',
+    summary: 'Implementation work for the official Modus PR #1457.',
     automation: 'Dev Agent',
     links: [
       {
@@ -254,8 +254,8 @@ export const engineeringNodes: WorkflowNode[] = [
       },
       {
         kind: 'asset',
-        label: 'PR #42',
-        url: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/pull/42',
+        label: 'PR #1457',
+        url: 'https://github.com/trimble-oss/modus-wc-2.0/pull/1457',
       },
     ],
     x: 320,
@@ -267,7 +267,7 @@ export const engineeringNodes: WorkflowNode[] = [
     shortLabel: 'QA',
     role: 'engineering',
     status: 'specified',
-    summary: 'Verification cycle after Dev; sends the same context to PR #42.',
+    summary: 'Verification cycle after Dev; sends the same context to PR #1457.',
     automation: 'QA Agent',
     links: [
       {
@@ -291,16 +291,16 @@ export const engineeringNodes: WorkflowNode[] = [
   },
   {
     id: 'pr42',
-    label: 'PR Node #42',
-    shortLabel: 'PR #42',
+    label: 'PR Node #1457',
+    shortLabel: 'PR #1457',
     role: 'engineering',
     status: 'demo',
-    summary: 'Human review happens on the PR. Comments loop back into Dev/QA; merge output ships outward.',
+    summary: 'Human review happens on official PR #1457. Comments loop back into Dev/QA; merge output ships outward.',
     links: [
       {
         kind: 'asset',
-        label: 'PR #42',
-        url: 'https://github.com/ElishaSamPeterPrabhu/modus-wc-2.0/pull/42',
+        label: 'PR #1457',
+        url: 'https://github.com/trimble-oss/modus-wc-2.0/pull/1457',
       },
     ],
     x: 720,
