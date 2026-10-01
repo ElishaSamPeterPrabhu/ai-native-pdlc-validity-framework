@@ -33,9 +33,12 @@ description: >-
 4. If the design uses label routing, propose `starter-kit/workflows/label-router.yml`
    filled for this repo, destined for `workflows_dir`. Install only on approval.
 5. Walk the human through the console setup, one automation at a time:
-   - Follow-up comment triggers must be **by Me**, never Anyone.
-   - QA "PR opened" may be Anyone (the bot opens PRs).
-   - Fix wakes on label added `qa-failed` only.
+   - Every comment trigger on every agent must be **by Me**, never Anyone. That
+     includes QA/Fix handoff comments; route those through the label router.
+   - QA wakes on label added (`qa-full`, `qa-skip`, `qa-rerun`) only, never on
+     PR opened.
+   - Fix (or Dev, if the team has no Fix agent) wakes on label added `qa-failed`
+     only.
    - Attach the MCPs the instructions need (GitHub; Drive/Figma staging for
      frontend).
 6. Optional: use the built-in `automate` skill to create the automations
@@ -44,5 +47,5 @@ description: >-
 
 ## Do not
 
-- Grant agents merge rights or Anyone-triggered follow-ups.
+- Grant agents merge rights or put Anyone on any comment trigger.
 - Drop the 3-iteration Fix cap or the one-verdict-per-wake rule.

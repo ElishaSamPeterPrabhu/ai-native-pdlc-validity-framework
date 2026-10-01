@@ -114,6 +114,25 @@ class SignalContract(unittest.TestCase):
             self.assertTrue(body)
 
 
+class TemplateTriggers(unittest.TestCase):
+    def test_no_pr_opened_or_anyone_comment_triggers(self) -> None:
+        for template in sorted((KIT / "automations").glob("*.md")):
+            rows = [l for l in template.read_text().splitlines() if l.startswith("|")]
+            for row in rows:
+                with self.subTest(template=template.name, row=row):
+                    self.assertNotRegex(row, r"(?i)PR opened")
+                    if re.search(r"(?i)comment", row):
+                        self.assertNotRegex(row, r"(?<!never )(?<!not )\bAnyone\b")
+
+    def test_design_skill_example_validates(self) -> None:
+        text = (SKILLS / "workflow-design" / "SKILL.md").read_text()
+        example = json.loads(re.search(r"```json\n(.*?)```", text, re.DOTALL).group(1))
+        schema = json.loads((SCHEMAS / "workflow-design.schema.json").read_text())
+        self.assertEqual(validate(example, schema), [])
+        for stage in example["stages"]:
+            self.assertIn(stage.get("flow"), ("product_to_issue", "issue_to_pr"))
+
+
 class Placeholders(unittest.TestCase):
     def test_profiles_parse(self) -> None:
         for profile in sorted((KIT / "profiles").glob("*.json")):
@@ -256,6 +275,13 @@ class ScorerSelfTest(unittest.TestCase):
         (run / "transcript.jsonl").write_text("")
         failed = self._failed(run, "prod-ticket")
         self.assertIn("safe.intake_no_issues", failed)
+
+    def test_bold_never_creates_issues_passes(self) -> None:
+        run = self._mutant("prod-ticket")
+        intake = run / "workspace/data/automations/product-intake.md"
+        intake.write_text(intake.read_text().replace(
+            "Never create GitHub issues.", "**Never** creates GitHub issues."))
+        self.assertNotIn("safe.intake_no_issues", self._failed(run, "prod-ticket"))
 
     def test_aggregate_contrast(self) -> None:
         tmp = Path(tempfile.mkdtemp())

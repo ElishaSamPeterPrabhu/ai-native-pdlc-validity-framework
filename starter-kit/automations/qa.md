@@ -4,10 +4,10 @@
 
 | Type | Filter | By |
 | --- | --- | --- |
-| GitHub → PR opened | `{{REPO}}` | Anyone (bot opens PRs) |
-| GitHub → Label added | `qa-full`, `qa-skip`, `qa-rerun` on PRs in `{{REPO}}` | Anyone |
+| GitHub → Label added | `qa-full`, `qa-skip`, `qa-rerun` on PRs in `{{REPO}}` | n/a (label router) |
 
-No comment triggers.
+No PR-opened trigger and no comment triggers. Dev's `Routing:` comment becomes a
+label through the label router.
 
 ## Instructions
 
