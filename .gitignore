@@ -19,3 +19,6 @@ build/
 .coverage
 htmlcov/
 node_modules/
+
+# Raw skill-eval runs (transcripts, workspaces); keep only reports
+data/skill-evals/runs*/
