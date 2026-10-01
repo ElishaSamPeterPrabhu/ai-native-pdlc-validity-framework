@@ -24,9 +24,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 try:
-    from cursor_sdk import Agent, Cursor, CursorAgentError, LocalAgentOptions
+    from cursor_sdk import (
+        Agent,
+        Cursor,
+        CursorAgentError,
+        LocalAgentOptions,
+        ModelParameterValue,
+        ModelSelection,
+    )
 except ImportError:  # optional: score.py and the L0 tests must run without it
-    Agent = Cursor = LocalAgentOptions = None
+    Agent = Cursor = LocalAgentOptions = ModelParameterValue = ModelSelection = None
     CursorAgentError = RuntimeError
 
 HERE = Path(__file__).resolve().parent
@@ -125,18 +132,68 @@ def collect_writes(scratch: Path, run_dir: Path) -> list[str]:
     return writes
 
 
+def _is_fast(*labels: str) -> bool:
+    return any("fast" in label.lower() for label in labels if label)
+
+
+def _param_is_fast(param_id: str, value: str) -> bool:
+    if _is_fast(value):
+        return True
+    return _is_fast(param_id) and value.lower() in ("true", "1", "on", "yes")
+
+
+def describe_model(model) -> str:
+    lines = [f"{model.id}  ({model.display_name})"]
+    for param in model.parameters:
+        values = ", ".join(v.value for v in param.values)
+        lines.append(f"  param {param.id}: {values}")
+    for variant in model.variants:
+        params = ", ".join(f"{p.id}={p.value}" for p in variant.params)
+        default = " [default]" if variant.is_default else ""
+        lines.append(f"  variant {variant.display_name or '-'}: {params}{default}")
+    return "\n".join(lines)
+
+
+def resolve_model(model, allow_fast: bool) -> tuple[object, str]:
+    """Pin an explicit variant; a bare id lets the account default (often fast) win."""
+    if allow_fast:
+        return ModelSelection(id=model.id), model.id
+    for variant in sorted(model.variants, key=lambda v: not v.is_default):
+        fast = _is_fast(variant.display_name) or any(
+            _param_is_fast(p.id, p.value) for p in variant.params
+        )
+        if not fast:
+            pairs = ",".join(f"{p.id}={p.value}" for p in variant.params)
+            label = variant.display_name or pairs or model.id
+            return ModelSelection(id=model.id, params=tuple(variant.params)), label
+    params = []
+    for param in model.parameters:
+        if not _is_fast(param.id, *(v.value for v in param.values)):
+            continue
+        slow = [v for v in param.values if not _param_is_fast(param.id, v.value)]
+        if not slow:
+            raise ValueError(f"{model.id}: no non-fast value for parameter {param.id}")
+        params.append(ModelParameterValue(id=param.id, value=slow[0].value))
+    if model.variants and not params:
+        raise ValueError(f"{model.id}: every variant is fast")
+    label = ",".join(f"{p.id}={p.value}" for p in params) or model.id
+    return ModelSelection(id=model.id, params=tuple(params)), label
+
+
 def _asks_question(text: str) -> bool:
     tail = text.strip()[-600:]
     return "?" in tail
 
 
-def run_one(scenario: str, arm: str, rep: int, model: str, runs_dir: Path) -> dict:
+def run_one(scenario: str, arm: str, rep: int, model: str, selection, variant: str,
+            allow_fast: bool, runs_dir: Path) -> dict:
     persona = json.loads((SCENARIOS / scenario / "persona.json").read_text())
     run_dir = runs_dir / f"{scenario}__{arm}__r{rep}"
     if run_dir.exists():
         shutil.rmtree(run_dir)
     run_dir.mkdir(parents=True)
     meta = {"scenario": scenario, "arm": arm, "rep": rep, "model": model,
+            "model_variant": variant, "models_used": [],
             "started_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
     transcript: list[dict] = []
     scratch = Path(tempfile.mkdtemp(prefix=f"skill-eval-{scenario}-{arm}-"))
@@ -146,7 +203,7 @@ def run_one(scenario: str, arm: str, rep: int, model: str, runs_dir: Path) -> di
         message = OPENING[arm]
         finalized = False
         with Agent.create(
-            model=model,
+            model=selection,
             api_key=os.environ["CURSOR_API_KEY"],
             name=f"skill-eval {scenario} {arm} r{rep}",
             local=LocalAgentOptions(cwd=str(scratch), setting_sources=["project"]),
@@ -155,6 +212,19 @@ def run_one(scenario: str, arm: str, rep: int, model: str, runs_dir: Path) -> di
                 transcript.append({"turn": turn, "role": "user", "text": message})
                 result = agent.send(message).wait()
                 reply = result.result or ""
+                if result.model is not None:
+                    used = result.model.id + "".join(
+                        f" {p.id}={p.value}" for p in result.model.params
+                    )
+                    if used not in meta["models_used"]:
+                        meta["models_used"].append(used)
+                    if not allow_fast and (
+                        _is_fast(result.model.id)
+                        or any(_param_is_fast(p.id, p.value) for p in result.model.params)
+                    ):
+                        meta["status"] = "failed"
+                        meta["error"] = f"server ran {used}, not the pinned non-fast variant"
+                        break
                 transcript.append({"turn": turn, "role": "assistant", "text": reply,
                                    "status": str(result.status)})
                 if result.status != "finished":
@@ -194,6 +264,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--arm", action="append", choices=criteria["arms"])
     parser.add_argument("--k", type=int, default=criteria["k"])
     parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument("--allow-fast", action="store_true",
+                        help="use the account's default variant even if it is fast")
+    parser.add_argument("--list-models", action="store_true",
+                        help="print models, parameters and variants, then exit")
     parser.add_argument("--runs", type=Path, default=DEFAULT_RUNS)
     parser.add_argument("--smoke", action="store_true", help="eng-modus, skills arm, k=1")
     args = parser.parse_args(argv)
@@ -217,21 +291,34 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     try:
-        available = {m.id for m in Cursor.models.list(api_key=os.environ["CURSOR_API_KEY"])}
+        models = {m.id: m for m in Cursor.models.list(api_key=os.environ["CURSOR_API_KEY"])}
     except CursorAgentError as exc:
         print(f"Cannot start L1 runs: {exc} (keys start with crsr_)", file=sys.stderr)
         return 1
-    if args.model not in available:
-        print(f"model {args.model!r} not available; choose from {sorted(available)}", file=sys.stderr)
+    if args.list_models:
+        for model in models.values():
+            print(describe_model(model))
+        return 0
+    if args.model not in models:
+        print(f"model {args.model!r} not available; choose from {sorted(models)}", file=sys.stderr)
         return 1
+    try:
+        selection, variant = resolve_model(models[args.model], args.allow_fast)
+    except ValueError as exc:
+        print(f"Cannot start L1 runs: {exc}\n{describe_model(models[args.model])}", file=sys.stderr)
+        return 1
+    print(f"model {args.model} variant {variant}")
 
     args.runs.mkdir(parents=True, exist_ok=True)
     failed = 0
     for scenario in scenarios:
         for arm in arms:
             for rep in range(1, k + 1):
-                meta = run_one(scenario, arm, rep, args.model, args.runs)
-                print(f"{scenario:13} {arm:6} r{rep}  {meta['status']:9} writes={meta['writes']}")
+                meta = run_one(scenario, arm, rep, args.model, selection, variant,
+                               args.allow_fast, args.runs)
+                used = ";".join(meta["models_used"]) or "?"
+                print(f"{scenario:13} {arm:6} r{rep}  {meta['status']:9} "
+                      f"writes={meta['writes']}  model={used}")
                 failed += meta["status"] != "finished"
     return 2 if failed else 0
 
