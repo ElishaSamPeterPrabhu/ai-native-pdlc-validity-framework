@@ -3,6 +3,24 @@
 Turns meeting notes, sprint-planning output, or product requests into reviewed,
 approved issues. Humans approve every issue before it is created.
 
+## Existing repo implementation
+
+This repository includes a fuller product-to-issue implementation under
+`docs/chat-bots/`:
+
+- `meeting-intake-automation-prompt.md` and `meeting-intake-rubric.md` define
+  classification and clarification behavior.
+- `workflows/meeting-intake*.json` and `apps-script/` contain the coordinator,
+  review, and write-back templates.
+- `.cursor/skills/meeting-review-intake`,
+  `.cursor/skills/review-ledger-round`, and
+  `.cursor/skills/approve-ledger-round` keep intake, review, and approval as
+  separate human-controlled stages.
+
+Use those adapters when adopting this repository's Google Docs/Sheets flow. For
+another repository, keep the generic ledger contract below and replace the
+source-specific templates.
+
 ## Ledger
 
 A sheet or `data/ledger.json` with one row per candidate item:

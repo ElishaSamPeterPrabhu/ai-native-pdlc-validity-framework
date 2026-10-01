@@ -36,8 +36,11 @@ Keep `dashboard/server.py` and its existing `/api/summary` and `/api/run/<tag>` 
    every 20s using `since` / ETag to respect rate limits.
 2. **Product→Issue adapter** (pluggable): a Google Sheet CSV export URL or a local
    `data/ledger.json` (rows: source meeting, classification, cursor comment, approval,
-   linked issue). Optional; when absent show "not connected" as a measurement gap, not
-   an error.
+   linked issue). For this repository, use the existing implementation under
+   `docs/chat-bots/` and the staged skills
+   `.cursor/skills/meeting-review-intake`, `review-ledger-round`, and
+   `approve-ledger-round` as the reference adapter. Optional; when absent show
+   "not connected" as a measurement gap, not an error.
 3. **Local framework artifacts:** `data/metrics.jsonl`, `data/score-pack.json`,
    `data/evidence-pack.json`, `data/validity-report.json`.
 4. **Replay mode:** `python dashboard/server.py --record` snapshots live responses into

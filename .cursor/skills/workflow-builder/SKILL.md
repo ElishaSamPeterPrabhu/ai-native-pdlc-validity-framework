@@ -27,13 +27,29 @@ Use `AskQuestion`:
 
 | Answer | Run in order |
 | --- | --- |
-| Understand | `workflow-discover` → `workflow-interview` → `workflow-design` → setup → `workflow-measure-handoff` |
+| Understand | `workflow-discover` → `repo-context-resolver` (when repo/design evidence is needed) → `workflow-interview` → `workflow-design` → setup → `workflow-measure-handoff` |
 | Design | `workflow-interview` (short) → `workflow-design` → setup → `workflow-measure-handoff` |
 | Set up | Read the existing `workflow-design.json`; `workflow-setup-cursor` or `workflow-setup-other` → `workflow-measure-handoff` |
 | Measure | `workflow-measure-handoff` (it hands off to `validity-setup` / `validity-score`) |
 
 "Setup" means `workflow-setup-cursor` when the team uses Cursor Automations, else
 `workflow-setup-other`. Ask if unknown.
+
+## Existing repo adapters
+
+Use these adapters when the repository already has the product/design intake
+surfaces in `docs/chat-bots/`:
+
+- **Product → issue:** `meeting-review-intake` classifies meeting notes without
+  creating issues, `review-ledger-round` reviews candidate rows, and
+  `approve-ledger-round` sends approved `repo-work` / `design-work` rows through
+  Issue Scaffolding. Reference prompts and Apps Script relays are under
+  `docs/chat-bots/`.
+- **Repository context:** `repo-context-resolver` answers repository questions
+  from cited component, graph, design, and issue evidence.
+- **Design → issue:** for frontend work, run `design-capability-check` first,
+  then `design-to-issue` to produce a cited issue draft. Keep the human approval
+  gate before issue creation.
 
 ## Artifacts (all under `data_dir` from `validity.layout.json`)
 
