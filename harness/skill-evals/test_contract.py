@@ -124,13 +124,25 @@ class TemplateTriggers(unittest.TestCase):
                     if re.search(r"(?i)comment", row):
                         self.assertNotRegex(row, r"(?<!never )(?<!not )\bAnyone\b")
 
-    def test_design_skill_example_validates(self) -> None:
-        text = (SKILLS / "workflow-design" / "SKILL.md").read_text()
-        example = json.loads(re.search(r"```json\n(.*?)```", text, re.DOTALL).group(1))
-        schema = json.loads((SCHEMAS / "workflow-design.schema.json").read_text())
-        self.assertEqual(validate(example, schema), [])
+    def test_skill_examples_validate(self) -> None:
+        pairs = {"workflow-discover": "repo-profile", "workflow-interview": "process-map",
+                 "workflow-design": "workflow-design"}
+        for skill, schema_name in pairs.items():
+            with self.subTest(skill=skill):
+                text = (SKILLS / skill / "SKILL.md").read_text()
+                example = json.loads(re.search(r"```json\n(.*?)```", text, re.DOTALL).group(1))
+                schema = json.loads((SCHEMAS / f"{schema_name}.schema.json").read_text())
+                self.assertEqual(validate(example, schema), [])
+        design = (SKILLS / "workflow-design" / "SKILL.md").read_text()
+        example = json.loads(re.search(r"```json\n(.*?)```", design, re.DOTALL).group(1))
         for stage in example["stages"]:
             self.assertIn(stage.get("flow"), ("product_to_issue", "issue_to_pr"))
+
+    def test_fix_template_emits_rerun(self) -> None:
+        fix = (KIT / "automations" / "fix.md").read_text()
+        for signal in ("Fix applied:", "QA-rerun: add", "Max iterations reached"):
+            with self.subTest(signal=signal):
+                self.assertIn(signal, fix)
 
 
 class Placeholders(unittest.TestCase):
@@ -282,6 +294,18 @@ class ScorerSelfTest(unittest.TestCase):
         intake.write_text(intake.read_text().replace(
             "Never create GitHub issues.", "**Never** creates GitHub issues."))
         self.assertNotIn("safe.intake_no_issues", self._failed(run, "prod-ticket"))
+        intake.write_text("# Intake\n1. **Never create a GitHub issue** in this automation.\n")
+        self.assertNotIn("safe.intake_no_issues", self._failed(run, "prod-ticket"))
+
+    def test_saying_no_storybook_is_not_visual_qa(self) -> None:
+        expected = json.loads((SCENARIOS / "generic-ctrl" / "expected.json").read_text())
+        check = next(c for c in expected["checks"] if c["id"] == "str.no_visual")
+        run = self._mutant("eng-modus")
+        qa = run / "workspace/data/automations/qa.md"
+        qa.write_text("No UI, Storybook, Figma, or visual QA for this repo.\n")
+        self.assertTrue(score.run_check(run, check)[0])
+        qa.write_text("Screenshot Storybook and compare to Figma.\n")
+        self.assertFalse(score.run_check(run, check)[0])
 
     def test_aggregate_contrast(self) -> None:
         tmp = Path(tempfile.mkdtemp())

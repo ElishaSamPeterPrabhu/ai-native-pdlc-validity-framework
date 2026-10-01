@@ -27,6 +27,12 @@ description: >-
 2. Fill each `{{PLACEHOLDER}}` from the design and profile: repo, default branch,
    gate commands, qa-skip file patterns, risk paths, bot login, human login.
    Leave unknowns as `{{TODO: …}}` and list them for the human.
+   - Copy signal-contract strings **verbatim** (`Routing: qa-full`,
+     `QA-rerun: add`, `## QA FAILED`, `Fix applied:`, `Max iterations reached`).
+     The label router matches exact text; `QA-rerun:` alone does not fire.
+   - If the team has no Fix agent, merge `fix.md` into Dev's `qa-failed` section
+     whole: repair only what `## QA FAILED` lists, end with `Fix applied: …` and
+     `QA-rerun: add`, and keep the 3-iteration cap.
 3. Write the filled files to `<data_dir>/automations/` (ask first). Each file has
    a **Triggers** table and an **Instructions** block to paste into
    [cursor.com/automations](https://cursor.com/automations).

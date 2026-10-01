@@ -165,7 +165,7 @@
         "*automations/*intake*"
       ],
       "patterns": [
-        "(?i)(never|do not|don't|must not)\\W{0,4}(create|open|file)s? (any )?(github )?issues?"
+        "(?i)(never|do not|don't|must not)\\W{0,4}(create|open|file)s? (any |a |an )?(new )?(github )?issues?"
       ]
     },
     {

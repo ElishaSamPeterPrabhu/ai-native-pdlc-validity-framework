@@ -30,18 +30,24 @@ description: >-
 ```json
 {
   "repo": "owner/name",
-  "profile": "generic | frontend",
-  "stack": [],
-  "commands": {"build": "", "test": "", "lint": "", "preview": ""},
-  "ci": {"workflows": [], "required_checks": []},
-  "agent_surface": {"rules": [], "hooks": false, "mcp": [], "skills": []},
+  "profile": "frontend",
+  "stack": ["typescript", "storybook"],
+  "commands": {"build": "npm run build", "test": "npm test", "lint": "npm run lint", "preview": ""},
+  "ci": {"workflows": [".github/workflows/ci.yml"], "required_checks": []},
+  "agent_surface": {"rules": [".cursor/rules/code.mdc"], "hooks": false, "mcp": [], "skills": []},
   "ownership": {"codeowners": false, "maintainers": []},
-  "graph": {"present": false, "path": ""},
+  "graph": {"present": true, "path": "docs/component-graph/component-graph.json"},
   "design_sources": [],
   "tracker": {"kind": "github", "labels": []},
-  "gaps": []
+  "gaps": ["no hooks"]
 }
 ```
+
+   Shape rules (validated by `framework/schemas/repo-profile.schema.json`):
+   - `profile` is exactly `generic` or `frontend`.
+   - `hooks` and `graph.present` are JSON booleans (`true`/`false`), never strings.
+   - `stack`, `ci.workflows`, `agent_surface.rules`/`mcp`/`skills`, `gaps` are
+     arrays of strings. `commands.*` are single command strings.
 
 5. **Summarize** in 5–8 sentences: what exists, which gaps block automation, and
    which profile (generic or frontend) fits. Then hand off to `workflow-interview`.
