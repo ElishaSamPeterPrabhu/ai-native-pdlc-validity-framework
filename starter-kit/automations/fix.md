@@ -26,5 +26,5 @@ Otherwise make the minimal fix on the same branch, re-run:
 Push, then comment on the PR (not the issue):
   Fix applied: <one sentence>
   QA-rerun: add
-Never claim QA passed.
+Never claim QA passed. Never merge or enable auto-merge; humans merge.
 ```

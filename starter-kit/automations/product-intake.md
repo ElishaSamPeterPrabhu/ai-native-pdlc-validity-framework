@@ -58,4 +58,5 @@ ON APPROVED ROW: create one issue in {{REPO}} using {{ISSUE_TEMPLATE}} with the
 summary, acceptance criteria, source link, and design source (QA-source line for UI
 work). Label {{INTAKE_LABEL}}. Write issue_url back and set status=issue_created.
 Do not comment /approve on the issue; implementation start stays human.
+Never merge or approve PRs; humans merge.
 ```

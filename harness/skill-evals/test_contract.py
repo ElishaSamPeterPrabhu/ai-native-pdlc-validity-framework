@@ -138,6 +138,11 @@ class TemplateTriggers(unittest.TestCase):
         for stage in example["stages"]:
             self.assertIn(stage.get("flow"), ("product_to_issue", "issue_to_pr"))
 
+    def test_every_template_forbids_merge(self) -> None:
+        for template in sorted((KIT / "automations").glob("*.md")):
+            with self.subTest(template=template.name):
+                self.assertRegex(template.read_text(), r"Never merge[^\n]*humans merge")
+
     def test_fix_template_emits_rerun(self) -> None:
         fix = (KIT / "automations" / "fix.md").read_text()
         for signal in ("Fix applied:", "QA-rerun: add", "Max iterations reached"):

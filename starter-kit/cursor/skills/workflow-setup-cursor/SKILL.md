@@ -30,6 +30,8 @@ description: >-
    - Copy signal-contract strings **verbatim** (`Routing: qa-full`,
      `QA-rerun: add`, `## QA FAILED`, `Fix applied:`, `Max iterations reached`).
      The label router matches exact text; `QA-rerun:` alone does not fire.
+   - Keep every `Never …` / `Do not …` line from the template in the filled file,
+     including "Never merge … humans merge". Rewording is fine; dropping is not.
    - If the team has no Fix agent, merge `fix.md` into Dev's `qa-failed` section
      whole: repair only what `## QA FAILED` lists, end with `Fix applied: …` and
      `QA-rerun: add`, and keep the 3-iteration cap.

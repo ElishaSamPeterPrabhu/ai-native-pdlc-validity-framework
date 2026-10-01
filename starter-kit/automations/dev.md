@@ -37,5 +37,5 @@ OPEN PR: link the issue, check off satisfied AC, add "Stop-boundary check: yes|n
 ROUTING (post as a PR conversation comment, first line exact):
 - Routing: qa-skip   if ALL changed files match {{QA_SKIP_PATTERNS}}
 - Routing: qa-full   otherwise
-Never claim QA passed. Never merge.
+Never claim QA passed. Never merge or enable auto-merge; humans merge.
 ```

@@ -24,6 +24,6 @@ IF invoked by /refine:
   If the latest QA is "## QA FAILED" and unrepaired: comment
     "Routed to Fix Agent for the latest QA FAILED." and STOP.
   Else make the requested minimal change on the same branch, run the gate, push,
-  comment what changed on the PR, then "QA-rerun: add". Never claim QA passed.
+  comment what changed on the PR, then "QA-rerun: add". Never claim QA passed. Never merge; humans merge.
   If not feasible: "## NOT FEASIBLE" on the PR. STOP.
 ```
