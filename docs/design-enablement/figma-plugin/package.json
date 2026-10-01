@@ -1,0 +1,11 @@
+{
+  "name": "modus-designer-copilot-figma-plugin",
+  "private": true,
+  "scripts": {
+    "build:index": "node build-component-index.cjs",
+    "build:code": "node build-plugin-code.cjs",
+    "build": "npm run build:index && npm run build:code",
+    "copilot": "node copilot-server.cjs",
+    "test": "node --test capability-engine.test.cjs copilot-suggest.test.cjs"
+  }
+}

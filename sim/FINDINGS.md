@@ -178,3 +178,33 @@ Prediction agreement: 11/16 cells inside the pre-registered ΔV_obs range;
   exists (same tier as `completion_guard_hook`).
 - Sobol and identifiability re-runs including the new mechanisms are deferred
   to a later round.
+
+### External cross-check target (llama-leash, 2026-08-30)
+
+Level 0 verification artifacts live in `data/external/llama-leash/`
+(inspect setup-manifest, documented-setup intake, score pack, factor mapping).
+
+- `inspect` reported 12 measurement gaps: conductor's controls live in a
+  TypeScript plugin, not `.cursor`/`.github` conventions — the intake path
+  covers them as declared (`reported`) evidence.
+- `score` on the documented setup returned **n_scored=0, V\* missing**: no run
+  telemetry exists, so the framework refused to produce a number. This is the
+  intended insufficient-data behavior, exercised on a real external repo.
+- All four v1.3 discipline factors are live, mechanically enforced controls in
+  that harness; under the v1.1 registry the setup would have been
+  indistinguishable from a plain tests-exist pipeline.
+- **Measured round 1 closed (local Mac, 2026-08-31):** benchmark calibration
+  `self_score − objective` observed at **0.0** on ornith-9b Q4_K_M
+  (merge-ranges, author-default preset); see
+  `data/external/llama-leash/benchmark-results.json`. T0 three-arm conductor
+  bench stopped at **8/30 cells** — baseline 3/3 hidden pass, doctrine 2/3.
+  The **conductor arm is not_computable** on this stack: llama.cpp Jinja
+  (Qwen/ornith) allows only one system message, and only as `messages[0]`;
+  conductor appends doctrine as extra system entries. Preflight 2026-08-31
+  reproduced a first-turn Jinja 500 in seconds; `opencode run --agent
+  conductor-orchestrator` produced zero tokens in 90s. Remaining T0 cells
+  were not run. Cross-check vs `data/discipline_ablation.json` is in
+  `cross-check.json` (`round_1_closed`): no magnitude claims, no sim
+  direction claim confirmed or refuted. `score` on this intake still returns
+  **n_scored=0, V\* missing** (no run telemetry). Unblocking conductor is a
+  separate llama-leash/serving change, not this round.

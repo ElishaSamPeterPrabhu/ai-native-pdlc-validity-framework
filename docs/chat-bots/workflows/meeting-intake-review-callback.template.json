@@ -1,0 +1,673 @@
+{
+  "name": "[PILOT] Meeting Intake Review Callback",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pilot-meeting-review-ready",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b101",
+      "name": "Cursor Review Ready Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        180
+      ],
+      "webhookId": "pilot-meeting-review-ready"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst reviewId = String(body.reviewId ?? '').trim();\nif (!reviewId) throw new Error('reviewId is required.');\nif (!body.chatResponse) throw new Error('chatResponse is required.');\nreturn [{ json: {\n  reviewId,\n  docId: body.docId ?? null,\n  docUrl: body.docUrl ?? null,\n  items: (Array.isArray(body.items) ? body.items : []).map((item) => ({ ...item, itemId: item.itemId ?? item.id })),\n  chatResponse: body.chatResponse,\n  status: 'review_ready',\n  reviewComment: '',\n  updatedAt: new Date().toISOString()\n} }];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b102",
+      "name": "Normalize Review Ready",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "meeting_review_state",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "reviewId",
+              "condition": "eq",
+              "keyValue": "={{ $('Normalize Review Ready').item.json.reviewId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reviewId": "={{ $('Normalize Review Ready').item.json.reviewId }}",
+            "docId": "={{ $('Normalize Review Ready').item.json.docId }}",
+            "docUrl": "={{ $('Normalize Review Ready').item.json.docUrl }}",
+            "itemsJson": "={{ JSON.stringify($('Normalize Review Ready').item.json.items) }}",
+            "chatResponseJson": "={{ JSON.stringify($('Normalize Review Ready').item.json.chatResponse) }}",
+            "status": "={{ $('Normalize Review Ready').item.json.status }}",
+            "reviewComment": "={{ $('Normalize Review Ready').item.json.reviewComment }}",
+            "lastUpdatedAt": "={{ $('Normalize Review Ready').item.json.updatedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "reviewId",
+              "displayName": "reviewId",
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "docId",
+              "displayName": "docId",
+              "type": "string"
+            },
+            {
+              "id": "docUrl",
+              "displayName": "docUrl",
+              "type": "string"
+            },
+            {
+              "id": "itemsJson",
+              "displayName": "itemsJson",
+              "type": "string"
+            },
+            {
+              "id": "chatResponseJson",
+              "displayName": "chatResponseJson",
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string"
+            },
+            {
+              "id": "reviewComment",
+              "displayName": "reviewComment",
+              "type": "string"
+            },
+            {
+              "id": "lastUpdatedAt",
+              "displayName": "lastUpdatedAt",
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b103",
+      "name": "Persist Review State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        180
+      ],
+      "notes": "Create an n8n Data Table named meeting_review_state with the listed columns before enabling this workflow."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://chat.googleapis.com/v1/spaces/REPLACE_SPACE_ID/messages?key=REPLACE_API_KEY&token=REPLACE_WEBHOOK_TOKEN",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Normalize Review Ready').item.json.chatResponse }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b104",
+      "name": "Send Review Card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        180
+      ],
+      "notes": "Use the existing private Chat incoming webhook. Keep the webhook secret in this n8n node/credential, never in Cursor payloads."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true,\"status\":\"review_ready\"}",
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b105",
+      "name": "Acknowledge Review Ready",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pilot-meeting-review-action",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b106",
+      "name": "Review Action Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        520
+      ],
+      "webhookId": "pilot-meeting-review-action"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst decision = String(body.decision ?? '').trim();\nconst reviewId = String(body.reviewId ?? '').trim();\nif (!reviewId || !decision) throw new Error('reviewId and decision are required.');\nif (!['approve_selected', 'reject_selected', 'request_changes', 'discard_review'].includes(decision)) throw new Error('Unsupported review decision.');\nreturn [{ json: { reviewId, decision, selectedItemIds: Array.isArray(body.selectedItemIds) ? body.selectedItemIds : [], comment: String(body.comment ?? ''), updatedAt: new Date().toISOString() } }];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b107",
+      "name": "Normalize Review Action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "meeting_review_state",
+          "mode": "name"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "reviewId",
+              "condition": "eq",
+              "keyValue": "={{ $('Normalize Review Action').item.json.reviewId }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b108",
+      "name": "Load Review State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        520
+      ],
+      "notes": "Reads the durable review state before applying the approval decision."
+    },
+    {
+      "parameters": {
+        "jsCode": "const action = $('Normalize Review Action').item.json;\nconst rows = $input.all().map((item) => item.json);\nif (!rows.length) throw new Error('Review state was not found.');\nconst review = rows[0];\nconst items = JSON.parse(review.itemsJson || '[]').map((item) => {\n  const itemId = item.itemId ?? item.id;\n  const rawText = item.rawText ?? item.rawExcerpt ?? '';\n  return {\n    ...item,\n    itemId,\n    rawText,\n    sourceExcerpt: item.sourceExcerpt ?? item.rawExcerpt ?? item.reason ?? '',\n    idempotencyKey: item.idempotencyKey ?? `gemini:${review.docId}:${itemId}`\n  };\n});\nif (action.decision === 'request_changes') {\n  return [{ json: {\n    route: 'rerun',\n    reviewId: action.reviewId,\n    cursorPayload: {\n      reviewId: action.reviewId,\n      docId: review.docId,\n      docUrl: review.docUrl,\n      previousItems: items,\n      reviewComment: action.comment,\n      reviewReadyCallbackUrl: 'https://flows-webhook.stage.trimble-ai.com/agentic/workflows/v1/webhook/pilot-meeting-review-ready',\n      revision: Date.now()\n    }\n  } }];\n}\nif (action.decision !== 'approve_selected') {\n  return [{ json: { route: 'review_update', response: { ok: true, status: action.decision, reviewId: action.reviewId, issueCreation: false } } }];\n}\nconst selected = new Set(action.selectedItemIds);\nconst approved = items.filter((item) => selected.has(item.itemId ?? item.id) && item.createEligible && ['repo-work', 'design-work'].includes(item.classification));\nif (!approved.length) {\n  return [{ json: { route: 'review_update', response: { ok: true, status: 'no_eligible_items', reviewId: action.reviewId, issueCreation: false } } }];\n}\nreturn approved.map((item) => ({ json: { route: 'create', reviewId: action.reviewId, reviewComment: action.comment, item: { ...item, itemId: item.itemId ?? item.id } } }));"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b109",
+      "name": "Build Approved Issue Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://flows-webhook.stage.trimble-ai.com/agentic/workflows/v1/webhook/pilot-modus-issue-service",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_ISSUE_SERVICE_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'ElishaSamPeterPrabhu/modus-wc-2.0', title: $json.item.rawText, summary: $json.item.sourceExcerpt || $json.item.reason, type: $json.item.classification === 'design-work' ? 'design' : 'feature', components: $json.item.componentHints || [], labels: $json.item.classification === 'design-work' ? ['needs-scaffolding', 'design-research'] : ['needs-scaffolding'], source: { kind: 'gemini-notes', threadName: $json.reviewId }, rawConversation: [{ sender: 'Gemini meeting notes', text: $json.item.rawText }], contextEvidence: $json.item.evidence || [], additionalContext: { reviewComment: $json.reviewComment }, idempotencyKey: $json.item.idempotencyKey, autoApprove: false } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b110",
+      "name": "Dispatch Approved Issues",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        520
+      ],
+      "notes": "Runs only for approved eligible repo-work/design-work items."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response || { ok: true, status: 'dispatched' } }}",
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b111",
+      "name": "Acknowledge Review Action",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "approved-review-route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "create",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b112",
+      "name": "Approved Review Items?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1080,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api2.cursor.sh/automations/webhook/REPLACE_CURSOR_MEETING_INTAKE_AUTOMATION_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_CURSOR_WEBHOOK_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.cursorPayload }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b113",
+      "name": "Re-run Cursor After Review Changes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        700
+      ],
+      "notes": "Asynchronous re-review. Cursor posts the new review-ready payload back to the callback webhook."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "rerun-route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "rerun",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b114",
+      "name": "Review Changes?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1080,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "meeting_review_state",
+        "columns": {
+          "column": [
+            {
+              "name": "reviewId",
+              "type": "string"
+            },
+            {
+              "name": "docId",
+              "type": "string"
+            },
+            {
+              "name": "docUrl",
+              "type": "string"
+            },
+            {
+              "name": "itemsJson",
+              "type": "string"
+            },
+            {
+              "name": "chatResponseJson",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "reviewComment",
+              "type": "string"
+            },
+            {
+              "name": "lastUpdatedAt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b115",
+      "name": "Ensure Review State Table (Ready)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        180
+      ],
+      "notes": "Creates the durable review-state table on first execution; subsequent executions reuse it."
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "meeting_review_state",
+        "columns": {
+          "column": [
+            {
+              "name": "reviewId",
+              "type": "string"
+            },
+            {
+              "name": "docId",
+              "type": "string"
+            },
+            {
+              "name": "docUrl",
+              "type": "string"
+            },
+            {
+              "name": "itemsJson",
+              "type": "string"
+            },
+            {
+              "name": "chatResponseJson",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "reviewComment",
+              "type": "string"
+            },
+            {
+              "name": "lastUpdatedAt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b116",
+      "name": "Ensure Review State Table (Action)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        520
+      ],
+      "notes": "Creates the durable review-state table on first execution; subsequent executions reuse it."
+    }
+  ],
+  "connections": {
+    "Cursor Review Ready Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Review Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Review Ready": {
+      "main": [
+        [
+          {
+            "node": "Ensure Review State Table (Ready)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Review State": {
+      "main": [
+        [
+          {
+            "node": "Send Review Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Review Card": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Review Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Action Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Review Action": {
+      "main": [
+        [
+          {
+            "node": "Ensure Review State Table (Action)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Review State": {
+      "main": [
+        [
+          {
+            "node": "Build Approved Issue Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Approved Issue Items": {
+      "main": [
+        [
+          {
+            "node": "Review Changes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch Approved Issues": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved Review Items?": {
+      "main": [
+        [
+          {
+            "node": "Dispatch Approved Issues",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acknowledge Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Changes?": {
+      "main": [
+        [
+          {
+            "node": "Re-run Cursor After Review Changes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Approved Review Items?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-run Cursor After Review Changes": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure Review State Table (Ready)": {
+      "main": [
+        [
+          {
+            "node": "Persist Review State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure Review State Table (Action)": {
+      "main": [
+        [
+          {
+            "node": "Load Review State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "pilot-meeting-review-callback-v4",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

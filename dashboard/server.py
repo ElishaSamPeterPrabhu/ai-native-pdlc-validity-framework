@@ -17,10 +17,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import mimetypes
 import os
 import sys
 from http.server import HTTPServer, SimpleHTTPRequestHandler
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.dirname(_HERE)
@@ -162,8 +163,33 @@ def summary() -> dict:
 
 
 class Handler(SimpleHTTPRequestHandler):
+    REPO_ASSET_ROOTS = frozenset({"docs", "harness", "framework", "theory", "scripts"})
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=_HERE, **kwargs)
+
+    def _serve_repo_file(self, path: str) -> bool:
+        relative = unquote(urlsplit(path).path).lstrip("/")
+        root = relative.split("/", 1)[0]
+        if root not in self.REPO_ASSET_ROOTS:
+            return False
+
+        candidate = os.path.realpath(os.path.join(_ROOT, relative))
+        if os.path.commonpath([_ROOT, candidate]) != _ROOT:
+            self.send_error(403, "Forbidden")
+            return True
+        if not os.path.isfile(candidate):
+            return False
+
+        content_type = mimetypes.guess_type(candidate)[0] or "application/octet-stream"
+        size = os.path.getsize(candidate)
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(size))
+        self.end_headers()
+        with open(candidate, "rb") as source:
+            self.copyfile(source, self.wfile)
+        return True
 
     def _json(self, payload: dict, status: int = 200) -> None:
         body = json.dumps(payload).encode()
@@ -175,6 +201,10 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self) -> None:  # noqa: N802
+        if urlsplit(self.path).path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
+            return
         if self.path.startswith("/api/summary"):
             self._json(summary())
             return
@@ -185,6 +215,8 @@ class Handler(SimpleHTTPRequestHandler):
                     self._json(run_view(r))
                     return
             self._json({"error": f"run {tag!r} not found"}, 404)
+            return
+        if self._serve_repo_file(self.path):
             return
         super().do_GET()
 

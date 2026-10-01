@@ -1,0 +1,366 @@
+{
+  "name": "Modus Conversational Ticket Bot (sanitized template)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "modus-ticket-bot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a001",
+      "name": "Google Chat App Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "modus-ticket-bot"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event = $json.body ?? $json;\nconst message = event.message ?? {};\nconst action = event.action ?? event.common?.invokedFunction ?? {};\nconst parameters = Object.fromEntries((action.parameters ?? []).map((p) => [p.key, p.value]));\nconst threadName = message.thread?.name ?? event.thread?.name ?? `${event.space?.name ?? 'unknown'}:${message.name ?? Date.now()}`;\nconst text = String(message.argumentText ?? message.text ?? event.text ?? '').trim();\nconst sourceUrl = message.name ? `https://chat.google.com/room/${encodeURIComponent(event.space?.name ?? '')}/${encodeURIComponent(message.name)}` : null;\n\nreturn [{\n  json: {\n    eventType: event.type ?? event.eventType ?? (event.action ? 'CARD_CLICK' : 'MESSAGE'),\n    actionName: action.actionMethodName ?? action.function ?? parameters.action ?? null,\n    actionToken: parameters.confirmationToken ?? parameters.token ?? null,\n    spaceName: event.space?.name ?? null,\n    threadName,\n    messageName: message.name ?? null,\n    sender: {\n      displayName: event.user?.displayName ?? message.sender?.displayName ?? null,\n      email: event.user?.email ?? message.sender?.email ?? null,\n    },\n    text,\n    source: {\n      kind: 'google-chat',\n      url: sourceUrl,\n      meetingDocId: parameters.meetingDocId ?? null,\n    },\n  },\n}];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a002",
+      "name": "Normalize Chat Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://chat.googleapis.com/v1/{{ $('Normalize Chat Event').item.json.threadName }}/messages?pageSize=20&orderBy=createTime%20desc",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a011",
+      "name": "Fetch Chat Thread",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        120
+      ],
+      "notes": "Bind Google Chat API OAuth. This read is bounded to the current thread and latest 20 messages."
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize Chat Event').item.json;\nconst messages = Array.isArray($json.messages) ? $json.messages.slice(-20) : [];\nreturn [{ json: { ...normalized, threadMessages: messages } }];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a012",
+      "name": "Attach Thread Window",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Return only valid JSON matching the decision contract below.\\n\\nNormalized event:\\n{{ JSON.stringify($('Normalize Chat Event').item.json) }}\\n\\nExisting thread state:\\n{{ JSON.stringify($getWorkflowStaticData('global').threads?.[$('Normalize Chat Event').item.json.threadName] ?? {}) }}\\n\\nDecision contract:\\n{\\\"outcome\\\":\\\"answer|duplicate|clarify|confirm_create|stop\\\",\\\"summary\\\":\\\"string\\\",\\\"questions\\\":[\\\"string\\\"],\\\"draft\\\":{\\\"title\\\":\\\"string|null\\\",\\\"summary\\\":\\\"string|null\\\",\\\"type\\\":\\\"feature|bug|design|docs\\\",\\\"components\\\":[\\\"string\\\"],\\\"labels\\\":[\\\"string\\\"],\\\"acceptanceCriteria\\\":[\\\"string\\\"],\\\"designNeeded\\\":true},\\\"evidence\\\":[{\\\"claim\\\":\\\"string\\\",\\\"source\\\":\\\"string\\\"}],\\\"statePatch\\\":{\\\"phase\\\":\\\"collecting|researching|clarifying|confirming|discarded\\\"}}\\n\\nRules:\\n- Research the Modus repository, custom-elements.json, component-docs MCP, component docs, rules, graph, and GitHub issues before deciding.\\n- Answer or link a duplicate when possible.\\n- Ask numbered questions when a developer or designer would need to invent a decision.\\n- Do not choose create_issue. Creation is allowed only after the separate confirmed-card branch verifies the static state.\\n- Cite every capability claim. Never guess a prop, state, token, or affected component.\\n- Process/meta comments are not issues.\\n- Keep the response concise and include all evidence needed for review.",
+        "options": {
+          "systemMessage": "You are the conversational Modus ticket bot. You are answer-first and clarification-first. You must not create an issue just because a user mentions work. The repository is the shared context, and a human confirms every draft."
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a003",
+      "name": "Ticket Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4"
+        },
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a004",
+      "name": "Trimble Model Gateway",
+      "type": "CUSTOM.lmChatTrimbleGateway",
+      "typeVersion": 1,
+      "position": [
+        560,
+        520
+      ],
+      "notes": "Bind the Trimble Identity credential after import. No credential is stored in this template."
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = $('Normalize Chat Event').item.json;\nconst raw = $json.output ?? $json.text ?? $json.response ?? $json.message?.content ?? '{}';\nlet decision;\ntry {\n  const text = String(raw).replace(/^```json\\s*/i, '').replace(/\\s*```$/i, '').trim();\n  decision = JSON.parse(text);\n} catch (error) {\n  decision = {\n    outcome: 'clarify',\n    summary: 'I could not safely parse the research response.',\n    questions: ['Please resend the request or ask a human to review the bot configuration.'],\n    draft: null,\n    evidence: [],\n    statePatch: { phase: 'clarifying' },\n  };\n}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.threads = staticData.threads || {};\nconst threadKey = normalized.threadName;\nconst prior = staticData.threads[threadKey] || {};\nconst confirmed = normalized.actionName === 'confirm_create'\n  && prior.phase === 'confirming'\n  && prior.confirmationToken === normalized.actionToken\n  && prior.draft;\n\nif (confirmed) {\n  return [{\n    json: {\n      ...normalized,\n      route: 'create',\n      issuePayload: {\n        repo: 'trimble-oss/modus-wc-2.0',\n        title: prior.draft.title,\n        summary: prior.draft.summary,\n        type: prior.draft.type,\n        components: prior.draft.components || [],\n        labels: prior.draft.labels || ['needs-scaffolding'],\n        source: normalized.source,\n        rawConversation: prior.rawConversation || [],\n        contextEvidence: prior.draft.evidence || [],\n        autoApprove: false,\n      },\n    },\n  }];\n}\n\nconst nextPhase = decision.outcome === 'clarify' ? 'clarifying'\n  : decision.outcome === 'confirm_create' ? 'confirming'\n  : decision.outcome === 'stop' ? 'discarded'\n  : 'complete';\nconst nextState = {\n  ...prior,\n  phase: nextPhase,\n  updatedAt: Date.now(),\n  questions: decision.questions || [],\n  draft: decision.draft || null,\n  evidence: decision.evidence || [],\n  rawConversation: [...(prior.rawConversation || []), { sender: normalized.sender, text: normalized.text }].slice(-50),\n};\nif (decision.outcome === 'confirm_create' && decision.draft) {\n  nextState.confirmationToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;\n}\nif (decision.outcome === 'stop') {\n  delete staticData.threads[threadKey];\n} else {\n  staticData.threads[threadKey] = nextState;\n}\n\nreturn [{\n  json: {\n    ...normalized,\n    route: 'reply',\n    decision,\n    confirmationToken: nextState.confirmationToken || null,\n  },\n}];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a005",
+      "name": "Validate Decision and State",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        984,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ticket-create-route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "create",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a006",
+      "name": "Confirmed Card?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ISSUE_SERVICE_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.ISSUE_SERVICE_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.issuePayload }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a007",
+      "name": "Call Shared Issue Service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        180
+      ],
+      "notes": "Use an n8n credential/header in production. ISSUE_SERVICE_URL may point to the shared sub-workflow or the sanitized standalone service."
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $json;\nconst issueUrl = result.issueUrl ?? result.url ?? result.issue?.html_url ?? null;\nconst response = issueUrl\n  ? { text: `Draft issue created and sent to Issue Scaffolding: ${issueUrl}` }\n  : { text: 'The shared issue service accepted the request but did not return an issue URL. A human should inspect the n8n execution before retrying.' };\nreturn [{ json: { chatResponse: response } }];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a008",
+      "name": "Build Created Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const decision = $json.decision || {};\nconst token = $json.confirmationToken;\nconst questions = (decision.questions || []).map((q, index) => `${index + 1}. ${q}`).join('<br>');\nconst evidence = (decision.evidence || []).map((item) => `${item.claim} (<a href=\\\"${item.source}\\\">source</a>)`).join('<br>');\nconst section = {\n  widgets: [{ textParagraph: { text: decision.summary || 'I researched the request.' } }],\n};\nif (questions) section.widgets.push({ textParagraph: { text: questions } });\nif (evidence) section.widgets.push({ textParagraph: { text: `<b>Evidence</b><br>${evidence}` } });\nif (decision.outcome === 'confirm_create' && decision.draft) {\n  section.widgets.push({ textParagraph: { text: `<b>Draft:</b> ${decision.draft.title}<br>${decision.draft.summary || ''}` } });\n  section.widgets.push({ buttonList: { buttons: [\n    { text: 'Confirm and create', onClick: { action: { actionMethodName: 'confirm_create', parameters: [{ key: 'confirmationToken', value: token }] } } },\n    { text: 'Edit / clarify', onClick: { action: { actionMethodName: 'edit_draft' } } },\n    { text: 'Discard', onClick: { action: { actionMethodName: 'discard' } } },\n  ] } });\n}\nif (decision.outcome === 'clarify') {\n  section.widgets.push({ textParagraph: { text: 'Reply in this thread with your answers. I will research again before drafting.' } });\n}\nreturn [{ json: { chatResponse: { cardsV2: [{ cardId: `ticket-${Date.now()}`, card: { header: { title: 'Modus ticket assistant', subtitle: decision.outcome || 'research' }, sections: [section] } }] } } }];"
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a009",
+      "name": "Build Chat Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.chatResponse }}",
+        "options": {}
+      },
+      "id": "f0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9a010",
+      "name": "Respond to Google Chat",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Chat App Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Chat Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Chat Event": {
+      "main": [
+        [
+          {
+            "node": "Fetch Chat Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Chat Thread": {
+      "main": [
+        [
+          {
+            "node": "Attach Thread Window",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Thread Window": {
+      "main": [
+        [
+          {
+            "node": "Ticket Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ticket Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Validate Decision and State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trimble Model Gateway": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ticket Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Decision and State": {
+      "main": [
+        [
+          {
+            "node": "Confirmed Card?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmed Card?": {
+      "main": [
+        [
+          {
+            "node": "Call Shared Issue Service",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Shared Issue Service": {
+      "main": [
+        [
+          {
+            "node": "Build Created Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Created Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Google Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Chat Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Google Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "sanitized-ticket-bot-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

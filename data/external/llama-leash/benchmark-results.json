@@ -1,0 +1,522 @@
+{
+  "provenance": {
+    "source": "llama-leash scripts/benchmark.py",
+    "host": "Mac16,7 Apple M4 Pro, 24 GiB RAM",
+    "model": "ornith-9b",
+    "quant": "Q4_K_M",
+    "hf_repo": "ornith-ai/Ornith-1.0-9B-GGUF",
+    "llama_leash_commit": "1bbbd0558a0ce7aa73e42dcb3991d1b31aa6d508",
+    "started_at": "2026-08-30T14:55:25Z",
+    "finished_at": "2026-08-30T15:29:03Z"
+  },
+  "task": "merge-ranges",
+  "calibration_self_minus_objective": {
+    "definition": "self_score - objective*100",
+    "author_default_preset": 0.0,
+    "values_all_presets": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "note": "Quoted only from .data/benchmark/ornith-9b/*/result.json on local host"
+  },
+  "best_objective_ratio": 1.0,
+  "presets": [
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "author-default",
+      "preset_focus": "The model author's published sampling settings on a stock Metal runtime. This is the control - every other preset is read as a delta from here.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "auto",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 37.977463245391846,
+        "prompt_tokens_per_sec": 207.63651507619076,
+        "gen_tokens_per_sec": 32.318994508679644,
+        "prompt_ms": 842.819,
+        "gen_ms": 37129.868,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1201.0,
+        "model_load_seconds": 23.1242618560791,
+        "reasoning_chars": 3903.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "balanced-chat",
+      "preset_focus": "temp 0.7 / top-p 0.8 / top-k 20 - the widely used general-purpose middle ground, and Qwen's published chat default.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "auto",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 37.45354700088501,
+        "prompt_tokens_per_sec": 283.6792058279056,
+        "gen_tokens_per_sec": 32.60492659353997,
+        "prompt_ms": 616.894,
+        "gen_ms": 36804.254,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1201.0,
+        "model_load_seconds": 23.1242618560791,
+        "reasoning_chars": 3903.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "deterministic",
+      "preset_focus": "Greedy decoding (temp 0). The standard choice for code and for any run that has to be reproducible.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "auto",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 47.695106983184814,
+        "prompt_tokens_per_sec": 283.7560217081464,
+        "gen_tokens_per_sec": 32.57266175223443,
+        "prompt_ms": 616.727,
+        "gen_ms": 47033.307,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1533.0,
+        "model_load_seconds": 23.1242618560791,
+        "reasoning_chars": 4527.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "flash-attn-off",
+      "preset_focus": "Identical to metal-throughput but with flash attention disabled - isolates exactly what FA is worth on this hardware.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "off",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "4096",
+        "ubatch-size": "1024"
+      },
+      "metrics": {
+        "wall_seconds": 38.88939094543457,
+        "prompt_tokens_per_sec": 275.3568231060565,
+        "gen_tokens_per_sec": 31.37744800312352,
+        "prompt_ms": 635.539,
+        "gen_ms": 38244.028,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1201.0,
+        "model_load_seconds": 3.0550668239593506,
+        "reasoning_chars": 3903.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "high-creative",
+      "preset_focus": "temp 1.0 / top-p 0.95 / top-k 64 - Gemma's published default and the usual setting for prose. Expected to help writing and hurt code.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "auto",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 27.773072957992554,
+        "prompt_tokens_per_sec": 316.1321323925241,
+        "gen_tokens_per_sec": 37.24345344900191,
+        "prompt_ms": 553.566,
+        "gen_ms": 27118.86,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1011.0,
+        "model_load_seconds": 23.1242618560791,
+        "reasoning_chars": 2988.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": false,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": null,
+          "self_reported_flaw": ""
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "kv-q4",
+      "preset_focus": "4-bit KV cache - quarter the cache memory. Expected to cost real quality; quantifies whether the memory saving is worth it.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "on",
+        "cache-type-k": "q4_0",
+        "cache-type-v": "q4_0",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 43.9827880859375,
+        "prompt_tokens_per_sec": 245.18320088770332,
+        "gen_tokens_per_sec": 30.996920602716976,
+        "prompt_ms": 713.752,
+        "gen_ms": 43262.362,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1342.0,
+        "model_load_seconds": 2.0091769695281982,
+        "reasoning_chars": 4247.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6614,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "kv-q8",
+      "preset_focus": "8-bit KV cache. Roughly halves cache memory; the community consensus is that quality loss is near-zero. This preset tests that claim on real output.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "on",
+        "cache-type-k": "q8_0",
+        "cache-type-v": "q8_0",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 38.142549991607666,
+        "prompt_tokens_per_sec": 282.11473203130663,
+        "gen_tokens_per_sec": 31.98401055344412,
+        "prompt_ms": 620.315,
+        "gen_ms": 37518.747,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1201.0,
+        "model_load_seconds": 2.0082056522369385,
+        "reasoning_chars": 3903.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6524,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "long-context",
+      "preset_focus": "4x the default context with an 8-bit KV cache, the usual recipe for large-repo work. Measures degradation as context grows.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "on",
+        "cache-type-k": "q8_0",
+        "cache-type-v": "q8_0",
+        "batch-size": "2048",
+        "ubatch-size": "512",
+        "ctx-size": "131072"
+      },
+      "metrics": {
+        "wall_seconds": 39.33984160423279,
+        "prompt_tokens_per_sec": 284.1785615693152,
+        "gen_tokens_per_sec": 30.996476268916954,
+        "prompt_ms": 615.81,
+        "gen_ms": 38714.078,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1201.0,
+        "model_load_seconds": 2.012216091156006,
+        "reasoning_chars": 3903.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": false,
+        "error": " n_threads = 10 (n_threads_batch = 10) / 14 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | \n0.01.174.827 I perplexity: tokenizing the input ..\n0.01.247.870 I perplexity: tokenization took 73.038 ms\n0.01.248.727 E perplexity: you need at least 262144 tokens to evaluate perplexity with a context of 131072\n0.01.248.734 E perplexity: the data file you provided tokenizes to only 102644 tokens\n"
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "metal-throughput",
+      "preset_focus": "Flash attention forced on with a large micro-batch. Targets peak prompt-processing and generation throughput on M-series GPUs.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "on",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "4096",
+        "ubatch-size": "1024"
+      },
+      "metrics": {
+        "wall_seconds": 40.18648600578308,
+        "prompt_tokens_per_sec": 283.6442614713843,
+        "gen_tokens_per_sec": 30.33039505946173,
+        "prompt_ms": 616.97,
+        "gen_ms": 39564.272,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1201.0,
+        "model_load_seconds": 2.0141940116882324,
+        "reasoning_chars": 3903.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    },
+    {
+      "model": "ornith-9b",
+      "category": "coding",
+      "quant": "Q4_K_M",
+      "preset": "min-p",
+      "preset_focus": "min-p sampling (min-p 0.05, top-p/top-k disabled). The min-p school argues this beats top-p for coherence at equal diversity.",
+      "task": "merge-ranges",
+      "runtime": {
+        "n-gpu-layers": "999",
+        "flash-attn": "auto",
+        "cache-type-k": "f16",
+        "cache-type-v": "f16",
+        "batch-size": "2048",
+        "ubatch-size": "512"
+      },
+      "metrics": {
+        "wall_seconds": 48.80695033073425,
+        "prompt_tokens_per_sec": 264.2538528211742,
+        "gen_tokens_per_sec": 32.718349541034264,
+        "prompt_ms": 662.242,
+        "gen_ms": 48138.125,
+        "prompt_tokens": 175.0,
+        "gen_tokens": 1576.0,
+        "model_load_seconds": 23.1242618560791,
+        "reasoning_chars": 4733.0
+      },
+      "score": {
+        "kind": "exec",
+        "passed": 12,
+        "total": 12,
+        "ratio": 1.0,
+        "failed_tests": [],
+        "finish_reason": "stop",
+        "self_judge": {
+          "kind": "self-judge",
+          "available": true,
+          "SELF_GRADED": true,
+          "note": "Scored by the model on its own output - not independent.",
+          "self_score": 100,
+          "self_reported_flaw": "none"
+        }
+      },
+      "ok": true,
+      "perplexity": {
+        "available": true,
+        "perplexity": 3.6525,
+        "chunks": 24
+      }
+    }
+  ]
+}

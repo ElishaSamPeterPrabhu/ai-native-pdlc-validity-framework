@@ -1,0 +1,170 @@
+{
+  "name": "[PILOT] Gemini Meeting Notes Coordinator (Apps Script delivery)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "from:gemini-notes@google.com {subject:\"Sprint Planning\" subject:\"Sprint Estimating\"}"
+        },
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b001",
+      "name": "Gemini Notes Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        260
+      ],
+      "notes": "Bind a service mailbox credential. This is only a cheap first-pass filter; the calendar series allowlist is authoritative."
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b016",
+      "name": "Get Full Gemini Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        360,
+        260
+      ],
+      "notes": "Bind the same Gmail OAuth credential. The email supplies the Doc URL; the Doc remains the notes source."
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $json;\nconst subject = String(email.subject ?? email.Subject ?? email.headers?.subject ?? '');\nconst titleMatch = subject.match(/\\b(Sprint Planning|Sprint Estimating)\\b/i);\nconst html = [email.textHtml, email.textAsHtml, email.html, email.textPlain, email.text, email.snippet].filter(Boolean).join('\\n');\nconst docMatch = html.match(/(?:https?:\\/\\/)?docs\\.google\\.com\\/document\\/d\\/([a-zA-Z0-9_-]+)/i);\nconst docId = docMatch?.[1] ?? email.docId ?? null;\nconst receivedAt = email.internalDate ?? email.date ?? new Date().toISOString();\nreturn [{ json: {\n  subject,\n  title: titleMatch?.[1] ?? null,\n  meetingDate: receivedAt,\n  docId,\n  docUrl: docId ? `https://docs.google.com/document/d/${docId}/edit` : null,\n  emailId: email.id ?? email.messageId ?? null,\n  sourceEmail: email,\n} }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b002",
+      "name": "Extract Meeting Identity",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const identity = $('Extract Meeting Identity').item.json;\nconst staticData = $getWorkflowStaticData('global');\nstaticData.meetingDocs = staticData.meetingDocs || {};\nconst prior = identity.docId ? staticData.meetingDocs[identity.docId] : null;\nif (prior) {\n  return [{ json: { ...identity, route: 'duplicate', calendarVerified: false, reason: `Doc ID already processed with status ${prior.status}.` } }];\n}\nif (!identity.title || !identity.docId) {\n  return [{ json: { ...identity, route: 'ignore', calendarVerified: false, reason: 'Gemini subject is not Sprint Planning/Estimating or the Google Doc ID is missing.' } }];\n}\nstaticData.meetingDocs[identity.docId] = { status: 'processing', startedAt: Date.now(), title: identity.title };\nreturn [{ json: { ...identity, route: 'accept', calendarVerified: false, meetingIdentityVerified: true, reason: 'Accepted from filtered Gemini meeting identity and Doc ID.' } }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b004",
+      "name": "Apply Meeting Identity and Idempotency Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        260
+      ],
+      "notes": "Prototype/variable-free identity gate. Gmail subject and Doc ID are the source-of-truth inputs; Calendar is intentionally not required in this flow."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api2.cursor.sh/automations/webhook/REPLACE_CURSOR_MEETING_INTAKE_AUTOMATION_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_CURSOR_WEBHOOK_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'ElishaSamPeterPrabhu/modus-wc-2.0', branch: 'main', docId: $('Apply Meeting Identity and Idempotency Gate').item.json.docId, docUrl: $('Apply Meeting Identity and Idempotency Gate').item.json.docUrl, meetingType: $('Apply Meeting Identity and Idempotency Gate').item.json.title, meetingDate: $('Apply Meeting Identity and Idempotency Gate').item.json.meetingDate, reviewId: `meeting-${$('Apply Meeting Identity and Idempotency Gate').item.json.docId}-${Date.now()}`, reviewProxyUrl: 'https://script.google.com/a/macros/trimble.com/s/REPLACE_APPS_SCRIPT_ID/exec', source: 'Gemini meeting notes' } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b008",
+      "name": "Call Cursor Meeting Intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        160
+      ],
+      "notes": "Cursor reads the Doc and private repository, builds the review card, and POSTs {reviewId, items, chatResponse} to reviewProxyUrl. n8n ends after this call."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gemini Notes Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Full Gemini Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Gemini Email": {
+      "main": [
+        [
+          {
+            "node": "Extract Meeting Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Meeting Identity": {
+      "main": [
+        [
+          {
+            "node": "Apply Meeting Identity and Idempotency Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Meeting Identity and Idempotency Gate": {
+      "main": [
+        [
+          {
+            "node": "Call Cursor Meeting Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Cursor Meeting Intake": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "pilot-gmail-appscript-coordinator-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

@@ -1,0 +1,150 @@
+{
+  "name": "[PILOT] Private Modus Context Resolver (sanitized template)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pilot-modus-context",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9f001",
+      "name": "Pilot Context Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "pilot-modus-context"
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $json.body ?? $json;\nconst query = request.query ?? request.state ?? request.property ?? request.componentName ?? '';\nif (!request.componentName && !request.query && !request.property && !request.state) throw new Error('Provide componentName, query, property, or state.');\nreturn [{ json: { ...request, query: String(query), repository: 'ElishaSamPeterPrabhu/modus-wc-2.0' } }];"
+      },
+      "id": "b0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9f002",
+      "name": "Normalize Context Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/ElishaSamPeterPrabhu/modus-wc-2.0/contents/src/custom-elements.json?ref=main",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.PILOT_GITHUB_TOKEN }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "b0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9f003",
+      "name": "Fetch Private Manifest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ],
+      "notes": "Use an n8n Header Auth credential instead of PILOT_GITHUB_TOKEN when environment access is unavailable."
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $('Normalize Context Query').item.json;\nconst response = $json;\nconst encoded = response.content || '';\nconst manifestText = Buffer.from(encoded.replace(/\\n/g, ''), 'base64').toString('utf8');\nconst manifest = JSON.parse(manifestText);\nconst normalize = (value) => String(value ?? '').toLowerCase().replace(/[-_]/g, '');\nconst query = normalize(request.query);\nconst exactProperty = request.property ? normalize(request.property) : null;\nconst componentName = request.componentName;\nconst modules = manifest.modules || [];\nconst matches = [];\nconst candidates = [];\nfor (const [moduleIndex, module] of modules.entries()) {\n  for (const [declarationIndex, declaration] of (module.declarations || []).entries()) {\n    const tag = declaration.tagName || declaration.tag;\n    if (!tag) continue;\n    if (componentName && tag !== componentName && !request.includeSiblings) continue;\n    candidates.push({ tag, declaration, source: `src/custom-elements.json#/modules/${moduleIndex}/declarations/${declarationIndex}` });\n  }\n}\nfor (const candidate of candidates) {\n  const declaration = candidate.declaration;\n  const members = [...(declaration.members || []), ...(declaration.attributes || [])];\n  const properties = members.filter((member) => {\n    const name = normalize(member.name);\n    if (exactProperty && name !== exactProperty) return false;\n    return !query || [member.name, member.type?.text, member.description].some((value) => normalize(value).includes(query));\n  });\n  const events = (declaration.events || []).filter((event) => !query || [event.name, event.detail, event.description].some((value) => normalize(value).includes(query)));\n  const slots = (declaration.slots || []).filter((slot) => !query || [slot.name, slot.description].some((value) => normalize(value).includes(query)));\n  if (properties.length || events.length || slots.length) {\n    matches.push({ tag: candidate.tag, supported: true, properties, events, slots, source: candidate.source });\n  }\n}\nreturn [{ json: { ok: true, repository: request.repository, source: { manifest: 'src/custom-elements.json', commit: response.sha || null }, matches, notFound: matches.length ? [] : [componentName || request.query], warning: null } }];"
+      },
+      "id": "b0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9f004",
+      "name": "Resolve Manifest Evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "b0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9f005",
+      "name": "Respond with Evidence",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Pilot Context Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Context Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Context Query": {
+      "main": [
+        [
+          {
+            "node": "Fetch Private Manifest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Private Manifest": {
+      "main": [
+        [
+          {
+            "node": "Resolve Manifest Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Manifest Evidence": {
+      "main": [
+        [
+          {
+            "node": "Respond with Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "sanitized-pilot-context-resolver-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

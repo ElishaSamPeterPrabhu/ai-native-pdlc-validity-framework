@@ -1,0 +1,1141 @@
+{
+  "schemaVersion": "1.0",
+  "sourceCommit": "e6ca5db0f0972c4f2dbffcaf662b38614912796c",
+  "generatedAt": "2026-08-13T12:19:12.000Z",
+  "tags": [
+    "modus-wc-accordion",
+    "modus-wc-alert",
+    "modus-wc-app-menu",
+    "modus-wc-autocomplete",
+    "modus-wc-avatar",
+    "modus-wc-badge",
+    "modus-wc-bottom-sheet",
+    "modus-wc-breadcrumbs",
+    "modus-wc-button",
+    "modus-wc-button-group",
+    "modus-wc-card",
+    "modus-wc-checkbox",
+    "modus-wc-chip",
+    "modus-wc-collapse",
+    "modus-wc-content-tree",
+    "modus-wc-date",
+    "modus-wc-divider",
+    "modus-wc-dock",
+    "modus-wc-dropdown-menu",
+    "modus-wc-file-dropzone",
+    "modus-wc-handle",
+    "modus-wc-icon",
+    "modus-wc-input-feedback",
+    "modus-wc-input-label",
+    "modus-wc-link",
+    "modus-wc-loader",
+    "modus-wc-logo",
+    "modus-wc-menu",
+    "modus-wc-menu-item",
+    "modus-wc-modal",
+    "modus-wc-navbar",
+    "modus-wc-number-input",
+    "modus-wc-pagination",
+    "modus-wc-panel",
+    "modus-wc-profile-menu",
+    "modus-wc-progress",
+    "modus-wc-radio",
+    "modus-wc-rating",
+    "modus-wc-select",
+    "modus-wc-side-navigation",
+    "modus-wc-skeleton",
+    "modus-wc-slider",
+    "modus-wc-stepper",
+    "modus-wc-switch",
+    "modus-wc-table",
+    "modus-wc-tabs",
+    "modus-wc-text-input",
+    "modus-wc-textarea",
+    "modus-wc-theme-switcher",
+    "modus-wc-time-input",
+    "modus-wc-toast",
+    "modus-wc-toolbar",
+    "modus-wc-tooltip",
+    "modus-wc-tree-item",
+    "modus-wc-tree-menu",
+    "modus-wc-typography",
+    "modus-wc-utility-panel",
+    "test-host-component"
+  ],
+  "propertiesByTag": {
+    "modus-wc-accordion": [
+      "el",
+      "custom-class"
+    ],
+    "modus-wc-alert": [
+      "el",
+      "alert-description",
+      "alert-title",
+      "custom-class",
+      "delay",
+      "disable-icon",
+      "dismissible",
+      "icon",
+      "variant"
+    ],
+    "modus-wc-app-menu": [
+      "draggedItemPos",
+      "dropTargetIndex",
+      "el",
+      "grabbedItemPos",
+      "isEditMode",
+      "truncatedApps",
+      "apps",
+      "custom-class",
+      "layout"
+    ],
+    "modus-wc-autocomplete": [
+      "el",
+      "auto-complete",
+      "bordered",
+      "custom-blur",
+      "custom-class",
+      "custom-input-change",
+      "custom-item-select",
+      "custom-key-down",
+      "debounce-ms",
+      "disabled",
+      "feedback",
+      "include-clear",
+      "include-search",
+      "input-id",
+      "input-tab-index",
+      "items",
+      "label",
+      "leave-menu-open",
+      "max-chips",
+      "min-chars",
+      "min-input-width",
+      "multi-select",
+      "name",
+      "no-results",
+      "placeholder",
+      "read-only",
+      "required",
+      "show-menu-on-focus",
+      "show-spinner",
+      "size",
+      "value"
+    ],
+    "modus-wc-avatar": [
+      "el",
+      "alt",
+      "custom-class",
+      "img-src",
+      "initials",
+      "shape",
+      "size"
+    ],
+    "modus-wc-badge": [
+      "el",
+      "color",
+      "custom-class",
+      "size",
+      "variant"
+    ],
+    "modus-wc-bottom-sheet": [
+      "el",
+      "custom-class",
+      "display-mode",
+      "drag-step-threshold",
+      "header",
+      "visible"
+    ],
+    "modus-wc-breadcrumbs": [
+      "el",
+      "custom-class",
+      "items",
+      "size"
+    ],
+    "modus-wc-button-group": [
+      "el",
+      "color",
+      "disabled",
+      "orientation",
+      "selection-type",
+      "variant"
+    ],
+    "modus-wc-button": [
+      "el",
+      "color",
+      "custom-class",
+      "disabled",
+      "full-width",
+      "pressed",
+      "shape",
+      "size",
+      "type",
+      "variant"
+    ],
+    "modus-wc-card": [
+      "el",
+      "background-figure",
+      "bordered",
+      "custom-class",
+      "layout",
+      "padding"
+    ],
+    "modus-wc-checkbox": [
+      "el",
+      "custom-class",
+      "disabled",
+      "indeterminate",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "name",
+      "required",
+      "size",
+      "value"
+    ],
+    "modus-wc-chip": [
+      "el",
+      "active",
+      "custom-class",
+      "disabled",
+      "has-error",
+      "label",
+      "multiline",
+      "shape",
+      "show-remove",
+      "size",
+      "variant"
+    ],
+    "modus-wc-collapse": [
+      "el",
+      "bordered",
+      "chevron-position",
+      "collapse-id",
+      "custom-class",
+      "expanded",
+      "options"
+    ],
+    "modus-wc-content-tree": [
+      "el",
+      "allow-drag-drop",
+      "bordered",
+      "checked-node-ids",
+      "custom-class",
+      "editing-node-id",
+      "expanded-node-ids",
+      "filter",
+      "nodes",
+      "searchable",
+      "selected-node-id",
+      "selection-mode",
+      "size",
+      "toolbar"
+    ],
+    "modus-wc-date": [
+      "el",
+      "bordered",
+      "custom-class",
+      "disabled",
+      "end-value",
+      "feedback",
+      "format",
+      "hide-overflow-dates",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "max",
+      "min",
+      "name",
+      "read-only",
+      "required",
+      "show-week-numbers",
+      "size",
+      "type",
+      "value",
+      "week-start-day"
+    ],
+    "modus-wc-divider": [
+      "el",
+      "color",
+      "content",
+      "custom-class",
+      "orientation",
+      "position",
+      "responsive"
+    ],
+    "modus-wc-dock": [
+      "el",
+      "active-item-index",
+      "custom-class",
+      "items",
+      "position",
+      "show-labels",
+      "size"
+    ],
+    "test-host-component": [],
+    "modus-wc-dropdown-menu": [
+      "el",
+      "button-aria-label",
+      "button-color",
+      "button-shape",
+      "button-size",
+      "button-variant",
+      "custom-class",
+      "disabled",
+      "menu-bordered",
+      "menu-offset",
+      "menu-placement",
+      "menu-size",
+      "menu-strategy",
+      "menu-visible"
+    ],
+    "modus-wc-file-dropzone": [
+      "el",
+      "accept-file-types",
+      "custom-class",
+      "disabled",
+      "feedback",
+      "file-dragged-over-instructions",
+      "include-state-icon",
+      "instructions",
+      "invalid-file-type-message",
+      "max-file-count",
+      "max-file-name-length",
+      "max-total-file-size-bytes",
+      "multiple",
+      "success-message"
+    ],
+    "modus-wc-handle": [
+      "el",
+      "button-color",
+      "button-size",
+      "button-variant",
+      "custom-class",
+      "default-split",
+      "density",
+      "left-target",
+      "orientation",
+      "right-target",
+      "size",
+      "type"
+    ],
+    "modus-wc-icon": [
+      "el",
+      "custom-class",
+      "decorative",
+      "name",
+      "size",
+      "variant"
+    ],
+    "modus-wc-input-feedback": [
+      "el",
+      "custom-class",
+      "icon",
+      "level",
+      "message",
+      "size"
+    ],
+    "modus-wc-input-label": [
+      "el",
+      "custom-class",
+      "for-id",
+      "label-text",
+      "required",
+      "size",
+      "sub-label-text"
+    ],
+    "modus-wc-link": [
+      "el",
+      "color",
+      "custom-class",
+      "href",
+      "rel",
+      "target",
+      "underline"
+    ],
+    "modus-wc-loader": [
+      "el",
+      "color",
+      "custom-class",
+      "size",
+      "variant"
+    ],
+    "modus-wc-logo": [
+      "el",
+      "alt",
+      "custom-class",
+      "emblem",
+      "name"
+    ],
+    "modus-wc-menu-item": [
+      "el",
+      "isExpanded",
+      "bordered",
+      "checkbox",
+      "custom-class",
+      "disabled",
+      "focused",
+      "has-submenu",
+      "label",
+      "selected",
+      "size",
+      "sub-label",
+      "tooltip-content",
+      "tooltip-position",
+      "value"
+    ],
+    "modus-wc-menu": [
+      "el",
+      "bordered",
+      "custom-class",
+      "is-sub-menu",
+      "orientation",
+      "selection-mode",
+      "size"
+    ],
+    "modus-wc-modal": [
+      "el",
+      "backdrop",
+      "custom-class",
+      "fullscreen",
+      "modal-id",
+      "position",
+      "show-close",
+      "show-fullscreen-toggle"
+    ],
+    "modus-wc-navbar": [
+      "el",
+      "apps-menu-open",
+      "condensed",
+      "condensed-menu-open",
+      "custom-class",
+      "logo-name",
+      "main-menu-open",
+      "notifications-menu-open",
+      "search-debounce-ms",
+      "search-input-open",
+      "text-overrides",
+      "user-card",
+      "user-menu-open",
+      "visibility"
+    ],
+    "modus-wc-number-input": [
+      "el",
+      "auto-complete",
+      "bordered",
+      "currency-symbol",
+      "custom-class",
+      "disabled",
+      "feedback",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "max",
+      "min",
+      "name",
+      "placeholder",
+      "read-only",
+      "required",
+      "size",
+      "step",
+      "type",
+      "value"
+    ],
+    "modus-wc-pagination": [
+      "el",
+      "aria-label-values",
+      "count",
+      "custom-class",
+      "next-button-text",
+      "page",
+      "prev-button-text",
+      "size"
+    ],
+    "modus-wc-panel": [
+      "el",
+      "custom-class",
+      "floating",
+      "height",
+      "width"
+    ],
+    "modus-wc-profile-menu": [
+      "el",
+      "main-menu",
+      "menu-one",
+      "menu-two",
+      "profile-props",
+      "show-sign-out"
+    ],
+    "modus-wc-progress": [
+      "el",
+      "custom-class",
+      "indeterminate",
+      "label",
+      "max",
+      "value",
+      "variant"
+    ],
+    "modus-wc-radio": [
+      "el",
+      "custom-class",
+      "disabled",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "name",
+      "required",
+      "size",
+      "value"
+    ],
+    "modus-wc-rating": [
+      "el",
+      "allow-half",
+      "count",
+      "custom-class",
+      "disabled",
+      "get-aria-label-text",
+      "size",
+      "value",
+      "variant"
+    ],
+    "modus-wc-select": [
+      "el",
+      "bordered",
+      "custom-class",
+      "disabled",
+      "feedback",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "name",
+      "options",
+      "required",
+      "size",
+      "value"
+    ],
+    "modus-wc-side-navigation": [
+      "el",
+      "collapse-on-click-outside",
+      "custom-class",
+      "expanded",
+      "max-width",
+      "mode",
+      "target-content"
+    ],
+    "modus-wc-skeleton": [
+      "el",
+      "custom-class",
+      "height",
+      "shape",
+      "width"
+    ],
+    "modus-wc-slider": [
+      "el",
+      "custom-class",
+      "disabled",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "max",
+      "min",
+      "name",
+      "required",
+      "size",
+      "step",
+      "value"
+    ],
+    "modus-wc-stepper": [
+      "el",
+      "custom-class",
+      "interactive",
+      "orientation",
+      "steps"
+    ],
+    "modus-wc-switch": [
+      "el",
+      "custom-class",
+      "disabled",
+      "indeterminate",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "name",
+      "required",
+      "size",
+      "value"
+    ],
+    "modus-wc-table": [
+      "activeEditor",
+      "el",
+      "internalPagination",
+      "internalRowSelection",
+      "sorting",
+      "caption",
+      "column-defs",
+      "columns",
+      "current-page",
+      "custom-class",
+      "data",
+      "density",
+      "editable",
+      "hover",
+      "is-row-selectable",
+      "mode",
+      "page-size-options",
+      "paginated",
+      "selectable",
+      "selected-row-ids",
+      "show-page-size-selector",
+      "sortable",
+      "table-options",
+      "zebra"
+    ],
+    "modus-wc-tabs": [
+      "el",
+      "active-tab-index",
+      "custom-class",
+      "size",
+      "tab-style",
+      "tabs"
+    ],
+    "modus-wc-text-input": [
+      "el",
+      "auto-capitalize",
+      "auto-complete",
+      "auto-correct",
+      "bordered",
+      "clear-aria-label",
+      "custom-class",
+      "disabled",
+      "enterkeyhint",
+      "feedback",
+      "include-clear",
+      "include-search",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "max-length",
+      "min-length",
+      "name",
+      "pattern",
+      "placeholder",
+      "read-only",
+      "required",
+      "size",
+      "type",
+      "value"
+    ],
+    "modus-wc-textarea": [
+      "el",
+      "auto-correct",
+      "bordered",
+      "custom-class",
+      "disabled",
+      "enterkeyhint",
+      "feedback",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "max-length",
+      "min-length",
+      "name",
+      "placeholder",
+      "readonly",
+      "required",
+      "rows",
+      "size",
+      "value"
+    ],
+    "modus-wc-theme-switcher": [
+      "el",
+      "isDarkMode",
+      "custom-class"
+    ],
+    "modus-wc-time-input": [
+      "el",
+      "auto-complete",
+      "bordered",
+      "custom-class",
+      "datalist-id",
+      "datalist-options",
+      "disabled",
+      "feedback",
+      "input-id",
+      "input-tab-index",
+      "label",
+      "max",
+      "min",
+      "name",
+      "read-only",
+      "required",
+      "show-seconds",
+      "size",
+      "step",
+      "value"
+    ],
+    "modus-wc-toast": [
+      "el",
+      "custom-class",
+      "delay",
+      "position"
+    ],
+    "modus-wc-toolbar": [
+      "el",
+      "custom-class"
+    ],
+    "modus-wc-tooltip": [
+      "el",
+      "content",
+      "content-element",
+      "custom-class",
+      "disabled",
+      "force-open",
+      "position",
+      "tooltip-id"
+    ],
+    "modus-wc-tree-item": [
+      "el",
+      "isExpanded",
+      "block-expand",
+      "bordered",
+      "checkbox",
+      "custom-class",
+      "disabled",
+      "focused",
+      "has-submenu",
+      "label",
+      "selected",
+      "size",
+      "sub-label",
+      "tooltip-content",
+      "tooltip-position",
+      "value"
+    ],
+    "modus-wc-tree-menu": [
+      "el",
+      "bordered",
+      "custom-class",
+      "is-sub-menu",
+      "orientation",
+      "selection-mode",
+      "size"
+    ],
+    "modus-wc-typography": [
+      "el",
+      "custom-class",
+      "hierarchy",
+      "label",
+      "size",
+      "weight"
+    ],
+    "modus-wc-utility-panel": [
+      "el",
+      "handlePanelClose",
+      "background-overlay",
+      "collapse-on-click-outside",
+      "custom-class",
+      "expanded",
+      "push-content",
+      "target-element"
+    ]
+  },
+  "statesByTag": {
+    "modus-wc-accordion": [
+      "Default",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-alert": [
+      "Default",
+      "CustomButton",
+      "WithCustomContent",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-app-menu": [
+      "Default",
+      "GridLayout"
+    ],
+    "modus-wc-autocomplete": [
+      "Default",
+      "WithCustomIconSlot",
+      "WithFeedback",
+      "WithTooltips",
+      "MultiSelect",
+      "WithSpinner",
+      "CustomMenuItems",
+      "CustomEventHandlers",
+      "WithProgrammaticControl",
+      "DynamicOptions",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-avatar": [
+      "Default",
+      "ShadowDomParent"
+    ],
+    "modus-wc-badge": [
+      "Default",
+      "WithIcon",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-bottom-sheet": [
+      "Default",
+      "TriggeredByButton",
+      "ContentOnly"
+    ],
+    "modus-wc-breadcrumbs": [
+      "Default",
+      "UnderlineLinks",
+      "FallbackButton",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-button-group": [
+      "Default",
+      "Vertical",
+      "SplitButton",
+      "SingleSelection",
+      "MultipleSelection",
+      "SelectionEvent",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-button": [
+      "Default",
+      "ButtonShapes",
+      "DynamicTextUpdate",
+      "IconOnlyButton",
+      "IconLeftButton",
+      "IconRightButton",
+      "IconLeftAndRightButton",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-card": [
+      "Default",
+      "SimpleCard",
+      "SlotsLayout",
+      "ComplexCard",
+      "HorizontalImage",
+      "BackgroundFigureImage",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-checkbox": [
+      "Default",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-chip": [
+      "Default",
+      "AvatarChip",
+      "CheckIconChip",
+      "Multiline",
+      "Composable",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-collapse": [
+      "Default",
+      "WithStartAndEndIcons",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-content-tree": [
+      "Default",
+      "BuildTree",
+      "MultiSelect",
+      "Toolbar",
+      "SearchFilter",
+      "TransactionalMenu",
+      "DragAndDrop",
+      "LazyLoading"
+    ],
+    "modus-wc-date": [
+      "Default",
+      "WithErrorFeedback",
+      "Range",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-divider": [
+      "Default",
+      "ShadowDomParent"
+    ],
+    "modus-wc-dock": [
+      "Default",
+      "IconsOnly",
+      "ActiveAndDisabled",
+      "ContainerPlacement",
+      "ShadowDomParent"
+    ],
+    "test-host-component": [],
+    "modus-wc-dropdown-menu": [
+      "Default",
+      "IconOnlyDropdownMenu",
+      "WithTreeMenu",
+      "ShadowDomParent"
+    ],
+    "modus-wc-file-dropzone": [
+      "Default",
+      "ShadowDomParent"
+    ],
+    "modus-wc-handle": [
+      "Default",
+      "ButtonVariant",
+      "MultipleHandlesNested",
+      "ShadowDomParent"
+    ],
+    "modus-wc-icon": [
+      "Default",
+      "CustomColor",
+      "NameResolution",
+      "CustomIcons",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-input-feedback": [
+      "Default",
+      "WithCustomModusIcon",
+      "ShadowDomParent"
+    ],
+    "modus-wc-input-label": [
+      "Default",
+      "Required",
+      "ShadowDomParent"
+    ],
+    "modus-wc-link": [
+      "Default",
+      "Underline",
+      "ExternalLink",
+      "InheritColor"
+    ],
+    "modus-wc-loader": [
+      "Default",
+      "Ball",
+      "Bars",
+      "Dots",
+      "Infinity",
+      "Ring",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-logo": [
+      "Default",
+      "CustomSizeWithClass",
+      "ShadowDomParent"
+    ],
+    "modus-wc-menu-item": [
+      "Default",
+      "WithIcon",
+      "WithCheckbox",
+      "WithTooltip",
+      "ShadowDomParent"
+    ],
+    "modus-wc-menu": [
+      "Default",
+      "MultiSelect",
+      "CustomMenu",
+      "CollapsibleMenu",
+      "ShadowDomParent"
+    ],
+    "modus-wc-modal": [
+      "Default",
+      "CustomWidthAndHeight",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-navbar": [
+      "Default",
+      "CustomMenuAndSlots",
+      "CustomLogoSizes",
+      "ShadowDomParent"
+    ],
+    "modus-wc-number-input": [
+      "Default",
+      "Currency",
+      "WithErrorFeedback",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-pagination": [
+      "Default",
+      "LargePageNumbers",
+      "AllSizes",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-panel": [
+      "Default",
+      "Floating",
+      "BodyOnly",
+      "ShadowDomParent"
+    ],
+    "modus-wc-profile-menu": [
+      "Default",
+      "WithCustomMainMenu",
+      "WithOneSubmenu",
+      "WithTwoSubmenus",
+      "ShadowDomParent"
+    ],
+    "modus-wc-progress": [
+      "Default",
+      "Indeterminate",
+      "SizeVariations",
+      "LabelTextColor",
+      "CustomBarColor",
+      "CustomBackgroundColor",
+      "RadialWithSlottedContent",
+      "RadialWithCustomSizeAndThickness",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-radio": [
+      "Default",
+      "RadioGroup",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-rating": [
+      "Default",
+      "CustomAriaLabels",
+      "CustomColors",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-select": [
+      "Default",
+      "WithErrorFeedback",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-side-navigation": [
+      "Default",
+      "WithSubmenu",
+      "WithTreeMenu",
+      "ShadowDomParent"
+    ],
+    "modus-wc-skeleton": [
+      "Default",
+      "Circle",
+      "Square",
+      "Composed",
+      "ShadowDomParent"
+    ],
+    "modus-wc-slider": [
+      "Default",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-stepper": [
+      "Default",
+      "Interactive",
+      "ShadowDomParent"
+    ],
+    "modus-wc-switch": [
+      "Default",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-table": [
+      "Default",
+      "Hover",
+      "Sorting",
+      "Pagination",
+      "CheckBoxRowSelection",
+      "PartialRowSelection",
+      "InlineEditing",
+      "ExpandableSubrows",
+      "ShadowDomParent"
+    ],
+    "modus-wc-tabs": [
+      "Default",
+      "CustomContent",
+      "ActiveAndDisabled",
+      "Icons",
+      "TabsWithPanel",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-text-input": [
+      "Default",
+      "WithErrorFeedback",
+      "WithCustomIconSlot",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-textarea": [
+      "Default",
+      "WithErrorFeedback",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-theme-switcher": [
+      "Default",
+      "ThemeTest",
+      "ShadowDomParent"
+    ],
+    "modus-wc-time-input": [
+      "Default",
+      "WithSeconds",
+      "WithDatalist",
+      "WithDatalistOptions",
+      "WithErrorFeedback",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-toast": [
+      "Default",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-toolbar": [
+      "Default",
+      "ShadowDomParent"
+    ],
+    "modus-wc-tooltip": [
+      "Default",
+      "ContentElement",
+      "ShadowDomParent",
+      "Migration"
+    ],
+    "modus-wc-tree-item": [
+      "Default",
+      "WithStartSlot",
+      "WithEndSlot",
+      "CustomTreeItem",
+      "WithCheckbox",
+      "WithTooltip",
+      "ShadowDomParent"
+    ],
+    "modus-wc-tree-menu": [
+      "Default",
+      "MultiSelect",
+      "CollapsibleMenu",
+      "ShadowDomParent"
+    ],
+    "modus-wc-typography": [
+      "Default",
+      "Heading1",
+      "Heading2",
+      "Heading3",
+      "Heading4",
+      "Heading5",
+      "Heading6",
+      "Paragraph",
+      "WithLabel",
+      "WithSlot",
+      "ShadowDomParent"
+    ],
+    "modus-wc-utility-panel": [
+      "Default",
+      "Expanded",
+      "OverlayMode",
+      "OverlayWithNavbar",
+      "WithoutHeaderFooter",
+      "ShadowDomParent"
+    ]
+  }
+}

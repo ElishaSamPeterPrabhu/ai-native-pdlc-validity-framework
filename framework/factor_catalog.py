@@ -39,6 +39,9 @@ LAYER_BY_FACTOR: dict[str, str] = {
     "reviewer_independence": "graph",
     "evidence_freshness": "loop",
     "doctrine_reinjection": "harness",
+    # AI-native PDLC candidates (v1.4)
+    "design_context": "harness",
+    "chat_intake": "graph",
 }
 
 # Candidate factor constructs (v1.2). Sources: RigorBench (arXiv:2606.22678),
@@ -90,6 +93,30 @@ CANDIDATE_FACTOR_CONSTRUCTS: dict[str, dict[str, str]] = {
         "construct": "Rules re-injected every request instead of stated once (drift countermeasure)",
         "telemetry": "Rule-injection cadence in agent transcripts",
         "missing_behavior": "activity=0; simulation-only until live telemetry",
+    },
+    # v1.4 AI-native PDLC candidates: the controls are specified, but no
+    # simulation arm or live telemetry exists yet.
+    "design_context": {
+        "construct": (
+            "Repository-backed design capability research is available before "
+            "a new component or state is designed"
+        ),
+        "telemetry": (
+            "Cited custom-elements/MCP capability check attached before design "
+            "handoff; record source and timestamp"
+        ),
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
+    },
+    "chat_intake": {
+        "construct": (
+            "Conversational intake clarifies, deduplicates, and confirms work "
+            "before an issue is created"
+        ),
+        "telemetry": (
+            "Thread state transitions: clarification, duplicate/answer, human "
+            "confirmation, and shared-service handoff"
+        ),
+        "missing_behavior": "activity=0; candidate — no claim until ablation",
     },
 }
 

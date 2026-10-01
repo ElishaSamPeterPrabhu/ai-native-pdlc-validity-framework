@@ -4,12 +4,11 @@ Every consumer (sim/, harness/, analysis/, dashboard/, framework/) imports this
 module; nothing else in the codebase hardcodes the model. Revisions are versioned
 here and explained in formula-changelog.md.
 
-Current version: v1.3 (four discipline factors registered from harness design
-practice — red-first, reviewer independence, evidence freshness, doctrine
-reinjection — with simulation mechanisms; no numeric change to D(t) or fitted
-claims). Factor weights remain placeholders until Phase D fits real campaign
-data (v2). Default decay form for analysis is HYBRID; MULTIPLICATIVE is kept
-only as a model-comparison baseline.
+Current version: v1.4 (two candidate intake/context factors registered for the
+AI-native PDLC blueprint; no numeric change to D(t) or fitted claims). Factor
+weights remain placeholders until Phase D fits real campaign data (v2).
+Default decay form for analysis is HYBRID; MULTIPLICATIVE is kept only as a
+model-comparison baseline.
 
 Model summary (see theory/derivation.md for the derivation):
 
@@ -27,7 +26,7 @@ import math
 from dataclasses import dataclass, field
 from enum import Enum
 
-FORMULA_VERSION = "v1.3"
+FORMULA_VERSION = "v1.4"
 # Evidence status for published claims. Do not treat placeholder weights as fitted.
 EVIDENCE_STATUS = "simulation-calibrated"  # not yet "modus-fitted" / "multi-repo"
 DEFAULT_DECAY_FORM_NAME = "hybrid"
@@ -230,6 +229,11 @@ DEFAULT_REGISTRY: tuple[Factor, ...] = (
     Factor("reviewer_independence", Stage.REVIEW, 0.08),
     Factor("evidence_freshness", Stage.REVIEW, 0.08),
     Factor("doctrine_reinjection", Stage.DEV, 0.08),
+    # AI-native PDLC candidates (registered 2026-09-07, v1.4). These have no
+    # simulation or live evidence yet and contribute only when activity is
+    # observed or an explicit future ablation toggle records them.
+    Factor("design_context", Stage.DEV, 0.08),
+    Factor("chat_intake", Stage.TICKET, 0.08),
 )
 
 # Factors with identifiable arm contrasts in the Modus campaign design.
@@ -257,6 +261,8 @@ CANDIDATE_FACTORS: frozenset[str] = frozenset(
         "error_msg_quality",
         "runtime_feedback_hooks",
         "rollback_reversibility",
+        "design_context",
+        "chat_intake",
     }
 )
 

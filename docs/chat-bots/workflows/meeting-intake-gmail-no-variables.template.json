@@ -1,0 +1,333 @@
+{
+  "name": "[PILOT] Gemini Meeting Notes Intake (Gmail \u2192 Cursor review card)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "from:gemini-notes@google.com {subject:\"Sprint Planning\" subject:\"Sprint Estimating\"}"
+        },
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b001",
+      "name": "Gemini Notes Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        260
+      ],
+      "notes": "Bind a service mailbox credential. This is only a cheap first-pass filter; the calendar series allowlist is authoritative."
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b016",
+      "name": "Get Full Gemini Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        360,
+        260
+      ],
+      "notes": "Bind the same Gmail OAuth credential. The email supplies the Doc URL; the Doc remains the notes source."
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $json;\nconst subject = String(email.subject ?? email.Subject ?? email.headers?.subject ?? '');\nconst titleMatch = subject.match(/\\b(Sprint Planning|Sprint Estimating)\\b/i);\nconst html = [email.textHtml, email.textAsHtml, email.html, email.textPlain, email.text, email.snippet].filter(Boolean).join('\\n');\nconst docMatch = html.match(/(?:https?:\\/\\/)?docs\\.google\\.com\\/document\\/d\\/([a-zA-Z0-9_-]+)/i);\nconst docId = docMatch?.[1] ?? email.docId ?? null;\nconst receivedAt = email.internalDate ?? email.date ?? new Date().toISOString();\nreturn [{ json: {\n  subject,\n  title: titleMatch?.[1] ?? null,\n  meetingDate: receivedAt,\n  docId,\n  docUrl: docId ? `https://docs.google.com/document/d/${docId}/edit` : null,\n  emailId: email.id ?? email.messageId ?? null,\n  sourceEmail: email,\n} }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b002",
+      "name": "Extract Meeting Identity",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const identity = $('Extract Meeting Identity').item.json;\nconst staticData = $getWorkflowStaticData('global');\nstaticData.meetingDocs = staticData.meetingDocs || {};\nconst prior = identity.docId ? staticData.meetingDocs[identity.docId] : null;\nif (prior) {\n  return [{ json: { ...identity, route: 'duplicate', calendarVerified: false, reason: `Doc ID already processed with status ${prior.status}.` } }];\n}\nif (!identity.title || !identity.docId) {\n  return [{ json: { ...identity, route: 'ignore', calendarVerified: false, reason: 'Gemini subject is not Sprint Planning/Estimating or the Google Doc ID is missing.' } }];\n}\nstaticData.meetingDocs[identity.docId] = { status: 'processing', startedAt: Date.now(), title: identity.title };\nreturn [{ json: { ...identity, route: 'accept', calendarVerified: false, meetingIdentityVerified: true, reason: 'Accepted from filtered Gemini meeting identity and Doc ID.' } }];"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b004",
+      "name": "Apply Meeting Identity and Idempotency Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        260
+      ],
+      "notes": "Prototype/variable-free identity gate. Gmail subject and Doc ID are the source-of-truth inputs; Calendar is intentionally not required in this flow."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api2.cursor.sh/automations/webhook/REPLACE_CURSOR_MEETING_INTAKE_AUTOMATION_ID",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_CURSOR_WEBHOOK_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'ElishaSamPeterPrabhu/modus-wc-2.0', branch: 'main', docId: $('Apply Meeting Identity and Idempotency Gate').item.json.docId, docUrl: $('Apply Meeting Identity and Idempotency Gate').item.json.docUrl, meetingType: $('Apply Meeting Identity and Idempotency Gate').item.json.title, meetingDate: $('Apply Meeting Identity and Idempotency Gate').item.json.meetingDate, reviewId: `meeting-${$('Apply Meeting Identity and Idempotency Gate').item.json.docId}-${Date.now()}`, reviewReadyCallbackUrl: 'https://flows-webhook.stage.trimble-ai.com/agentic/workflows/v1/webhook/pilot-meeting-review-ready', reviewDelivery: 'n8n-callback', source: 'Gemini meeting notes' } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b008",
+      "name": "Call Cursor Meeting Intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        160
+      ],
+      "notes": "Cursor reads the Google Doc and private repository, then POSTs {reviewId, items, chatResponse} to reviewReadyCallbackUrl. The callback workflow persists state and owns Chat delivery. Cursor needs CURSOR_REVIEW_CALLBACK_TOKEN as a runtime secret."
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "modus-meeting-intake-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b012",
+      "name": "Review Card Interaction Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        760
+      ],
+      "webhookId": "modus-meeting-intake-review"
+    },
+    {
+      "parameters": {
+        "jsCode": "const event = $json.body ?? $json;\nconst action = event.action ?? event.common?.invokedFunction ?? {};\nconst parameters = Object.fromEntries((action.parameters ?? []).map((p) => [p.key, p.value]));\nconst method = event.decision ?? action.actionMethodName ?? parameters.action ?? null;\nconst reviewId = event.reviewId ?? parameters.reviewId;\nconst selected = Array.isArray(event.selectedItemIds)\n  ? event.selectedItemIds\n  : (event.common?.formInputs?.itemIds?.stringInputs?.value ?? event.action?.formInputs?.itemIds?.stringInputs?.value ?? []);\nconst comment = event.comment\n  ?? event.common?.formInputs?.reviewComment?.stringInputs?.value?.[0]\n  ?? event.action?.formInputs?.reviewComment?.stringInputs?.value?.[0]\n  ?? '';\nconst staticData = $getWorkflowStaticData('global');\nconst review = Object.values(staticData.meetingDocs || {}).find((entry) => entry.reviewId === reviewId);\nif (!review) throw new Error('Review not found or expired.');\nif (['discard_review', 'reject_selected', 'request_changes'].includes(method)) {\n  review.status = method === 'discard_review' ? 'discarded' : method === 'reject_selected' ? 'rejected' : 'changes_requested';\n  review.reviewComment = comment;\n  return [{ json: { route: 'review_update', response: { text: `Review ${review.status.replace('_', ' ')}. No issues were created.` }, reviewId } }];\n}\nif (method !== 'approve_selected') {\n  return [{ json: { route: 'review_update', response: { text: 'Unsupported review action. No issues were created.' }, reviewId } }];\n}\nconst selectedSet = new Set(selected);\nconst candidates = review.items.filter((item) => selectedSet.has(item.itemId) && ['repo-work', 'design-work'].includes(item.classification));\nif (!candidates.length) {\n  return [{ json: { route: 'review_update', response: { text: 'No eligible repo-work or design-work items were selected. No issues were created.' }, reviewId } }];\n}\nreview.status = 'approved';\nreview.reviewComment = comment;\nreturn candidates.map((item) => ({ json: { route: 'create', reviewId, docUrl: review.docUrl, reviewComment: comment, item } }));"
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b013",
+      "name": "Load Selected Meeting Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://flows-webhook.stage.trimble-ai.com/agentic/workflows/v1/webhook/pilot-modus-issue-service",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REPLACE_ISSUE_SERVICE_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { repo: 'ElishaSamPeterPrabhu/modus-wc-2.0', title: $json.item.rawText, summary: $json.item.sourceExcerpt, type: $json.item.classification === 'design-work' ? 'design' : 'feature', components: $json.item.componentHints || [], labels: $json.item.classification === 'design-work' ? ['needs-scaffolding', 'design-research'] : ['needs-scaffolding'], source: { kind: 'gemini-notes', url: $json.docUrl, meetingDocId: $json.docUrl?.split('/document/d/')[1]?.split('/')[0] || null }, rawConversation: [{ sender: 'Gemini meeting notes', text: $json.item.rawText }], contextEvidence: [{ claim: $json.item.reason, source: $json.docUrl }], idempotencyKey: `gemini:${$json.docUrl}:${$json.item.itemId}`, autoApprove: false } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b014",
+      "name": "Create Selected Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        700
+      ],
+      "notes": "No n8n Variables required. Replace the Authorization token or bind a credential before enabling issue creation."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response || { text: \"Selected meeting items were sent to the shared issue service for draft scaffolding.\" } }}",
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b015",
+      "name": "Respond to Review Action",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "meeting-create-route",
+              "leftValue": "={{ $json.route }}",
+              "rightValue": "create",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0d9a0d7-6b6a-4c6c-a8b4-4c0c01a9b016",
+      "name": "Approved Meeting Selection?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        760
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Review Card Interaction Webhook": {
+      "main": [
+        [
+          {
+            "node": "Load Selected Meeting Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Selected Meeting Items": {
+      "main": [
+        [
+          {
+            "node": "Approved Meeting Selection?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Selected Draft": {
+      "main": [
+        [
+          {
+            "node": "Respond to Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Cursor Meeting Intake": {
+      "main": [
+        []
+      ]
+    },
+    "Approved Meeting Selection?": {
+      "main": [
+        [
+          {
+            "node": "Create Selected Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Review Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Notes Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Full Gemini Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Gemini Email": {
+      "main": [
+        [
+          {
+            "node": "Extract Meeting Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Meeting Identity": {
+      "main": [
+        [
+          {
+            "node": "Apply Meeting Identity and Idempotency Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Meeting Identity and Idempotency Gate": {
+      "main": [
+        [
+          {
+            "node": "Call Cursor Meeting Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "pilot-gmail-cursor-sends-review-card-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

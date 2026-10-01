@@ -2,8 +2,22 @@
   "schema_version": "1.0.0",
   "subject_repo": "https://github.com/vorlac/llama-leash",
   "generated_at": "2026-08-30",
-  "provenance": "reported",
-  "provenance_note": "Presence judged from repository documentation only (README gate table, docs/, conductor/docs/HONEST-LIMITS.md). No run telemetry, no live activity measurement, no V* computed (see score-pack.json: n_scored=0, V* missing). This mapping is a setup inventory, not evidence of effectiveness.",
+  "provenance": "mixed (observed_gate_tests for test-covered mechanisms; reported otherwise)",
+  "provenance_note": "Initial presence judged from repository documentation (README gate table, docs/, conductor/docs/HONEST-LIMITS.md). 2026-08-30 upgrade: the conductor gate test suite was executed locally (2050/2052 pass; both failures environment-dependent pytest-host assumptions; see verification-run.log). Mechanisms exercised by named passing test files are upgraded to observed_gate_tests. Still no run telemetry, no live activity measurement, no V* computed (score-pack.json: n_scored=0, V* missing). Gate tests prove the controls behave as documented; they are not evidence of delivery effectiveness.",
+  "per_factor_provenance": {
+    "red_first_discipline": "observed_gate_tests (fsm-item.test.ts)",
+    "evidence_freshness": "observed_gate_tests (freshness.test.ts)",
+    "reviewer_independence": "observed_gate_tests (fanout.test.ts, fanout-transcript.test.ts)",
+    "doctrine_reinjection": "observed_gate_tests (doctrine.test.ts, doctrine-mechanics.test.ts, doctrine-content.test.ts)",
+    "completion_guard_hook": "observed_gate_tests (evidence.test.ts, evidence-attribution.test.ts)",
+    "checkpointing": "observed_gate_tests (g8-testscope-exit.test.ts, admission-seams.test.ts scope gates)",
+    "ci_gate": "reported",
+    "agentic_qa": "reported",
+    "fix_loop": "reported",
+    "spec_refinement": "reported",
+    "rules_context": "reported",
+    "review_bot": "reported"
+  },
   "formula_version": "v1.3",
   "factors_present_per_documentation": {
     "ci_gate": "visible test suites gate every item; hidden gauge tests in bench corpus",
@@ -31,8 +45,19 @@
   "inspect_gaps_note": "framework inspect reported 12 measurement gaps because conductor's controls live in a TypeScript plugin rather than .cursor/.github conventions; those gaps are convention mismatches documented in user-intake.json setup_declared.notes, not absent controls.",
   "cross_check_status": {
     "their_benchmark": "three-arm harness-vs-bare benchmark with hidden tests; calibration metric self_score - objective",
-    "published_results": "none in-repo (.data/benchmark/ is gitignored)",
-    "status": "quantitative cross-check of sim deltas blocked until results are published",
+    "published_results": "none upstream in-repo (.data/benchmark/ is gitignored); local reproduction copied to data/external/llama-leash/",
+    "local_reproduction_attempt": "2026-08-30/31 round 1 on M4 Pro 24GB: ornith-9b Q4_K_M benchmark complete (calibration 0.0 on author-default merge-ranges preset); T0 stopped at 8/30 cells; conductor arm closed as not_computable (Jinja); gate suite 2080/2085 under Node 26; preflight 2026-08-31 confirmed first-turn Jinja 500 and 90s zero-token orchestrator run",
+    "status": "round_1_closed",
+    "artifacts": [
+      "data/external/llama-leash/benchmark-results.json",
+      "data/external/llama-leash/t0-arm-results.json",
+      "data/external/llama-leash/cross-check.json"
+    ],
+    "claim_boundaries": [
+      "One model, one host, T0 stopped at 8/30 cells",
+      "Conductor arm not_computable; no harness-vs-bare direction claim",
+      "No fitted-weight claims; no sim direction claim confirmed or refuted"
+    ],
     "structural_alignment": [
       "their calibration metric (self_score - objective) is the live counterpart of the simulation calibration gap added in v1.3",
       "their two hardest-enforced evidence-honesty gates (red-first FSM, verify freshness stamp) are the two factors with the largest simulated deltas in data/discipline_ablation.json",

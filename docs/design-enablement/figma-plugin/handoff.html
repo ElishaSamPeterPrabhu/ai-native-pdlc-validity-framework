@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+    body {
+      font: 12px/1.5 Inter, sans-serif;
+      margin: 0;
+      padding: 16px;
+      color: var(--figma-color-text, #111);
+      background: var(--figma-color-bg, #fff);
+    }
+    h1 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 0 0 12px;
+      color: var(--figma-color-text-secondary, #666);
+    }
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 120px;
+      resize: vertical;
+      font: inherit;
+      padding: 8px;
+      border: 1px solid var(--figma-color-border, #ddd);
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 8px 12px;
+      font: inherit;
+      font-weight: 600;
+      border: 0;
+      border-radius: 6px;
+      background: var(--figma-color-bg-brand, #0d99ff);
+      color: #fff;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 8px;
+      min-height: 18px;
+      color: var(--figma-color-text-secondary, #666);
+    }
+  </style>
+</head>
+<body>
+  <h1>Continue in Cursor</h1>
+  <p>The agent can research Modus, standards, impact, and draft next steps. Copy this prompt into Cursor chat.</p>
+  <textarea id="prompt" readonly></textarea>
+  <button id="copy">Copy prompt</button>
+  <div id="status"></div>
+  <script>
+    const promptEl = document.getElementById('prompt');
+    const statusEl = document.getElementById('status');
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      const area = document.createElement('textarea');
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand('copy');
+      document.body.removeChild(area);
+      return Promise.resolve();
+    }
+
+    document.getElementById('copy').addEventListener('click', () => {
+      copyText(promptEl.value)
+        .then(() => {
+          statusEl.textContent = 'Copied. Paste in Cursor chat, then close this panel.';
+          parent.postMessage({ pluginMessage: { type: 'copied' } }, '*');
+        })
+        .catch((error) => {
+          statusEl.textContent = 'Select the text and copy manually.';
+        });
+    });
+
+    window.onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (message?.type === 'init') {
+        promptEl.value = message.prompt || '';
+      }
+    };
+  </script>
+</body>
+</html>

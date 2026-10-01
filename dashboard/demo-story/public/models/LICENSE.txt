@@ -1,0 +1,9 @@
+2CylinderEngine.glb
+
+Source:
+https://github.com/KhronosGroup/glTF-Sample-Models/tree/main/2.0/2CylinderEngine
+
+The Khronos sample README attributes the data conversion from original JT to
+COLLADA to Okino Computer Graphics using Okino PolyTrans Software. This asset
+is included as a demo reference model; retain this attribution if the model
+is redistributed.

@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "round": "round_1_closed",
+  "closed_at": "2026-08-31",
+  "claim_boundaries": [
+    "One model (ornith-9b Q4_K_M), one host (M4 Pro 24GB), T0 stopped at 8/30 cells",
+    "Conductor arm not_computable on this stack; remaining T0 cells would not change that",
+    "No fitted-weight or live-effect-size claims",
+    "No sim direction claim confirmed or refuted for discipline factors",
+    "Calibration number quoted only from benchmark-results.json",
+    "Sim numbers quoted only from data/discipline_ablation.json"
+  ],
+  "inputs": {
+    "benchmark_results": "data/external/llama-leash/benchmark-results.json",
+    "t0_arm_results": "data/external/llama-leash/t0-arm-results.json",
+    "discipline_ablation": "data/discipline_ablation.json",
+    "discipline_predictions": "data/discipline_predictions.json"
+  },
+  "calibration_cross_check": {
+    "mechanism": "calibration_gap (self_score - objective)",
+    "live": {
+      "value": 0.0,
+      "direction": "near_zero",
+      "provenance": "observed benchmark author-default preset"
+    },
+    "sim_red_first_medium": {
+      "factor_off_gap": 0.050000000000000044,
+      "factor_on_gap": 0.0,
+      "delta_gap": -0.050000000000000044,
+      "prediction": "positive"
+    },
+    "direction_agreement": "not_claimed",
+    "magnitude_claim": "none \u2014 live calibration on merge-ranges task is not comparable to sim task distribution",
+    "note": "Live gap is 0.0 on ornith-9b merge-ranges (observed). Sim predicts red_first OFF widens gap. Different measurement surface; round 1 does not treat this as confirming or refuting the sim direction."
+  },
+  "discipline_factor_direction_checks": [
+    {
+      "factor": "red_first_discipline",
+      "sim_expected_direction": "positive",
+      "sim_delta_v_obs": 0.006249999999999978,
+      "live_direction": "inconclusive",
+      "direction_agreement": "inconclusive",
+      "magnitude_claim": "none \u2014 direction-level only; partial T0, one model, one host",
+      "note": "T0 stopped at 3 baseline tasks; cannot isolate red-first OFF. No direction claim."
+    },
+    {
+      "factor": "reviewer_independence",
+      "sim_expected_direction": "near_zero",
+      "sim_delta_v_obs": 0.0,
+      "live_direction": "inconclusive",
+      "direction_agreement": "inconclusive",
+      "magnitude_claim": "none \u2014 direction-level only; partial T0, one model, one host",
+      "note": "Conductor arm not_computable (Jinja multi-system reject). No independent-review contrast measured."
+    },
+    {
+      "factor": "evidence_freshness",
+      "sim_expected_direction": "positive",
+      "sim_delta_v_obs": 0.0854166666666667,
+      "live_direction": "inconclusive",
+      "direction_agreement": "inconclusive",
+      "magnitude_claim": "none \u2014 direction-level only; partial T0, one model, one host",
+      "note": "No freshness telemetry exported in T0 cell JSON"
+    },
+    {
+      "factor": "doctrine_reinjection",
+      "sim_expected_direction": "near_zero_to_small_positive",
+      "sim_delta_v_obs": 0.0,
+      "live_direction": "inconclusive",
+      "direction_agreement": "inconclusive",
+      "magnitude_claim": "none \u2014 direction-level only; partial T0, one model, one host",
+      "note": "Doctrine 2/3 on three overlapping tasks is not a clean reinjection ablation; not used as a direction claim."
+    }
+  ],
+  "harness_vs_bare_contrast": {
+    "baseline_hidden_pass_rate": 1.0,
+    "doctrine_hidden_pass_rate": 0.6666666666666666,
+    "conductor_hidden_pass_rate": null,
+    "conductor_status": "not_computable",
+    "doctrine_minus_baseline": -0.33333333333333337,
+    "conductor_minus_baseline": null,
+    "cells_basis": "8/30 T0 cells on slugify-ts, retry-ts, duration-py only; remaining 22 not run",
+    "direction_read": "not claimed: conductor not_computable; doctrine-vs-baseline is three tasks only and is not a mechanism ablation"
+  },
+  "overall": {
+    "status": "round_1_closed",
+    "summary": "Round 1 closed 2026-08-31. Observed: merge-ranges calibration 0.0 (author-default preset). Partial T0: baseline 3/3 hidden pass, doctrine 2/3. Conductor arm is not_computable on ornith-9b + llama.cpp Jinja (only one system message allowed, and only as messages[0]; conductor appends extra system entries). Preflight 2026-08-31 reproduced the Jinja error in seconds; opencode conductor-orchestrator produced zero tokens in 90s. Remaining T0 cells were not run. No sim direction claim is confirmed or refuted. V* remains missing: no run telemetry."
+  }
+}
