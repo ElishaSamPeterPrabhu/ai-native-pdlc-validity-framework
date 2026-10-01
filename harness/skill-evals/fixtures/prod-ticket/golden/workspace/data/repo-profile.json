@@ -1,0 +1,9 @@
+{
+  "repo": "ElishaSamPeterPrabhu/modus-wc-2.0",
+  "profile": "frontend",
+  "stack": ["stencil", "typescript"],
+  "commands": {"test": "npm test", "lint": "npm run lint"},
+  "ci": {"workflows": [".github/workflows/lint.yml"]},
+  "agent_surface": {"rules": [".cursor/rules/code-guidelines.mdc"]},
+  "gaps": ["no product intake surface"]
+}

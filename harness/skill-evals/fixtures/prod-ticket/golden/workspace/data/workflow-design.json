@@ -1,0 +1,10 @@
+{
+  "profile": "frontend",
+  "stages": [
+    {"id": "intake", "flow": "product_to_issue", "layer": "harness", "agent": "meeting-review-intake", "exit_signals": ["needs-review"]},
+    {"id": "review", "flow": "product_to_issue", "layer": "loop", "agent": "review-ledger-round", "exit_signals": ["pending", "clarification", "rejected"]},
+    {"id": "approve", "flow": "product_to_issue", "layer": "graph", "agent": "approve-ledger-round", "exit_signals": ["approved", "created", "failed"]}
+  ],
+  "classifications": ["repo-work", "design-work", "process/meta", "decision-record", "already-tracked"],
+  "dedupe": "idempotency key per meeting item"
+}

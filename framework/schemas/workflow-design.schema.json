@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/workflow-design.schema.json",
+  "title": "WorkflowDesign",
+  "description": "Written by the workflow-design skill.",
+  "type": "object",
+  "required": ["profile", "stages"],
+  "properties": {
+    "profile": { "enum": ["generic", "frontend"] },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "exit_signals"],
+        "properties": {
+          "id": { "type": "string" },
+          "flow": { "enum": ["product_to_issue", "issue_to_pr"] },
+          "trigger": { "type": "string" },
+          "agent": { "type": ["string", "null"] },
+          "gate": { "type": "array", "items": { "type": "string" } },
+          "exit_signals": { "type": "array", "items": { "type": "string" } },
+          "human_checkpoint": { "type": "string" },
+          "max_iterations": { "type": "integer" },
+          "layer": { "enum": ["harness", "loop", "graph"] }
+        }
+      }
+    },
+    "signals": { "type": "string" },
+    "risk_policy": {
+      "type": "object",
+      "properties": {
+        "needs_human_paths": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "measurement": { "type": "object" }
+  }
+}

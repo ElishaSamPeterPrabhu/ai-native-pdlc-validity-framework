@@ -1,0 +1,10 @@
+{
+  "role": "Maintainer of a Python CLI research repo with no UI",
+  "answers": [
+    "Work starts from GitHub issues. I comment /approve on the issue to start a Dev agent; nobody else can trigger it.",
+    "Dev should open a PR and make sure the CI checks pass: pip install -e . then pdlc-validity --help and python -m framework inspect. Then route to QA with a PR conversation comment.",
+    "QA reruns those checks independently and posts ## QA PASSED or ## QA FAILED. On failure a Fix agent repairs only what QA listed, at most 3 times, then Max iterations reached and needs-human. There is no UI, so no visual review.",
+    "I always merge myself. Do not touch .cursor/rules, hooks or .github without approval. Cursor Automations."
+  ],
+  "finalize": "That is everything. Write data/repo-profile.json, data/process-map.json, data/workflow-design.json and paste-ready automation configs under data/automations/ (one .md per agent). Do not write into .cursor/rules, .cursor/hooks, or .github; I will install them myself."
+}

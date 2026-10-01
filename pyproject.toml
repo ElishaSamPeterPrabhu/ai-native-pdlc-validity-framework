@@ -37,6 +37,9 @@ validate = [
   "matplotlib>=3.9",
   "SALib>=1.5",
 ]
+evals = [
+  "cursor-sdk==1.0.35",
+]
 
 [project.urls]
 Homepage = "https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework"

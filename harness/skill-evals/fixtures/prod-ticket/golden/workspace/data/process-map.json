@@ -1,0 +1,9 @@
+{
+  "stages": [
+    {"name": "meeting notes", "tool": "gmail/calendar"},
+    {"name": "review ledger", "tool": "google sheets"},
+    {"name": "issue", "tool": "github"}
+  ],
+  "approvers": {"merge": "human", "rows": "product owner"},
+  "platform": "cursor-automations"
+}

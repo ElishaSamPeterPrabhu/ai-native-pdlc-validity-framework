@@ -1,0 +1,22 @@
+{
+  "id": "eng-modus",
+  "flow": "issue_to_pr",
+  "repo_label": "trimble-oss/modus-wc-2.0",
+  "source": {
+    "path_env": "MODUS_WC_REPO",
+    "default_path": "../modus-wc-2.0",
+    "ref": "97128dc9297c5e9b3252e42911e01cb7aa3adcd0"
+  },
+  "held_out": [
+    ".cursor/skills/modus-*",
+    ".cursor/hooks.json",
+    ".cursor/hooks",
+    ".cursor/agents",
+    ".github/workflows/automation-label-router.yml"
+  ],
+  "ground_truth": [
+    "harness/AUTOMATION-PROMPTS.md",
+    "harness/CONSOLE-TRIGGERS.md",
+    "harness/console-paste/"
+  ]
+}
