@@ -44,6 +44,21 @@ The router always removes then adds a label so label-added webhooks fire again.
 
 Product→Issue: `intake` → `review` → `approved` → `issue_created`
 
+Reference ledger (`docs/chat-bots/apps-script/cursor-sheet-review-orchestrator.gs`):
+
+| Ledger value | Stage |
+| --- | --- |
+| row `status` `needs-review` / `pending` | `review` |
+| row `status` `clarification` | nexus event (`## NEED CLARIFICATION`) |
+| row `status` `approved` | `approved` |
+| row `status` `rejected` | pruned |
+| row `status` `failed` | nexus event |
+| Issues tab `status` `created` + `issueUrl` | `issue_created` (links to the Issue→PR lifeline) |
+
+Only `repo-work` and `design-work` rows can become issues; `process/meta`,
+`decision-record`, and `already-tracked` stay on the ledger. Idempotency key:
+`gemini:<meetingDocId>:<suffix>`.
+
 Issue→PR: `issue_opened` → `approved` → `dev` → `pr_opened` → `routed` → `qa` →
 `fix` (≤3) → `qa_rerun` → `human_review` → `merged` | `closed`
 

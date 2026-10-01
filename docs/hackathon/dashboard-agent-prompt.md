@@ -55,6 +55,12 @@ Derive stages from the signal contract in `harness/AUTOMATION-PROMPTS.md` and
 so other repos can change it without code changes.
 
 - **Product→Issue:** meeting/notes → ledger row → review round → approved → issue created.
+  Map the reference sheet's `Review` tab `status` (`needs-review`, `pending`,
+  `clarification`, `approved`, `rejected`, `failed`) and `Issues` tab
+  (`status`, `issueUrl`, `idempotencyKey`) using the table in
+  `starter-kit/signal-contract.md`. Join a ledger row to its Issue→PR lifeline via
+  `issueUrl`, so one item reads as a single timeline from meeting to merge.
+  Only `repo-work` / `design-work` rows advance past review.
 - **Issue→PR:** issue opened → `/approve` → Dev (branch `exp/<n>-<slug>`) → PR opened →
   routing (`qa-full` | `qa-skip`) → `## QA PASSED` | `## QA FAILED` | `## QA SKIPPED` →
   Fix (`Fix applied:`, cap 3) → `qa-rerun` → `needs-human` / human review → merged | closed.

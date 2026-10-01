@@ -59,7 +59,7 @@ role badges: "CLI owns the facts", "AI skills reason", "Humans approve".
 | 2:30 | QA posts `## QA FAILED`. The lifeline branches into a nexus event, and the ticker flashes. | "Here's a deviation from the expected timeline, caught as it happens, not a week later." |
 | 2:45 | Fix posts `Fix applied:` and `QA-rerun: add`; QA reruns and posts `## QA PASSED`. The lifeline rejoins. | "The loop closes by itself, capped at three tries." |
 | 3:00 | Open the validity panel: R, D, V* with provenance badges (observed / heuristic / imputed), `weight_source=placeholder`. | "Every number comes from the CLI and shows where it came from." |
-| 3:15 | Show the product→issue lane with a ledger row that became an issue. | "Same view, upstream: from meeting to issue." |
+| 3:15 | Show the product→issue lane: a sprint-planning note classified as `repo-work`, reviewed on the sheet, approved, and linked to the same issue you just watched. | "Same view, upstream: from meeting to issue, with a human approving every step." |
 
 **Backup:** If the live loop is slow, switch to `--replay` from the fixture recorded
 the day before. The REPLAY badge stays visible, so be honest about it in the
@@ -110,6 +110,8 @@ record_kind=intake_pseudo · simulation-calibrated`
 - [ ] Timeline Monitor running locally, live and replay ([prompt](dashboard-agent-prompt.md))
 - [ ] Recorded replay fixture covering a full loop with one nexus event
 - [ ] Two prepared issues on the fork (one clean, one that will fail lint once)
+- [ ] Sheet ledger primed per [`docs/pilot/interactive-demo-runbook.md`](../pilot/interactive-demo-runbook.md) with one approvable `repo-work` row ([demo links](../pilot/demo-workflow-links.md))
+- [ ] `dashboard/sheet-pilot-map.html` and `dashboard/pdlc-map.html` as backup visuals for the product→issue segment
 - [ ] `dashboard/demo-story/dist` recording for the problem segment
 - [ ] Loop diagram and text cards (Figma or slides)
 - [ ] Fresh sample repo for the build-your-own segment
