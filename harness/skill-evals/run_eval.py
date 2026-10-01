@@ -216,7 +216,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  - {problem}", file=sys.stderr)
         return 1
 
-    available = {m.id for m in Cursor.models.list(api_key=os.environ["CURSOR_API_KEY"])}
+    try:
+        available = {m.id for m in Cursor.models.list(api_key=os.environ["CURSOR_API_KEY"])}
+    except CursorAgentError as exc:
+        print(f"Cannot start L1 runs: {exc} (keys start with crsr_)", file=sys.stderr)
+        return 1
     if args.model not in available:
         print(f"model {args.model!r} not available; choose from {sorted(available)}", file=sys.stderr)
         return 1

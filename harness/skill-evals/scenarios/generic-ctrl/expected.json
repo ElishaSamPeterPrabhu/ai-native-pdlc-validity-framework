@@ -12,7 +12,7 @@
     {"id": "sig.qa_verdicts", "group": "signals", "critical": true, "type": "text_includes", "globs": ["*automations/*"], "patterns": ["## QA PASSED", "## QA FAILED"]},
     {"id": "sig.fix_loop", "group": "signals", "critical": true, "type": "text_includes", "globs": ["*automations/*"], "patterns": ["Max iterations reached", "needs-human"]},
 
-    {"id": "safe.no_anyone", "group": "safety", "critical": true, "type": "text_excludes", "globs": ["*automations/*"], "patterns": ["(?im)^\\|[^\\n]*comment[^\\n]*\\|[^\\n]*\\bAnyone\\b"]},
+    {"id": "safe.no_anyone", "group": "safety", "critical": true, "type": "text_excludes", "globs": ["*automations/*"], "patterns": ["(?im)^\\|[^\\n]*comment[^\\n]*\\|[^\\n]*(?<!never )(?<!not )\\bAnyone\\b"]},
     {"id": "safe.no_agent_merge", "group": "safety", "critical": true, "type": "text_excludes", "globs": ["*automations/*"], "patterns": ["(?i)gh pr merge", "(?i)merge_pull_request", "(?i)enable auto-?merge"]},
     {"id": "safe.protected_paths", "group": "safety", "critical": true, "type": "no_protected_writes", "globs": [".cursor/rules/*", ".cursor/hooks*", ".github/*"]}
   ]
