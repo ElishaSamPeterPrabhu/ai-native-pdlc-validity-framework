@@ -194,7 +194,7 @@ def score_run(run_dir: Path, expected: dict) -> dict:
 
 
 def aggregate(runs_dir: Path, criteria: dict) -> dict:
-    cells: dict[tuple[str, str], list[dict]] = {}
+    cells: dict[tuple[str, str, str], list[dict]] = {}
     per_run = []
     for run_dir in sorted(p for p in runs_dir.iterdir() if (p / "meta.json").exists()):
         meta = json.loads((run_dir / "meta.json").read_text())
@@ -209,14 +209,15 @@ def aggregate(runs_dir: Path, criteria: dict) -> dict:
             }
         )
         per_run.append(result)
-        cells.setdefault((meta["scenario"], meta["arm"]), []).append(result)
+        cells.setdefault((meta.get("model") or "unknown", meta["scenario"], meta["arm"]), []).append(result)
 
     summary = []
-    for (scenario, arm), results in sorted(cells.items()):
+    for (model, scenario, arm), results in sorted(cells.items()):
         n = len(results)
         c = sum(r["success"] for r in results)
         summary.append(
             {
+                "model": model,
                 "scenario": scenario,
                 "arm": arm,
                 "n": n,
@@ -231,11 +232,12 @@ def aggregate(runs_dir: Path, criteria: dict) -> dict:
         )
 
     contrasts = []
-    for scenario in sorted({s["scenario"] for s in summary}):
-        by_arm = {s["arm"]: s for s in summary if s["scenario"] == scenario}
+    for model, scenario in sorted({(s["model"], s["scenario"]) for s in summary}):
+        by_arm = {s["arm"]: s for s in summary if (s["model"], s["scenario"]) == (model, scenario)}
         if "skills" in by_arm and "bare" in by_arm:
             contrasts.append(
                 {
+                    "model": model,
                     "scenario": scenario,
                     "delta_overall": round(
                         by_arm["skills"]["mean_overall"] - by_arm["bare"]["mean_overall"], 4
@@ -254,27 +256,31 @@ def aggregate(runs_dir: Path, criteria: dict) -> dict:
 
 
 def evaluate_criteria(summary: list[dict], contrasts: list[dict], criteria: dict) -> dict:
-    out = {}
-    for scenario in criteria["gated_scenarios"]:
-        cell = next(
-            (s for s in summary if s["scenario"] == scenario and s["arm"] == "skills"), None
-        )
-        contrast = next((c for c in contrasts if c["scenario"] == scenario), None)
-        if cell is None:
-            out[scenario] = {"status": "not_run"}
-            continue
-        checks = {
-            "critical_rate": cell["mean_critical_rate"] >= criteria["min_critical_rate"],
-            "pass_hat_k": cell["pass_hat_k"] >= criteria["min_pass_hat_k"],
-            "no_safety_violations": cell["safety_violations"] == 0,
-            "beats_bare": contrast is not None
-            and contrast["delta_overall"] >= criteria["min_delta_vs_bare"],
-        }
-        out[scenario] = {
-            "status": "pass" if all(checks.values()) else "fail",
-            "checks": checks,
+    """Verdict per model, per gated scenario: {model: {scenario: verdict}}."""
+    out: dict[str, dict] = {}
+    for model in sorted({s["model"] for s in summary}) or ["none"]:
+        out[model] = {
+            scenario: _verdict(
+                next((s for s in summary if (s["model"], s["scenario"], s["arm"]) == (model, scenario, "skills")), None),
+                next((c for c in contrasts if (c["model"], c["scenario"]) == (model, scenario)), None),
+                criteria,
+            )
+            for scenario in criteria["gated_scenarios"]
         }
     return out
+
+
+def _verdict(cell: dict | None, contrast: dict | None, criteria: dict) -> dict:
+    if cell is None:
+        return {"status": "not_run"}
+    checks = {
+        "critical_rate": cell["mean_critical_rate"] >= criteria["min_critical_rate"],
+        "pass_hat_k": cell["pass_hat_k"] >= criteria["min_pass_hat_k"],
+        "no_safety_violations": cell["safety_violations"] == 0,
+        "beats_bare": contrast is not None
+        and contrast["delta_overall"] >= criteria["min_delta_vs_bare"],
+    }
+    return {"status": "pass" if all(checks.values()) else "fail", "checks": checks}
 
 
 def write_report(results: dict, out_dir: Path) -> None:
@@ -283,18 +289,19 @@ def write_report(results: dict, out_dir: Path) -> None:
         "",
         f"Generated {results['generated_at']} · models: {', '.join(results['models']) or 'n/a'}",
         "",
-        "| Scenario | Arm | n | pass@1 | pass^k | overall | critical | safety violations |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Model | Scenario | Arm | n | pass@1 | pass^k | overall | critical | safety violations |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for s in results["summary"]:
         lines.append(
-            f"| {s['scenario']} | {s['arm']} | {s['n']} | {s['pass_at_1']} | "
+            f"| {s['model']} | {s['scenario']} | {s['arm']} | {s['n']} | {s['pass_at_1']} | "
             f"{s['pass_hat_k']} | {s['mean_overall']} | {s['mean_critical_rate']} | "
             f"{s['safety_violations']} |"
         )
     lines += ["", "## Pre-registered criteria", ""]
-    for scenario, verdict in results["criteria"].items():
-        lines.append(f"- **{scenario}:** {verdict['status']} {verdict.get('checks', '')}")
+    for model, verdicts in results["criteria"].items():
+        for scenario, verdict in verdicts.items():
+            lines.append(f"- **{model} / {scenario}:** {verdict['status']} {verdict.get('checks', '')}")
     failed = sorted(
         {c["id"] for r in results["runs"] if r["arm"] == "skills" for c in r["checks"] if not c["passed"]}
     )
