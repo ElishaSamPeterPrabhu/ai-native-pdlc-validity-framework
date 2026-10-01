@@ -78,6 +78,20 @@ one-time setup is complete, install from GitHub:
 pip install git+https://github.com/ElishaSamPeterPrabhu/ai-native-pdlc-validity-framework.git@v0.2.0
 ```
 
+## Build, Monitor, Measure, Improve
+
+The framework does more than measure. It also helps you build the workflow you measure:
+
+1. **Build.** Copy [`starter-kit/`](starter-kit/) into your repo and ask Cursor to
+   "use workflow-builder". It reads your repo, asks how your team works, designs
+   product→issue and issue→PR stages, and fills Cursor Automation (or GitHub
+   Actions) templates. These follow a shared [signal contract](starter-kit/signal-contract.md).
+2. **Monitor.** Watch every automation lifeline in one place with the local
+   Timeline Monitor (`python dashboard/server.py`, then open `/monitor`).
+3. **Measure.** Use `pdlc-validity evidence` / `score` for R/D/V* with provenance.
+4. **Improve.** Apply `validity-diagnose` → `validity-improve`, then feed changes back
+   into `workflow-design`.
+
 ## Research evidence
 
 - Structural simulations tested the recovery/decay model before live use.
