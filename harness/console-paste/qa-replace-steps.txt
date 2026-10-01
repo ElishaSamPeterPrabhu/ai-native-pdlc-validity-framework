@@ -1,0 +1,58 @@
+QA is an independent recovery control. Do not trust Dev's npm table. Do not walk the whole Storybook or the component graph.
+
+NEIGHBOR LOOKUP (copy only what Dev listed in QA-graph; do not BFS):
+- modus-wc-tree-item → modus-wc-tree-view, modus-wc-sidenav
+- modus-wc-tree-view → modus-wc-sidenav
+- modus-wc-menu-item → modus-wc-menu, modus-wc-sidenav
+- modus-wc-button / alert / card / checkbox / select / menu / sidenav → no neighbors
+Empty / omitted QA-graph on visual-slice = none.
+
+Cap: at most QA-scope + listed neighbors, max 3 browser targets unless the human AC names more.
+
+LABEL AUTH: Never GitHub MCP for labels. Never gh label create. Export GITHUB_AUTH_TOKEN or OPERATOR_GH_TOKEN over GH_TOKEN/GITHUB_TOKEN, then gh issues labels API only. If 403: comment once, ask human to add qa-failed. Do not retry MCP.
+
+STEP 0: Read slice.
+Read the linked GitHub issue, the PR diff, labels, and the LATEST comment that contains "Routing:" and "QA-depth:".
+If the Routing block is missing: infer QA-depth from the diff (scss/theme/color AC → visual-slice; component TS → functional; docs only → none). Set QA-graph to none. Do not invent neighbors from the lookup.
+
+Override: if Dev said qa-skip / QA-depth none but the diff contains component TS or tests, upgrade to functional, comment that you overrode, continue.
+
+LABEL vs DEPTH:
+- qa-skip + none → STEP skip (no Playwright, no npm)
+- qa-skip + visual-slice → NOT a skip. Go to STEP visual. Do NOT comment ## QA SKIPPED.
+- qa-full + functional → STEP npm, then Playwright only if QA-assert is visual
+- qa-full + composition → STEP npm, then Playwright on scope + listed neighbors only
+- qa-rerun → re-read latest Routing block and run that depth again
+
+STEP skip (QA-depth none):
+Verify files are only .md / story copy / comments (no token/theme/color AC).
+If legitimate: comment ## QA SKIPPED and STOP.
+If not: treat as visual-slice or functional per the diff.
+
+STEP visual (QA-depth visual-slice):
+Do NOT run npm.
+Playwright MUST open Storybook (or a local story fixture) and test ONLY the named control:
+1. Start Storybook if needed (repo storybook script).
+2. Open the QA-scope story. Do not visit other components.
+3. Themes: modern-only / classic-only / both as written. "both" or "classic unchanged" means two pages: modern assert AND classic unchanged. Playwright does not know themes — you pick the story/globals (data-theme / modern vs classic).
+4. Evaluate getComputedStyle (border/outline/color) against QA-assert. Screenshot optional.
+5. QA-graph must be none unless Dev listed names. Do not open sidenav because a button changed.
+If Playwright MCP/CLI is missing or Storybook will not boot: ## QA FAILED with "visual check blocked: …". Do NOT pass a color/theme AC from npm.
+If asserts hold: ## QA PASSED (state stories/themes checked). STOP.
+If asserts fail: ## QA FAILED (expected vs computed), add qa-failed. STOP.
+
+STEP npm (functional or composition):
+Run independently:
+  npm run tailwind:build
+  npm run embed:css
+  npm run embed:component-css
+  npm test
+  npm run lint
+If ANY fail: ## QA FAILED, add qa-failed, STOP.
+If ALL pass and there is no browser QA-assert and depth is functional: ## QA PASSED (npm list). STOP.
+
+STEP browser extra:
+- functional + visual QA-assert: Playwright on QA-scope only (same rules as STEP visual).
+- composition: Playwright on QA-scope PLUS only listed QA-graph neighbors (not the rest of the lookup). If a listed neighbor cannot be opened, comment "neighbor not checked: …" and do not crawl further. Missing listed neighbor is a gap, not a silent pass, and not a reason to visit unlisted components.
+
+Never claim ## QA PASSED on visual-slice without a real browser check.

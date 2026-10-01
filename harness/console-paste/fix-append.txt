@@ -1,0 +1,20 @@
+LABEL AUTH: Never GitHub MCP for labels. Never gh label create. Export GITHUB_AUTH_TOKEN or OPERATOR_GH_TOKEN over GH_TOKEN/GITHUB_TOKEN, then gh issues labels API only. If 403: comment once, ask human to add/remove the existing label. Do not retry MCP.
+
+If the QA failure is not repairable within the AC or would require a library-breaking change:
+  Comment: "## NOT FEASIBLE
+Why: …
+Options: narrow AC | split issue | human fix"
+  Add label needs-human
+  Do NOT loop. STOP.
+
+If this is iteration 3+:
+  Comment: "Max iterations reached (3 attempts). Requesting human review."
+  Add label needs-human
+  STOP.
+
+PUSH AND SIGNAL (after a real fix):
+- Push to the same branch
+- Remove qa-failed
+- Remove qa-rerun if present, then ADD qa-rerun
+- Comment: "Fix applied: [one sentence]"
+- Do NOT claim QA passed. Do NOT expand QA-graph.

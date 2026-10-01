@@ -1,0 +1,16 @@
+{
+  "comment": "Lookup only. Dev copies neighbors into QA-graph when QA-depth is composition. Empty array = never walk. QA must not BFS this map.",
+  "max_browser_targets": 3,
+  "neighbors": {
+    "modus-wc-alert": [],
+    "modus-wc-button": [],
+    "modus-wc-card": [],
+    "modus-wc-checkbox": [],
+    "modus-wc-menu": [],
+    "modus-wc-menu-item": ["modus-wc-menu", "modus-wc-sidenav"],
+    "modus-wc-select": [],
+    "modus-wc-sidenav": [],
+    "modus-wc-tree-item": ["modus-wc-tree-view", "modus-wc-sidenav"],
+    "modus-wc-tree-view": ["modus-wc-sidenav"]
+  }
+}

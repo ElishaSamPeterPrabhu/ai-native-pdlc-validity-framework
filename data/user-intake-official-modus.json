@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0.0",
+  "repo": {
+    "owner": "trimble-oss",
+    "name": "modus-wc-2.0",
+    "default_branch": "main",
+    "url": "https://github.com/trimble-oss/modus-wc-2.0"
+  },
+  "automations": [
+    {
+      "name": "Dev Agent",
+      "role": "dev",
+      "trigger": "issue comment /approve by Me; PR comment /refine by Me; /ask|/clarify by Me",
+      "repo_scope": "trimble-oss/modus-wc-2.0",
+      "tools_mcp": ["github"],
+      "stop_rule": "PRE-OPEN npm then POST-OPEN Routing comment + qa-skip|qa-full; do not run Playwright",
+      "repair_cap": null,
+      "instructions_summary": "Implement from issue; Routing block with QA-depth; OPERATOR_GH_TOKEN for labels",
+      "console_url": "https://cursor.com/t/trimble/automations",
+      "enabled": true
+    },
+    {
+      "name": "QA Agent",
+      "role": "qa",
+      "trigger": "label added qa-skip|qa-full|qa-rerun on PRs",
+      "repo_scope": "trimble-oss/modus-wc-2.0",
+      "tools_mcp": ["github"],
+      "stop_rule": "Depth from Routing comment; visual-slice = Playwright named Storybook only; else independent npm",
+      "repair_cap": null,
+      "instructions_summary": "Independent QA; no full graph walk; Playwright MCP not yet on live run #1407",
+      "enabled": true
+    },
+    {
+      "name": "Fix Agent",
+      "role": "fix",
+      "trigger": "label added qa-failed on PRs",
+      "repo_scope": "trimble-oss/modus-wc-2.0",
+      "tools_mcp": ["github"],
+      "stop_rule": "max 3 repairs then needs-human; qa-rerun after push",
+      "repair_cap": 3,
+      "instructions_summary": "Repair from ## QA FAILED; do not claim QA passed",
+      "enabled": true
+    }
+  ],
+  "setup_declared": {
+    "has_rules": true,
+    "has_mcp": true,
+    "has_hooks": false,
+    "has_ci_gate": true,
+    "has_review_bot": true,
+    "label_handoff": true,
+    "human_review_always": true,
+    "notes": "Official-repo Cursor automations. Label write 403 on cursor[bot] until OPERATOR_GH_TOKEN. Playwright MCP and new Routing instructions written in research harness, console Save not confirmed. n_runs metrics.jsonl=0."
+  },
+  "prs": [
+    {
+      "url_or_number": "https://github.com/trimble-oss/modus-wc-2.0/pull/1407",
+      "title": "fix(button): Set tertiary outline border color to base-200",
+      "stratum_guess": "low",
+      "linked_issue": "#1406",
+      "acceptance_criteria": [
+        "Tertiary outline button border color is base-200",
+        "Modern theme only; classic unchanged (human /refine)"
+      ],
+      "body_excerpt": "Stop-boundary check: yes. Dev npm table claimed pass. Closes #1406. Routing label add 403 after /refine.",
+      "labels": ["qa-full", "qa-rerun"],
+      "ci_status": "pass",
+      "qa_comments_summary": "QA Agent ## QA PASSED (npm) twice; no Playwright/Storybook computed-style check. Human added qa-rerun after bot 403. Human APPROVED; asked Jewel for review.",
+      "fix_iterations": 0,
+      "files_changed": 2,
+      "lines_changed": 47,
+      "agent_claimed_done": true,
+      "human_review_notes": "Needed /refine for modern-only; Copilot review; human approved. Label permissions still blocked bot.",
+      "what_failed_or_surprised": "First /refine regex missed extra lines; label API 403 Resource not accessible by integration for qa-rerun and needs-human; QA passed without visual-slice Playwright; architecture.mdc slipped into a style PR so qa-full not qa-skip.",
+      "formula_signals": {
+        "entropy_notes": "failed label write 403; /refine needed a second comment after exact-match regex",
+        "opacity_notes": "Two files: button scss plus architecture.mdc",
+        "blast_radius_notes": "Tertiary outline on modus-wc-button only; QA-graph none",
+        "spec_ambiguity_notes": "AC pinned after /refine: modern only, classic must not change",
+        "recovery_seen": [
+          "agentic_qa",
+          "ci_gate",
+          "github_mcp",
+          "rules_context",
+          "spec_refinement",
+          "review_bot"
+        ]
+      }
+    }
+  ],
+  "goals": [
+    "Score official-repo loop after PR #1407",
+    "Do not start next automation set until console has Routing + Playwright MCP"
+  ]
+}

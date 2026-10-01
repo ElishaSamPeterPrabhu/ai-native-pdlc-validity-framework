@@ -1,0 +1,218 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-20T09:28:09.902867+00:00",
+  "role_split": {
+    "ai": "diagnose layers from intake + optional offline inspect",
+    "cli": "intake merge / evidence / report",
+    "automations": "console-declared; not API-listed"
+  },
+  "layout": {
+    "schema_version": "1.0.0",
+    "rules_dir": ".cursor/rules",
+    "hooks_path": ".cursor/hooks.json",
+    "mcp_config_path": ".cursor/mcp.json",
+    "mcp_server_dir": "mcp",
+    "workflows_dir": ".github/workflows",
+    "framework_dir": "framework",
+    "harness_dir": "harness",
+    "tasks_dir": "harness/tasks",
+    "theory_dir": "theory",
+    "analysis_dir": "analysis",
+    "data_dir": "data",
+    "metrics_path": "data/metrics.jsonl",
+    "setup_manifest_path": "data/setup-manifest.json",
+    "validity_report_path": "data/validity-report.json",
+    "fit_results_path": "data/fit_results.json",
+    "source": "file",
+    "layout_file": "validity.layout.json",
+    "notes": [
+      "hooks_path not found; default .cursor/hooks.json"
+    ]
+  },
+  "setup_manifest": null,
+  "measurement_gaps": [
+    "loop: completion_guard / hooks not declared (may be simulation-only still)"
+  ],
+  "run_summary": {
+    "n_records": 0,
+    "n_synthetic": 0,
+    "strata_present": [],
+    "arms_present": []
+  },
+  "diagnosis_instructions": "You are diagnosing an AI-native delivery setup (issue \u2192 implement \u2192 QA \u2192 repair \u2192 human PR review).\n\nUse ONLY the evidence pack JSON. Do not invent telemetry.\n\nProduce:\n1. weakest_layer: harness | loop | graph | unknown (with confidence high|medium|low)\n2. rationale: cite specific gaps, stratum outcomes, and missing evidence\n3. recommended_controls: ordered list from the intervention catalog ids / factor names\n4. review_policy_suggestion: deep / high-level / minimal by stratum (human review never removed)\n5. next_actions: what CLI/automation steps to run after human approval\n6. open_questions: what evidence is still missing\n\nHard rules:\n- Scripts do not own the diagnosis; you do.\n- Prefer instrumentation when evidence is thin.\n- completion_guard_hook is simulation-only until live telemetry exists.\n- Apply fixes only after human approval, using paths from validity.layout.json.\n\n\nIntake mode: automations and PRs may be user-declared. Trust console excerpts when present. Map each PR surprise to a decay pressure or missing recovery control. Teach the team how to improve the next PR body using teaching.how_to_make_prs_better_with_ai.",
+  "claim_warnings": [],
+  "intake": {
+    "schema_version": "1.0.0",
+    "repo": {
+      "owner": "trimble-oss",
+      "name": "modus-wc-2.0",
+      "default_branch": "main",
+      "url": "https://github.com/trimble-oss/modus-wc-2.0"
+    },
+    "automations": [
+      {
+        "name": "Dev Agent",
+        "role": "dev",
+        "trigger": "issue comment /approve by Me; PR comment /refine by Me; /ask|/clarify by Me",
+        "repo_scope": "trimble-oss/modus-wc-2.0",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "PRE-OPEN npm then POST-OPEN Routing comment + qa-skip|qa-full; do not run Playwright",
+        "repair_cap": null,
+        "instructions_summary": "Implement from issue; Routing block with QA-depth; OPERATOR_GH_TOKEN for labels",
+        "console_url": "https://cursor.com/t/trimble/automations",
+        "enabled": true
+      },
+      {
+        "name": "QA Agent",
+        "role": "qa",
+        "trigger": "label added qa-skip|qa-full|qa-rerun on PRs",
+        "repo_scope": "trimble-oss/modus-wc-2.0",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "Depth from Routing comment; visual-slice = Playwright named Storybook only; else independent npm",
+        "repair_cap": null,
+        "instructions_summary": "Independent QA; no full graph walk; Playwright MCP not yet on live run #1407",
+        "enabled": true
+      },
+      {
+        "name": "Fix Agent",
+        "role": "fix",
+        "trigger": "label added qa-failed on PRs",
+        "repo_scope": "trimble-oss/modus-wc-2.0",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "max 3 repairs then needs-human; qa-rerun after push",
+        "repair_cap": 3,
+        "instructions_summary": "Repair from ## QA FAILED; do not claim QA passed",
+        "enabled": true
+      }
+    ],
+    "setup_declared": {
+      "has_rules": true,
+      "has_mcp": true,
+      "has_hooks": false,
+      "has_ci_gate": true,
+      "has_review_bot": true,
+      "label_handoff": true,
+      "human_review_always": true,
+      "notes": "Official-repo Cursor automations. Label write 403 on cursor[bot] until OPERATOR_GH_TOKEN. Playwright MCP and new Routing instructions written in research harness, console Save not confirmed. n_runs metrics.jsonl=0."
+    },
+    "prs": [
+      {
+        "url_or_number": "https://github.com/trimble-oss/modus-wc-2.0/pull/1407",
+        "title": "fix(button): Set tertiary outline border color to base-200",
+        "stratum_guess": "low",
+        "linked_issue": "#1406",
+        "acceptance_criteria": [
+          "Tertiary outline button border color is base-200",
+          "Modern theme only; classic unchanged (human /refine)"
+        ],
+        "body_excerpt": "Stop-boundary check: yes. Dev npm table claimed pass. Closes #1406. Routing label add 403 after /refine.",
+        "labels": [
+          "qa-full",
+          "qa-rerun"
+        ],
+        "ci_status": "pass",
+        "qa_comments_summary": "QA Agent ## QA PASSED (npm) twice; no Playwright/Storybook computed-style check. Human added qa-rerun after bot 403. Human APPROVED; asked Jewel for review.",
+        "fix_iterations": 0,
+        "files_changed": 2,
+        "lines_changed": 47,
+        "agent_claimed_done": true,
+        "human_review_notes": "Needed /refine for modern-only; Copilot review; human approved. Label permissions still blocked bot.",
+        "what_failed_or_surprised": "First /refine regex missed extra lines; label API 403 Resource not accessible by integration for qa-rerun and needs-human; QA passed without visual-slice Playwright; architecture.mdc slipped into a style PR so qa-full not qa-skip.",
+        "formula_signals": {
+          "entropy_notes": "failed label write 403; /refine needed a second comment after exact-match regex",
+          "opacity_notes": "Two files: button scss plus architecture.mdc",
+          "blast_radius_notes": "Tertiary outline on modus-wc-button only; QA-graph none",
+          "spec_ambiguity_notes": "AC pinned after /refine: modern only, classic must not change",
+          "recovery_seen": [
+            "agentic_qa",
+            "ci_gate",
+            "github_mcp",
+            "rules_context",
+            "spec_refinement",
+            "review_bot"
+          ]
+        }
+      }
+    ],
+    "goals": [
+      "Score official-repo loop after PR #1407",
+      "Do not start next automation set until console has Routing + Playwright MCP"
+    ],
+    "mode": "user_provided_online_setup"
+  },
+  "intake_pr_records": [
+    {
+      "run_id": "intake-pr-0",
+      "record_kind": "intake_pseudo",
+      "task": "fix(button): Set tertiary outline border color to base-200",
+      "arm": "intake",
+      "stratum": "low",
+      "synthetic": false,
+      "source": "user_intake",
+      "final_pass": false,
+      "final_v_obs": 0.0,
+      "fix_iterations": 0,
+      "opacity": 0.079375,
+      "decay_proxies": {
+        "opacity": {
+          "value": 0.079375,
+          "source": "imputed",
+          "confidence": "low"
+        }
+      },
+      "factor_activity": {
+        "agentic_qa": 1.0,
+        "ci_gate": 1.0,
+        "github_mcp": 1.0,
+        "rules_context": 1.0,
+        "spec_refinement": 1.0,
+        "review_bot": 1.0
+      },
+      "labels": [
+        "qa-full",
+        "qa-rerun"
+      ],
+      "pr_url": "https://github.com/trimble-oss/modus-wc-2.0/pull/1407"
+    }
+  ],
+  "teaching": {
+    "why_intake": "Cursor Automations are configured in the console and are not fully readable via API for listing definitions. Offline git inspect cannot see triggers/instructions. Paste setup + PR evidence here.",
+    "what_we_need_from_setup": [
+      "Automation names and roles (dev / qa / fix / scaffold / review)",
+      "Triggers (comment, label, PR opened, schedule)",
+      "Repo scope and enabled tools/MCP",
+      "Stop rules and repair caps (when may the agent say done?)",
+      "Whether human review is always required",
+      "Declared rules / hooks / CI / review bot (yes/no is enough)"
+    ],
+    "what_we_need_from_each_pr": [
+      "PR URL/number, title, linked issue",
+      "Acceptance criteria (from issue or PR checklist)",
+      "Labels and CI status",
+      "QA/fix comments summary and repair iteration count",
+      "Diff size (files/lines) and whether agent claimed done early",
+      "What failed or surprised the human reviewer",
+      "Optional formula signals: entropy, opacity, blast radius, spec ambiguity, recovery seen"
+    ],
+    "how_to_make_prs_better_with_ai": [
+      "Ask AI to fill the PR body from the issue AC using the formula PR template",
+      "Require AC checklist + evidence links (tests, QA comment, screenshots)",
+      "State stratum guess (low/medium/high) and blast-radius note",
+      "Never claim done without acceptance + tests + QA evidence",
+      "After human review, ask AI to map review comments to R/D gaps and one intervention"
+    ],
+    "pr_template_path": "framework/templates/intake/pr-body-formula.md",
+    "questionnaire_path": "framework/templates/intake/SETUP-QUESTIONNAIRE.md"
+  },
+  "online_automation_status": {
+    "console_api_list": false,
+    "method": "user_intake_plus_optional_offline_git_inspect",
+    "note": "There is no Automations Management API to list definitions. Use Cloud Agents API only for launching/monitoring runs, not for reading automation config."
+  }
+}

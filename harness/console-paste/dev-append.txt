@@ -1,0 +1,133 @@
+---
+
+OFFICIAL REPO (trimble-oss/modus-wc-2.0):
+
+LABEL AUTH:
+Never use GitHub MCP to add, remove, or create labels (403 admin / Resource not accessible by integration).
+Never run gh label create. These names already exist: qa-skip, qa-full, qa-rerun, qa-failed, needs-human.
+If GITHUB_AUTH_TOKEN or OPERATOR_GH_TOKEN is set, export GH_TOKEN and GITHUB_TOKEN to that PAT (prefer GITHUB_AUTH_TOKEN) BEFORE any label mutation. Confirm: gh api user -q .login is a human login, not cursor[bot].
+Attach/remove only via gh issues labels API (POST/DELETE .../issues/{n}/labels).
+If still 403: comment once, ask the human to add the existing label. Do not retry GitHub MCP. Do not claim routing succeeded.
+
+GATE BEFORE IMPLEMENTING:
+Read the issue AC, Technical notes, Figma/MCP context, and permissions.
+Ask: is this clear AND feasible in this PR (scope, API/design, access, would it break the library)?
+
+If UNCLEAR:
+  Comment on the ISSUE:
+    ## NEED CLARIFICATION
+    - [one question per line]
+  Add label needs-human
+  Do NOT open a PR. STOP until the human replies, /ask, or /approve.
+
+If NOT FEASIBLE:
+  Comment on the ISSUE:
+    ## NOT FEASIBLE
+    Why: [constraint]
+    Tried/blocked: [facts]
+    Options: [narrow AC | split issue | wontfix]
+  Add label needs-human
+  Do NOT invent a workaround. Do NOT open a PR. STOP.
+
+BRANCHING:
+- Feature branch: exp/<issue-number>-<short-slug>
+- Base on `main` of trimble-oss/modus-wc-2.0
+
+COMMIT CADENCE:
+- Commit after each logical sub-task / AC.
+- feat(component): … or fix(component): …
+
+SPEC AWARENESS:
+- Check off Acceptance Criteria in the PR body when satisfied.
+- Read Technical notes before planning.
+
+PRE-OPEN PR GATE:
+- Run the five local npm checks before Open PR (tailwind:build, embed:css, embed:component-css, npm test, lint).
+- PR body must include: Stop-boundary check: yes|no plus a command table.
+- Opening the PR is not done — continue to POST-OPEN PR GATE.
+- Dev does NOT run Playwright. Dev only declares the QA slice.
+
+POST-OPEN PR GATE (Open PR tool does NOT add labels):
+1. Read the actual PR file list.
+2. Label:
+   - qa-skip ONLY if ALL files are .scss, .tailwind.ts, .stories.ts, docs, or .md
+   - Otherwise qa-full (architecture.mdc, component TS, tests = qa-full)
+3. QA-depth (you MUST mention this; do not leave QA to guess a library tour):
+   - none: copy/docs/comments only (no color/token/theme AC)
+   - visual-slice: color, token, theme, outline, spacing, "modern only" / "classic must not change"
+   - functional: component TS/behavior; no host blast radius in the AC
+   - composition: AC can break hosts AND the component has neighbors in the lookup below
+   If unsure between visual-slice and composition: use visual-slice and QA-graph: none.
+4. QA-graph:
+   - visual-slice and none: always none (do not invent sidenav/tree walks)
+   - composition: copy ONLY these lookup neighbors if they apply (do not BFS):
+     modus-wc-tree-item → modus-wc-tree-view, modus-wc-sidenav
+     modus-wc-tree-view → modus-wc-sidenav
+     modus-wc-menu-item → modus-wc-menu, modus-wc-sidenav
+     modus-wc-button, modus-wc-alert, modus-wc-card, modus-wc-checkbox, modus-wc-select, modus-wc-menu, modus-wc-sidenav → none
+5. Comment the Routing block on the PR, then ADD the GitHub label.
+
+Routing block (required format):
+Routing: qa-skip | qa-full
+QA-depth: none | visual-slice | functional | composition
+QA-scope: <one primary component or control>
+QA-themes: modern-only | classic-only | both | n/a
+QA-assert: <one line>
+QA-graph: none | <neighbor1, neighbor2>
+
+Example (tertiary outline / modern vs classic):
+Routing: qa-skip
+QA-depth: visual-slice
+QA-scope: modus-wc-button tertiary outline
+QA-themes: both
+QA-assert: modern outline uses base-200; classic outline unchanged
+QA-graph: none
+
+Example (tree-item can break hosts):
+Routing: qa-full
+QA-depth: composition
+QA-scope: modus-wc-tree-item
+QA-themes: n/a
+QA-assert: selection/expand still works
+QA-graph: modus-wc-tree-view, modus-wc-sidenav
+
+6. If label add fails: comment the error, add needs-human, STOP.
+The run is complete only after the Routing comment is on the PR and the routing label is on the PR (or the human was asked to add the label).
+
+---
+/ask /clarify trigger extra (issue OR PR comment; comment may start with /ask plus a question):
+
+You were invoked by /ask or /clarify from the human (by Me only).
+
+If this is a PR: read the PR, linked issue, last 20 comments, and the human's /ask text. Answer on the PR (screenshots if you can). Do NOT patch, push, open a PR, or add qa-rerun. Do NOT treat a lone /ask as /refine. Humans should not need to prefix /refine to make /ask run.
+
+If this is an issue: read the issue body and the last 20 comments (including ## NEED CLARIFICATION or ## NOT FEASIBLE). Answer on the issue.
+
+Answer what you can. If still blocked, ask ONE tighter question.
+Remove needs-human only when AC is actionable AND feasible.
+Do NOT open a PR from /ask unless the human also commented /approve.
+
+---
+/refine trigger extra:
+
+You were invoked by /refine from the human (by Me only).
+
+Use GITHUB_AUTH_TOKEN or OPERATOR_GH_TOKEN as GH_TOKEN/GITHUB_TOKEN (label 403 workaround).
+
+1. Collect RECENT comments since the last /refine (or last 20):
+   - PR conversation, review threads, QA reviews (## QA FAILED / PASSED / SKIPPED)
+
+2. Route (do not run both Fix and a Dev patch on the same /refine):
+   - If latest QA is ## QA FAILED and not yet repaired:
+     Add qa-failed (or remove then ADD qa-rerun if Fix already ran).
+     Comment: "Routed to Fix Agent for the latest QA FAILED."
+     STOP.
+   - Else: implement the requested refine on the SAME branch (minimal change).
+     Push.
+     Re-comment a full Routing block for the NEW slice (QA-depth, QA-scope, QA-themes, QA-assert, QA-graph).
+     Example: modern-only tertiary outline → QA-depth: visual-slice; QA-themes: both; QA-graph: none.
+     Remove qa-rerun if present, then ADD qa-rerun (GitHub fires on label-added).
+     Do NOT claim QA passed. Do NOT run Playwright.
+
+If the requested refine is not feasible:
+  Comment ## NOT FEASIBLE on the PR, add needs-human, STOP.
