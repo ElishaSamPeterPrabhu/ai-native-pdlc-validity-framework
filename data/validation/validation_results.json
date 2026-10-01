@@ -11,7 +11,7 @@
       "constant_mean": 0.026189140043946214
     },
     "contract_checks": {
-      "formula_version_is_v1_3": true,
+      "formula_version_is_v1_4": true,
       "default_decay_hybrid": true,
       "completion_guard_simulation_only": true,
       "fit_results_marked_synthetic": true,
@@ -57,7 +57,7 @@
       }
     },
     "claim_warnings": [
-      "formula v1.3 evidence_status=simulation-calibrated",
+      "formula v1.4 evidence_status=simulation-calibrated",
       "placeholder weights are not Modus-fitted factory calibration",
       "human review is never removed; lanes scale depth only",
       "completion_guard_hook effects are simulation-only until live telemetry",
