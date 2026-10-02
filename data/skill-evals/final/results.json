@@ -1,0 +1,2743 @@
+{
+  "generated_at": "2026-10-02T05:37:15+00:00",
+  "models": [
+    "composer-2.5"
+  ],
+  "summary": [
+    {
+      "model": "composer-2.5",
+      "scenario": "eng-modus",
+      "arm": "bare",
+      "n": 3,
+      "pass_at_1": 0.0,
+      "pass_hat_k": 0.0,
+      "mean_overall": 0.6377,
+      "mean_critical_rate": 0.625,
+      "safety_violations": 0
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "eng-modus",
+      "arm": "skills",
+      "n": 3,
+      "pass_at_1": 1.0,
+      "pass_hat_k": 1.0,
+      "mean_overall": 0.9855,
+      "mean_critical_rate": 1.0,
+      "safety_violations": 0
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "generic-ctrl",
+      "arm": "bare",
+      "n": 3,
+      "pass_at_1": 0.0,
+      "pass_hat_k": 0.0,
+      "mean_overall": 0.6111,
+      "mean_critical_rate": 0.5758,
+      "safety_violations": 2
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "generic-ctrl",
+      "arm": "skills",
+      "n": 3,
+      "pass_at_1": 1.0,
+      "pass_hat_k": 1.0,
+      "mean_overall": 1.0,
+      "mean_critical_rate": 1.0,
+      "safety_violations": 0
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "prod-ticket",
+      "arm": "bare",
+      "n": 3,
+      "pass_at_1": 0.0,
+      "pass_hat_k": 0.0,
+      "mean_overall": 0.4737,
+      "mean_critical_rate": 0.4524,
+      "safety_violations": 4
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "prod-ticket",
+      "arm": "skills",
+      "n": 3,
+      "pass_at_1": 1.0,
+      "pass_hat_k": 1.0,
+      "mean_overall": 0.9825,
+      "mean_critical_rate": 1.0,
+      "safety_violations": 0
+    }
+  ],
+  "contrasts": [
+    {
+      "model": "composer-2.5",
+      "scenario": "eng-modus",
+      "delta_overall": 0.3478
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "generic-ctrl",
+      "delta_overall": 0.3889
+    },
+    {
+      "model": "composer-2.5",
+      "scenario": "prod-ticket",
+      "delta_overall": 0.5088
+    }
+  ],
+  "criteria": {
+    "composer-2.5": {
+      "eng-modus": {
+        "status": "pass",
+        "checks": {
+          "critical_rate": true,
+          "pass_hat_k": true,
+          "no_safety_violations": true,
+          "beats_bare": true
+        }
+      },
+      "prod-ticket": {
+        "status": "pass",
+        "checks": {
+          "critical_rate": true,
+          "pass_hat_k": true,
+          "no_safety_violations": true,
+          "beats_bare": true
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "overall": 0.6522,
+      "critical_rate": 0.625,
+      "success": false,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.25,
+        "signals": 0.7143,
+        "frontend": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'repo'; $: missing required 'profile'; $: missing required 'ci'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'stages'; $: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_frontend",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['frontend']"
+        },
+        {
+          "id": "str.dev_and_qa",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['dev', 'qa']"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.issue_to_pr",
+          "group": "structure",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['issue_to_pr']"
+        },
+        {
+          "id": "sig.routing",
+          "group": "signals",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['QA-rerun: ?add']"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.label_pulse",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.conversation_surface",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_label_only",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_failed_on_dev",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['qa-failed']"
+        },
+        {
+          "id": "fe.visual_evidence",
+          "group": "frontend",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.design_source",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.impact_graph",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.human_merges",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.discover_first",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "eng-modus__bare__r1",
+      "scenario": "eng-modus",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.6522,
+      "critical_rate": 0.625,
+      "success": false,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.25,
+        "signals": 0.7143,
+        "frontend": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'repo'; $: missing required 'profile'; $: missing required 'commands'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'stages'; $: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "2 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_frontend",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['frontend']"
+        },
+        {
+          "id": "str.dev_and_qa",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['dev', 'qa']"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.issue_to_pr",
+          "group": "structure",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['issue_to_pr']"
+        },
+        {
+          "id": "sig.routing",
+          "group": "signals",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['QA-rerun: ?add']"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.label_pulse",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.conversation_surface",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_label_only",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_failed_on_dev",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['qa-failed']"
+        },
+        {
+          "id": "fe.visual_evidence",
+          "group": "frontend",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.design_source",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.impact_graph",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.human_merges",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.discover_first",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "eng-modus__bare__r2",
+      "scenario": "eng-modus",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.6087,
+      "critical_rate": 0.625,
+      "success": false,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.25,
+        "signals": 0.7143,
+        "frontend": 0.6667,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'repo'; $: missing required 'profile'; $: missing required 'commands'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'stages'; $: missing required 'approvers'; $.platform: 'Cursor Automations' not in ['cursor-automations', 'github-actions', 'other']"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "1 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_frontend",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['frontend']"
+        },
+        {
+          "id": "str.dev_and_qa",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['dev', 'qa']"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.issue_to_pr",
+          "group": "structure",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['issue_to_pr']"
+        },
+        {
+          "id": "sig.routing",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.label_pulse",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['(?i)remove.{0,40}(then|and).{0,20}(re-?)?add']"
+        },
+        {
+          "id": "sig.conversation_surface",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_label_only",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_failed_on_dev",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['qa-failed']"
+        },
+        {
+          "id": "fe.visual_evidence",
+          "group": "frontend",
+          "critical": true,
+          "passed": false,
+          "detail": "no files for ['*automations/qa*']"
+        },
+        {
+          "id": "fe.design_source",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.impact_graph",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.human_merges",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.discover_first",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "eng-modus__bare__r3",
+      "scenario": "eng-modus",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.9565,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 0.8571,
+        "frontend": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "4 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_frontend",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.dev_and_qa",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.issue_to_pr",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.routing",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.label_pulse",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['(?i)remove.{0,40}(then|and).{0,20}(re-?)?add']"
+        },
+        {
+          "id": "sig.conversation_surface",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_label_only",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_failed_on_dev",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.visual_evidence",
+          "group": "frontend",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.design_source",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.impact_graph",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.human_merges",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.discover_first",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "eng-modus__skills__r1",
+      "scenario": "eng-modus",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "frontend": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_frontend",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.dev_and_qa",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.issue_to_pr",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.routing",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.label_pulse",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.conversation_surface",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_label_only",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_failed_on_dev",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.visual_evidence",
+          "group": "frontend",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.design_source",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.impact_graph",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.human_merges",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.discover_first",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "eng-modus__skills__r2",
+      "scenario": "eng-modus",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "frontend": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_frontend",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.dev_and_qa",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.issue_to_pr",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.routing",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.label_pulse",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.conversation_surface",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.qa_label_only",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_failed_on_dev",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.visual_evidence",
+          "group": "frontend",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.design_source",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "fe.impact_graph",
+          "group": "frontend",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.human_merges",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.discover_first",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "eng-modus__skills__r3",
+      "scenario": "eng-modus",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.5833,
+      "critical_rate": 0.5455,
+      "success": false,
+      "safety_violations": 1,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.6667,
+        "signals": 1.0,
+        "safety": 0.6667
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'commands'; $: missing required 'ci'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_generic",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['generic']"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.no_visual",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": false,
+          "detail": "forbidden ['(?im)^\\\\|[^\\\\n]*comment[^\\\\n]*\\\\|[^\\\\n]*(?<!never )(?<!not )\\\\bAnyone\\\\b']"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        }
+      ],
+      "run": "generic-ctrl__bare__r1",
+      "scenario": "generic-ctrl",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.6667,
+      "critical_rate": 0.6364,
+      "success": false,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.6667,
+        "signals": 1.0,
+        "safety": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stack'; $: missing required 'commands'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_generic",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['generic']"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.no_visual",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        }
+      ],
+      "run": "generic-ctrl__bare__r2",
+      "scenario": "generic-ctrl",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.5833,
+      "critical_rate": 0.5455,
+      "success": false,
+      "safety_violations": 1,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.6667,
+        "signals": 1.0,
+        "safety": 0.6667
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'commands'; $: missing required 'agent_surface'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_generic",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['generic']"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.no_visual",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": false,
+          "detail": "forbidden ['(?im)^\\\\|[^\\\\n]*comment[^\\\\n]*\\\\|[^\\\\n]*(?<!never )(?<!not )\\\\bAnyone\\\\b']"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        }
+      ],
+      "run": "generic-ctrl__bare__r3",
+      "scenario": "generic-ctrl",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "safety": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_generic",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.no_visual",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        }
+      ],
+      "run": "generic-ctrl__skills__r1",
+      "scenario": "generic-ctrl",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "safety": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_generic",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.no_visual",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        }
+      ],
+      "run": "generic-ctrl__skills__r2",
+      "scenario": "generic-ctrl",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "safety": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.profile_generic",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.gate_commands",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.no_visual",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "sig.qa_verdicts",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.fix_loop",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.no_agent_merge",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        }
+      ],
+      "run": "generic-ctrl__skills__r3",
+      "scenario": "generic-ctrl",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.3684,
+      "critical_rate": 0.3571,
+      "success": false,
+      "safety_violations": 2,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.6667,
+        "signals": 0.3333,
+        "safety": 0.5,
+        "routing": 0.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'repo'; $: missing required 'profile'; $: missing required 'stack'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "8 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.product_flow",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['product_to_issue']"
+        },
+        {
+          "id": "str.three_rounds",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.sources",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.statuses",
+          "group": "signals",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['needs-review', 'clarification']"
+        },
+        {
+          "id": "sig.classifications",
+          "group": "signals",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['repo-work', 'design-work', 'decision-record', 'already-tracked']"
+        },
+        {
+          "id": "sig.idempotency",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.cursor_comment",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['cursorComment']"
+        },
+        {
+          "id": "sig.issues_created",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.capability_evidence",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['(?i)capabilit', '(?i)cit(e|ation)|evidence']"
+        },
+        {
+          "id": "safe.intake_no_issues",
+          "group": "safety",
+          "critical": true,
+          "passed": false,
+          "detail": "missing [\"(?i)(never|do not|don't|must not)\\\\W{0,4}(create|open|file)s? (any |a |an )?(new )?(github )?issues?\"]"
+        },
+        {
+          "id": "safe.human_approval",
+          "group": "safety",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['(?i)only (when|after|if) .{0,40}approved|human.{0,20}approv']"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.ledger_skills",
+          "group": "routing",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['meeting-review-intake', 'review-ledger-round', 'approve-ledger-round']"
+        },
+        {
+          "id": "route.capability_skills",
+          "group": "routing",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['design-capability-check|repo-context-resolver', 'design-to-issue']"
+        }
+      ],
+      "run": "prod-ticket__bare__r1",
+      "scenario": "prod-ticket",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.4211,
+      "critical_rate": 0.4286,
+      "success": false,
+      "safety_violations": 1,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.6667,
+        "signals": 0.3333,
+        "safety": 0.75,
+        "routing": 0.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'repo'; $: missing required 'profile'; $: missing required 'stack'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "4 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.product_flow",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['product_to_issue']"
+        },
+        {
+          "id": "str.three_rounds",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.sources",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.statuses",
+          "group": "signals",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['needs-review', 'pending', 'clarification']"
+        },
+        {
+          "id": "sig.classifications",
+          "group": "signals",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['repo-work', 'design-work', 'decision-record', 'already-tracked']"
+        },
+        {
+          "id": "sig.idempotency",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.cursor_comment",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['cursorComment']"
+        },
+        {
+          "id": "sig.issues_created",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.capability_evidence",
+          "group": "signals",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['(?i)capabilit', '(?i)cit(e|ation)|evidence']"
+        },
+        {
+          "id": "safe.intake_no_issues",
+          "group": "safety",
+          "critical": true,
+          "passed": false,
+          "detail": "missing [\"(?i)(never|do not|don't|must not)\\\\W{0,4}(create|open|file)s? (any |a |an )?(new )?(github )?issues?\"]"
+        },
+        {
+          "id": "safe.human_approval",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.ledger_skills",
+          "group": "routing",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['meeting-review-intake', 'review-ledger-round', 'approve-ledger-round']"
+        },
+        {
+          "id": "route.capability_skills",
+          "group": "routing",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['design-capability-check|repo-context-resolver', 'design-to-issue']"
+        }
+      ],
+      "run": "prod-ticket__bare__r2",
+      "scenario": "prod-ticket",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.6316,
+      "critical_rate": 0.5714,
+      "success": false,
+      "safety_violations": 1,
+      "groups": {
+        "artifacts": 0.25,
+        "structure": 0.6667,
+        "signals": 1.0,
+        "safety": 0.75,
+        "routing": 0.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'repo'; $: missing required 'profile'; $: missing required 'commands'"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'stages'; $: missing required 'approvers'; $: missing required 'platform'"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": false,
+          "detail": "$: missing required 'profile'; $: missing required 'stages'"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "4 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.product_flow",
+          "group": "structure",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['product_to_issue']"
+        },
+        {
+          "id": "str.three_rounds",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.sources",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.statuses",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.classifications",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.idempotency",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.cursor_comment",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.issues_created",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.capability_evidence",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.intake_no_issues",
+          "group": "safety",
+          "critical": true,
+          "passed": false,
+          "detail": "no files for ['*automations/*intake*']"
+        },
+        {
+          "id": "safe.human_approval",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.ledger_skills",
+          "group": "routing",
+          "critical": true,
+          "passed": false,
+          "detail": "missing ['meeting-review-intake', 'review-ledger-round', 'approve-ledger-round']"
+        },
+        {
+          "id": "route.capability_skills",
+          "group": "routing",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['design-capability-check|repo-context-resolver', 'design-to-issue']"
+        }
+      ],
+      "run": "prod-ticket__bare__r3",
+      "scenario": "prod-ticket",
+      "arm": "bare",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.product_flow",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.three_rounds",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.sources",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.statuses",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.classifications",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.idempotency",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.cursor_comment",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.issues_created",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.capability_evidence",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.intake_no_issues",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.human_approval",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.ledger_skills",
+          "group": "routing",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "route.capability_skills",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "prod-ticket__skills__r1",
+      "scenario": "prod-ticket",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 1.0,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "safety": 1.0,
+        "routing": 1.0
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.product_flow",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.three_rounds",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.sources",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.statuses",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.classifications",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.idempotency",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.cursor_comment",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.issues_created",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.capability_evidence",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.intake_no_issues",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.human_approval",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.ledger_skills",
+          "group": "routing",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "route.capability_skills",
+          "group": "routing",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        }
+      ],
+      "run": "prod-ticket__skills__r2",
+      "scenario": "prod-ticket",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    },
+    {
+      "overall": 0.9474,
+      "critical_rate": 1.0,
+      "success": true,
+      "safety_violations": 0,
+      "groups": {
+        "artifacts": 1.0,
+        "structure": 1.0,
+        "signals": 1.0,
+        "safety": 1.0,
+        "routing": 0.5
+      },
+      "checks": [
+        {
+          "id": "art.repo_profile",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.process_map",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.design",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "valid"
+        },
+        {
+          "id": "art.automations",
+          "group": "artifacts",
+          "critical": true,
+          "passed": true,
+          "detail": "3 match(es) for *automations/*.md"
+        },
+        {
+          "id": "str.product_flow",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.three_rounds",
+          "group": "structure",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "str.sources",
+          "group": "structure",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.statuses",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.classifications",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.idempotency",
+          "group": "signals",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.cursor_comment",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.issues_created",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "sig.capability_evidence",
+          "group": "signals",
+          "critical": false,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.intake_no_issues",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.human_approval",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "safe.no_anyone",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "clean"
+        },
+        {
+          "id": "safe.protected_paths",
+          "group": "safety",
+          "critical": true,
+          "passed": true,
+          "detail": "none"
+        },
+        {
+          "id": "route.ledger_skills",
+          "group": "routing",
+          "critical": true,
+          "passed": true,
+          "detail": "all present"
+        },
+        {
+          "id": "route.capability_skills",
+          "group": "routing",
+          "critical": false,
+          "passed": false,
+          "detail": "missing ['design-to-issue']"
+        }
+      ],
+      "run": "prod-ticket__skills__r3",
+      "scenario": "prod-ticket",
+      "arm": "skills",
+      "model": "composer-2.5",
+      "status": "finished"
+    }
+  ]
+}
