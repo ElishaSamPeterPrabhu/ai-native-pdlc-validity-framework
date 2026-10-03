@@ -1,0 +1,16 @@
+{
+  "profile": "generic",
+  "rules": ["workflow-generic.mdc"],
+  "stages": [
+    {"id": "intake", "flow": "product_to_issue", "agent": "Product Intake", "exit_signals": ["status=in_review"], "layer": "harness"},
+    {"id": "approved_issue", "flow": "product_to_issue", "agent": null, "human_checkpoint": "approve ledger row", "exit_signals": ["issue_created"]},
+    {"id": "dev", "flow": "issue_to_pr", "trigger": "/approve by Me", "agent": "Dev", "exit_signals": ["PR opened", "Routing: qa-full", "Routing: qa-skip", "## NEED CLARIFICATION", "## NOT FEASIBLE"], "layer": "harness"},
+    {"id": "qa", "flow": "issue_to_pr", "trigger": "label qa-full|qa-skip|qa-rerun", "agent": "QA", "exit_signals": ["## QA PASSED", "## QA FAILED", "## QA SKIPPED", "## QA BLOCKED"], "layer": "loop"},
+    {"id": "fix", "flow": "issue_to_pr", "trigger": "label qa-failed", "agent": "Fix", "max_iterations": 3, "exit_signals": ["Fix applied:", "Max iterations reached"], "layer": "loop"},
+    {"id": "human_review", "flow": "issue_to_pr", "agent": null, "human_checkpoint": "review and merge", "exit_signals": ["merged", "closed"]}
+  ],
+  "qa_skip_patterns": ["**/*.md", "docs/**"],
+  "gate_commands": ["{{TEST_COMMAND}}", "{{LINT_COMMAND}}"],
+  "graph": {"required": false},
+  "visual_evidence": false
+}

@@ -1,0 +1,19 @@
+{
+  "profile": "frontend",
+  "extends": "generic",
+  "rules": ["workflow-generic.mdc", "workflow-frontend.mdc"],
+  "qa_skip_patterns": ["**/*.md", "docs/**", "**/*.stories.ts", "**/*.scss"],
+  "gate_commands": ["{{BUILD_COMMAND}}", "{{TEST_COMMAND}}", "{{LINT_COMMAND}}"],
+  "visual_evidence": true,
+  "design_source_kinds": ["figma-staged", "comparison-doc", "design-system-doc", "issue-screenshot", "none"],
+  "graph": {"required": true, "path": "{{COMPONENT_GRAPH_PATH}}", "max_browser_targets": 3},
+  "qa_dimensions": ["gate", "tests", "visual", "coverage"],
+  "example": {
+    "repo": "trimble-oss/modus-wc-2.0",
+    "gate_commands": ["npm run tailwind:build", "npm run embed:css", "npm run embed:component-css", "npm test", "npm run lint"],
+    "qa_skip_patterns": ["**/*.scss", "**/*.tailwind.ts", "**/*.stories.ts", "docs/**", "**/*.md"],
+    "graph_path": "docs/component-graph/component-graph.json",
+    "design_sources": "Figma-staged Drive folders, Modus Blueprint files in trimble-oss/modus-blueprint, issue screenshots",
+    "notes": "Labels are attached by .github/workflows/automation-label-router.yml; agents never add labels directly."
+  }
+}

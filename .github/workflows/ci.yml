@@ -26,5 +26,9 @@ jobs:
           pdlc-validity inspect --repo . --out /tmp/setup-manifest.json
       - name: Workflow-builder contract tests (L0)
         run: python -m unittest discover -s harness/skill-evals -p "test_*.py" -v
+      - name: Kit sync and kit command tests
+        run: |
+          python scripts/sync_kit.py --check
+          python -m unittest discover -s tests -v
       - name: Build distributions
         run: pip install build && python -m build

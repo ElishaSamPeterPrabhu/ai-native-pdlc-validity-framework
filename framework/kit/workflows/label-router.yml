@@ -1,0 +1,79 @@
+name: Automation label router
+
+# Attaches existing qa-* / needs-human labels from exact PR comment lines.
+# Does not create labels. Allowlisted commenters only.
+# Every attach is remove-then-add so label-added webhooks always fire.
+#
+# Replace {{REPO}}, {{BOT_LOGIN}}, {{HUMAN_LOGIN}} before installing.
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  route:
+    if: >
+      github.repository == '{{REPO}}' &&
+      (
+        (
+          github.event_name == 'issue_comment' &&
+          github.event.issue.pull_request &&
+          (github.event.comment.user.login == '{{BOT_LOGIN}}' ||
+           github.event.comment.user.login == '{{HUMAN_LOGIN}}')
+        ) ||
+        (
+          github.event_name == 'pull_request_review' &&
+          github.event.review.body != '' &&
+          (github.event.review.user.login == '{{BOT_LOGIN}}' ||
+           github.event.review.user.login == '{{HUMAN_LOGIN}}')
+        )
+      )
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+      COMMENT_BODY: ${{ github.event.comment.body || github.event.review.body }}
+    steps:
+      - name: Attach labels from comment
+        run: |
+          set -euo pipefail
+
+          remove_label() {
+            gh api --method DELETE "repos/${GH_REPO}/issues/${ISSUE_NUMBER}/labels/$1" >/dev/null 2>&1 || true
+          }
+
+          pulse_label() {
+            remove_label "$1"
+            sleep 2
+            printf '{"labels":["%s"]}' "$1" | \
+              gh api --method POST "repos/${GH_REPO}/issues/${ISSUE_NUMBER}/labels" --input - >/dev/null
+            echo "pulsed $1"
+          }
+
+          matched=0
+
+          if grep -qE '(^|[[:space:]])Routing:[[:space:]]*qa-full([[:space:]]|$)' <<<"${COMMENT_BODY}"; then
+            remove_label qa-skip; pulse_label qa-full; matched=1
+          fi
+          if grep -qE '(^|[[:space:]])Routing:[[:space:]]*qa-skip([[:space:]]|$)' <<<"${COMMENT_BODY}"; then
+            remove_label qa-full; pulse_label qa-skip; matched=1
+          fi
+          if grep -qE '(^|[[:space:]])(QA-rerun:[[:space:]]*add|Routing:[[:space:]]*qa-rerun)([[:space:]]|$)' <<<"${COMMENT_BODY}"; then
+            pulse_label qa-rerun; matched=1
+          fi
+          if grep -qE '^##[[:space:]]*QA FAILED' <<<"${COMMENT_BODY}"; then
+            pulse_label qa-failed; matched=1
+          fi
+          if grep -qE '^##[[:space:]]*(QA PASSED WITH CONCERNS|QA BLOCKED|NEED CLARIFICATION|NOT FEASIBLE)' <<<"${COMMENT_BODY}" \
+             || grep -qE '^Max iterations reached' <<<"${COMMENT_BODY}"; then
+            pulse_label needs-human; matched=1
+          fi
+
+          [ "${matched}" -eq 1 ] || echo "no routing signal; skip"

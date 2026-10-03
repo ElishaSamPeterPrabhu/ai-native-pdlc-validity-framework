@@ -1,0 +1,76 @@
+---
+description: Generic contract for AI delivery automations (product→issue, issue→PR) built with the workflow-* skills. Apply when designing, generating, or running Dev/QA/Fix/intake automations.
+alwaysApply: false
+---
+
+# Workflow contract (generic)
+
+These rules bind every automation and every agent that builds one with the
+`workflow-*` skills. The signal vocabulary lives in
+`starter-kit/signal-contract.md`; do not invent new headers or labels without
+adding them there first.
+
+## Human gates
+
+- Nothing starts implementation without an explicit human signal (`/approve`, a
+  label added by a human, or an approved ledger row).
+- Every comment trigger, on any agent (`/approve`, `/ask`, `/clarify`, `/refine`,
+  QA or Fix handoffs), fires **by Me / allowlisted humans only**, never Anyone.
+- QA and Fix wake on **label added** (`qa-full`, `qa-skip`, `qa-rerun`,
+  `qa-failed`), never on "PR opened". The label router turns agent comments into
+  labels, so no agent needs an Anyone trigger.
+- Merges are always human. No automation merges, force-pushes, or deletes branches.
+- Builder skills propose files; a human approves before rules, hooks, workflows,
+  or automations are written or installed.
+
+## Reply surface
+
+- If a PR exists or the trigger came from a PR comment, reply on the PR.
+- Otherwise reply on the issue (or the ledger row for product intake).
+- Never post the only copy of an answer or a fix summary on a different surface.
+
+## Unclear or not feasible
+
+- Unclear: comment `## NEED CLARIFICATION` with one question per line, mark
+  `needs-human`, and STOP. Do not open a PR.
+- Not feasible: comment `## NOT FEASIBLE` with `Why`, `Tried/blocked`, `Options`,
+  mark `needs-human`, and STOP. Do not invent a workaround.
+
+## Verdicts and loops
+
+- QA posts exactly **one** verdict comment per wake, with an exact header as its
+  first line (`## QA PASSED`, `## QA FAILED`, `## QA SKIPPED`, `## QA BLOCKED`,
+  `## QA PASSED WITH CONCERNS`).
+- Build/lint/test is a **gate**, not a verdict. Dev never claims QA passed.
+- Fix is capped at 3 iterations. On the cap, comment
+  `Max iterations reached (3 attempts). Requesting human review.`, mark
+  `needs-human`, STOP.
+- After a fix: push to the same branch, comment `Fix applied: <one sentence>`, and
+  re-signal QA with a label pulse (remove then add `qa-rerun`).
+
+## Labels
+
+- Labels are attached by a deterministic router (GitHub Action or equivalent) from
+  exact comment lines, not by the agent, unless the repo explicitly grants it.
+- Router attaches use remove-then-add so label-added webhooks always fire.
+
+## Branches and commits
+
+- Branch `exp/<issue-number>-<short-slug>` off the default branch.
+- Commit after each logical sub-task / acceptance criterion with a conventional
+  message (`feat(scope): …`, `fix(scope): …`).
+- Check off acceptance criteria in the PR body as they are satisfied.
+
+## Read-only by default
+
+- Monitoring, discovery, and measurement are read-only toward GitHub, trackers,
+  and sheets.
+- Never commit secrets; use the user's existing CLI/MCP auth.
+
+## Measurement
+
+- Every automation must emit the signals above so the monitor and
+  `python -m framework` can observe it. A stage with no signal is a measurement
+  gap, not a pass.
+- Trust numbers follow `factor-provenance.mdc`: only CLI output, no invented
+  factors or values.

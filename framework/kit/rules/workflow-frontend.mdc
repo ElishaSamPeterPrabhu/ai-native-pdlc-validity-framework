@@ -1,0 +1,60 @@
+---
+description: Frontend profile for AI delivery automations — visual evidence, design-source resolution, story and graph coverage. Generalized from the Modus Dev/QA automation skills.
+globs: **/*.{tsx,jsx,ts,scss,css,vue,html,stories.ts,stories.tsx}
+alwaysApply: false
+---
+
+# Workflow contract (frontend profile)
+
+Applies on top of `workflow-generic.mdc` for UI repos (component libraries,
+design systems, web apps).
+
+## Routing
+
+- `qa-skip` only when every changed file is styles-only copy, stories, docs, or
+  markdown **and** QA confirms it from the diff. A mislabeled skip is removed and
+  routed to `qa-full`.
+- Logic, events, props, or accessibility changes are always `qa-full`.
+
+## Design source (resolve before implementing or judging)
+
+Dev and QA read the same `QA-source` line from the issue or PR. Resolve by kind:
+
+| Kind | What to read |
+| --- | --- |
+| `figma-staged` | A staged export (manifest, variable defs, design context, screenshot). Read the manifest first; load only the matching variant. |
+| `comparison-doc` | A design doc with token tables and embedded comparison images. |
+| `design-system-doc` | The design system's source files in its repo, not its live site. |
+| `issue-screenshot` | Images attached to the issue or PR. |
+| `none` | Existing component: baseline is the default branch vs the PR branch. New feature with no source: `## QA BLOCKED`. |
+
+- Never scrape login-gated or dynamic design sites from cloud agents.
+- Live design-tool MCP calls from cloud automations are blocked; ask for a staged
+  export with `## NEED CLARIFICATION`.
+
+## Visual evidence
+
+- `## QA PASSED` on a diff that touches styles, component source, or stories
+  requires screenshots for every scenario. No screenshot, no pass.
+- Report four dimensions — gate, tests, visual, coverage — each `pass`, `fail`,
+  `not-evaluated`, or `blocked`, then one overall header.
+- Gate failure: `## QA FAILED — functional`, visual is `not-evaluated`.
+- Gate green, scenario wrong: `## QA FAILED — visual` with a screenshot pair.
+- A screenshot of broken UI in a `/refine` comment is failing evidence until the
+  fixed state is shown.
+
+## Coverage
+
+- Use a component dependency graph when one exists: changed component (its relevant
+  stories), children it composes (default story if the change can show through),
+  parents that depend on it (default story).
+- Cap browser targets at 3 unless the acceptance criteria name more. Never walk the
+  whole library.
+- New props, sizes, or behaviors ship with tests and/or stories.
+
+## Implementation
+
+- Reuse the repo's design-system components and tokens; do not hand-build a
+  primitive that the design system provides.
+- Check every theme the repo supports (for example light and dark) when tokens or
+  colors change.

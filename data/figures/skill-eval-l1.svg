@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="490" viewBox="0 0 940 490" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="940" height="490" fill="#ffffff"/>
+<text x="70" y="28" font-size="18" font-weight="600" fill="#111">Workflow-builder skills vs a bare agent</text>
+<text x="70" y="48" font-size="12.5" fill="#555">Overall check score per run (0 to 1). Replayed persona, 3 runs per arm. Dots are runs, line is the mean, whiskers are a 95% interval.</text>
+<line x1="70" x2="910" y1="370.0" y2="370.0" stroke="#e5e7eb"/>
+<text x="60" y="374.0" font-size="11" fill="#666" text-anchor="end">0</text>
+<line x1="70" x2="910" y1="295.0" y2="295.0" stroke="#e5e7eb"/>
+<text x="60" y="299.0" font-size="11" fill="#666" text-anchor="end">0.25</text>
+<line x1="70" x2="910" y1="220.0" y2="220.0" stroke="#e5e7eb"/>
+<text x="60" y="224.0" font-size="11" fill="#666" text-anchor="end">0.5</text>
+<line x1="70" x2="910" y1="145.0" y2="145.0" stroke="#e5e7eb"/>
+<text x="60" y="149.0" font-size="11" fill="#666" text-anchor="end">0.75</text>
+<line x1="70" x2="910" y1="70.0" y2="70.0" stroke="#e5e7eb"/>
+<text x="60" y="74.0" font-size="11" fill="#666" text-anchor="end">1</text>
+<rect x="102.0" y="178.7" width="76" height="191.3" fill="#9ca3af" fill-opacity="0.18"/>
+<line x1="140.0" x2="140.0" y1="160.0" y2="197.4" stroke="#374151" stroke-width="1.5"/>
+<line x1="133.0" x2="147.0" y1="197.4" y2="197.4" stroke="#374151" stroke-width="1.5"/>
+<line x1="133.0" x2="147.0" y1="160.0" y2="160.0" stroke="#374151" stroke-width="1.5"/>
+<line x1="102.0" x2="178.0" y1="178.7" y2="178.7" stroke="#9ca3af" stroke-width="3"/>
+<circle cx="122.0" cy="187.4" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<circle cx="140.0" cy="174.3" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<circle cx="158.0" cy="174.3" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<text x="186.0" y="182.7" font-size="12" font-weight="600" fill="#111">0.64</text>
+<text x="140.0" y="388.0" font-size="12" fill="#333" text-anchor="middle">bare</text>
+<text x="140.0" y="404.0" font-size="11" fill="#666" text-anchor="middle">safety: 0</text>
+<rect x="242.0" y="74.3" width="76" height="295.6" fill="#d97706" fill-opacity="0.18"/>
+<line x1="280.0" x2="280.0" y1="70.0" y2="93.1" stroke="#374151" stroke-width="1.5"/>
+<line x1="273.0" x2="287.0" y1="93.1" y2="93.1" stroke="#374151" stroke-width="1.5"/>
+<line x1="273.0" x2="287.0" y1="70.0" y2="70.0" stroke="#374151" stroke-width="1.5"/>
+<line x1="242.0" x2="318.0" y1="74.3" y2="74.3" stroke="#d97706" stroke-width="3"/>
+<circle cx="262.0" cy="83.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<circle cx="280.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<circle cx="298.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<text x="326.0" y="78.3" font-size="12" font-weight="600" fill="#111">0.99</text>
+<text x="280.0" y="388.0" font-size="12" fill="#333" text-anchor="middle">with skills</text>
+<text x="280.0" y="404.0" font-size="11" fill="#666" text-anchor="middle">safety: 0</text>
+<text x="210.0" y="434.0" font-size="13.5" font-weight="600" fill="#111" text-anchor="middle">Engineering, production web app</text>
+<rect x="382.0" y="227.9" width="76" height="142.1" fill="#9ca3af" fill-opacity="0.18"/>
+<line x1="420.0" x2="420.0" y1="124.1" y2="331.7" stroke="#374151" stroke-width="1.5"/>
+<line x1="413.0" x2="427.0" y1="331.7" y2="331.7" stroke="#374151" stroke-width="1.5"/>
+<line x1="413.0" x2="427.0" y1="124.1" y2="124.1" stroke="#374151" stroke-width="1.5"/>
+<line x1="382.0" x2="458.0" y1="227.9" y2="227.9" stroke="#9ca3af" stroke-width="3"/>
+<circle cx="402.0" cy="259.5" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<circle cx="420.0" cy="243.7" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<circle cx="438.0" cy="180.5" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<text x="466.0" y="231.9" font-size="12" font-weight="600" fill="#111">0.47</text>
+<text x="420.0" y="388.0" font-size="12" fill="#333" text-anchor="middle">bare</text>
+<text x="420.0" y="404.0" font-size="11" fill="#666" text-anchor="middle">safety: 4</text>
+<rect x="522.0" y="75.3" width="76" height="294.7" fill="#d97706" fill-opacity="0.18"/>
+<line x1="560.0" x2="560.0" y1="70.0" y2="97.9" stroke="#374151" stroke-width="1.5"/>
+<line x1="553.0" x2="567.0" y1="97.9" y2="97.9" stroke="#374151" stroke-width="1.5"/>
+<line x1="553.0" x2="567.0" y1="70.0" y2="70.0" stroke="#374151" stroke-width="1.5"/>
+<line x1="522.0" x2="598.0" y1="75.3" y2="75.3" stroke="#d97706" stroke-width="3"/>
+<circle cx="542.0" cy="85.8" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<circle cx="560.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<circle cx="578.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<text x="606.0" y="79.3" font-size="12" font-weight="600" fill="#111">0.98</text>
+<text x="560.0" y="388.0" font-size="12" fill="#333" text-anchor="middle">with skills</text>
+<text x="560.0" y="404.0" font-size="11" fill="#666" text-anchor="middle">safety: 0</text>
+<text x="490.0" y="434.0" font-size="13.5" font-weight="600" fill="#111" text-anchor="middle">Product to ticket</text>
+<rect x="662.0" y="186.7" width="76" height="183.3" fill="#9ca3af" fill-opacity="0.18"/>
+<line x1="700.0" x2="700.0" y1="150.8" y2="222.6" stroke="#374151" stroke-width="1.5"/>
+<line x1="693.0" x2="707.0" y1="222.6" y2="222.6" stroke="#374151" stroke-width="1.5"/>
+<line x1="693.0" x2="707.0" y1="150.8" y2="150.8" stroke="#374151" stroke-width="1.5"/>
+<line x1="662.0" x2="738.0" y1="186.7" y2="186.7" stroke="#9ca3af" stroke-width="3"/>
+<circle cx="682.0" cy="195.0" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<circle cx="700.0" cy="195.0" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<circle cx="718.0" cy="170.0" r="5" fill="#9ca3af" stroke="#fff" stroke-width="1.5"/>
+<text x="746.0" y="190.7" font-size="12" font-weight="600" fill="#111">0.61</text>
+<text x="700.0" y="388.0" font-size="12" fill="#333" text-anchor="middle">bare</text>
+<text x="700.0" y="404.0" font-size="11" fill="#666" text-anchor="middle">safety: 2</text>
+<rect x="802.0" y="70.0" width="76" height="300.0" fill="#d97706" fill-opacity="0.18"/>
+<line x1="840.0" x2="840.0" y1="70.0" y2="70.0" stroke="#374151" stroke-width="1.5"/>
+<line x1="833.0" x2="847.0" y1="70.0" y2="70.0" stroke="#374151" stroke-width="1.5"/>
+<line x1="833.0" x2="847.0" y1="70.0" y2="70.0" stroke="#374151" stroke-width="1.5"/>
+<line x1="802.0" x2="878.0" y1="70.0" y2="70.0" stroke="#d97706" stroke-width="3"/>
+<circle cx="822.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<circle cx="840.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<circle cx="858.0" cy="70.0" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<text x="886.0" y="74.0" font-size="12" font-weight="600" fill="#111">1.00</text>
+<text x="840.0" y="388.0" font-size="12" fill="#333" text-anchor="middle">with skills</text>
+<text x="840.0" y="404.0" font-size="11" fill="#666" text-anchor="middle">safety: 0</text>
+<text x="770.0" y="434.0" font-size="13.5" font-weight="600" fill="#111" text-anchor="middle">Generic control</text>
+<text x="70" y="476" font-size="11" fill="#666">3 of 3 runs passed with skills in each scenario; the 95% range for the true per-run pass rate is 29% to 100%. Directional evidence, not a statistical estimate.</text>
+</svg>
