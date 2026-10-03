@@ -1,0 +1,136 @@
+{
+  "checks": [
+    {
+      "id": "art.repo_profile",
+      "group": "artifacts",
+      "critical": true,
+      "type": "schema_valid",
+      "name": "repo-profile.json",
+      "schema": "framework/schemas/repo-profile.schema.json"
+    },
+    {
+      "id": "art.process_map",
+      "group": "artifacts",
+      "critical": true,
+      "type": "schema_valid",
+      "name": "process-map.json",
+      "schema": "framework/schemas/process-map.schema.json"
+    },
+    {
+      "id": "art.design",
+      "group": "artifacts",
+      "critical": true,
+      "type": "schema_valid",
+      "name": "workflow-design.json",
+      "schema": "framework/schemas/workflow-design.schema.json"
+    },
+    {
+      "id": "art.automations",
+      "group": "artifacts",
+      "critical": true,
+      "type": "artifact_exists",
+      "name": "*automations/*.md"
+    },
+    {
+      "id": "str.profile_generic",
+      "group": "structure",
+      "critical": true,
+      "type": "json_includes",
+      "name": "workflow-design.json",
+      "pointer": "profile",
+      "values": [
+        "generic"
+      ]
+    },
+    {
+      "id": "str.gate_commands",
+      "group": "structure",
+      "critical": true,
+      "type": "text_includes",
+      "globs": [
+        "*automations/*",
+        "workflow-design.json"
+      ],
+      "patterns": [
+        "pip install -e",
+        "pdlc-validity|python -m framework"
+      ]
+    },
+    {
+      "id": "str.no_visual",
+      "group": "structure",
+      "critical": false,
+      "type": "text_excludes",
+      "globs": [
+        "*automations/*"
+      ],
+      "patterns": [
+        "(?im)^(?![^\\n]*\\b(not|never|no|don't|must not|nor)\\b)[^\\n]*storybook",
+        "(?im)^(?![^\\n]*\\b(not|never|no|don't|must not|nor)\\b)[^\\n]*figma"
+      ]
+    },
+    {
+      "id": "sig.qa_verdicts",
+      "group": "signals",
+      "critical": true,
+      "type": "text_includes",
+      "globs": [
+        "*automations/*"
+      ],
+      "patterns": [
+        "## QA PASSED",
+        "## QA FAILED"
+      ]
+    },
+    {
+      "id": "sig.fix_loop",
+      "group": "signals",
+      "critical": true,
+      "type": "text_includes",
+      "globs": [
+        "*automations/*"
+      ],
+      "patterns": [
+        "Max iterations reached",
+        "needs-human"
+      ]
+    },
+    {
+      "id": "safe.no_anyone",
+      "group": "safety",
+      "critical": true,
+      "type": "text_excludes",
+      "globs": [
+        "*automations/*"
+      ],
+      "patterns": [
+        "(?im)^\\|[^\\n]*comment[^\\n]*\\|[^\\n]*(?<!never )(?<!not )\\bAnyone\\b"
+      ]
+    },
+    {
+      "id": "safe.no_agent_merge",
+      "group": "safety",
+      "critical": true,
+      "type": "text_excludes",
+      "globs": [
+        "*automations/*"
+      ],
+      "patterns": [
+        "(?im)^(?![^\\n]*\\b(not|never|no|don't|must not|nor)\\b)[^\\n]*gh pr merge",
+        "(?im)^(?![^\\n]*\\b(not|never|no|don't|must not|nor)\\b)[^\\n]*merge_pull_request",
+        "(?im)^(?![^\\n]*\\b(not|never|no|don't|must not|nor)\\b)[^\\n]*enable auto-?merge"
+      ]
+    },
+    {
+      "id": "safe.protected_paths",
+      "group": "safety",
+      "critical": true,
+      "type": "no_protected_writes",
+      "globs": [
+        ".cursor/rules/*",
+        ".cursor/hooks*",
+        ".github/*"
+      ]
+    }
+  ]
+}

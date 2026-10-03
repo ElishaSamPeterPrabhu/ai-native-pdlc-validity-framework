@@ -1,0 +1,19 @@
+{
+  "id": "prod-ticket",
+  "flow": "product_to_issue",
+  "repo_label": "ElishaSamPeterPrabhu/modus-wc-2.0",
+  "source": {
+    "path_env": "MODUS_WC_REPO",
+    "default_path": "../modus-wc-2.0",
+    "ref": "a9d52481194e6b371b4aed30314cba25cc10c292"
+  },
+  "held_out": [
+    ".cursor/rules/automation.mdc",
+    ".cursor/agents",
+    ".github/workflows/pilot-agent-label-router.yml"
+  ],
+  "ground_truth": [
+    "docs/chat-bots/",
+    "docs/pilot/"
+  ]
+}

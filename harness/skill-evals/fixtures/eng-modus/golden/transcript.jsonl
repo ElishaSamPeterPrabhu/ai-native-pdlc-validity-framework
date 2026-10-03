@@ -1,0 +1,2 @@
+{"turn": 1, "role": "user", "text": "Set up delivery automations for this repo."}
+{"turn": 1, "role": "assistant", "text": "Running workflow-discover first; I will write data/repo-profile.json. How does work start?"}

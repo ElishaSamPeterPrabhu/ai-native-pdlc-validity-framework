@@ -1,0 +1,462 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T17:56:22.641053+00:00",
+  "role_split": {
+    "ai": "diagnose layers, explain gaps, propose interventions and review policy",
+    "cli": "init/inspect/collect/calibrate/report/evidence; apply approved file changes",
+    "automations": "Dev/QA/Fix execution path; not the trust reasoner"
+  },
+  "layout": {
+    "schema_version": "1.0.0",
+    "rules_dir": ".cursor/rules",
+    "hooks_path": ".cursor/hooks.json",
+    "mcp_config_path": ".cursor/mcp.json",
+    "mcp_server_dir": "mcp",
+    "workflows_dir": ".github/workflows",
+    "framework_dir": "framework",
+    "harness_dir": "harness",
+    "tasks_dir": "harness/tasks",
+    "theory_dir": "theory",
+    "analysis_dir": "analysis",
+    "data_dir": "data",
+    "metrics_path": "data/metrics.jsonl",
+    "setup_manifest_path": "data/setup-manifest.json",
+    "validity_report_path": "data/validity-report.json",
+    "fit_results_path": "data/fit_results.json",
+    "source": "file",
+    "layout_file": "validity.layout.json",
+    "notes": [
+      "framework_dir not found; using intended path framework",
+      "harness_dir not found; using intended path harness",
+      "tasks_dir not found; using intended path harness/tasks",
+      "theory_dir not found; using intended path theory",
+      "analysis_dir not found; using intended path analysis",
+      "data_dir not found; using intended path data"
+    ]
+  },
+  "setup_manifest": null,
+  "setup_profile": {
+    "schema_version": "1.0.0",
+    "formula_version": "v1.4",
+    "evidence_status": "simulation-calibrated",
+    "generated_at": "2026-10-01T17:56:22.635727+00:00",
+    "repo": "modus-l2-eng",
+    "n_runs": 0,
+    "synthetic_runs_excluded": true,
+    "evidence_coverage": {
+      "final_v_obs": {
+        "observed_fraction": 0.0,
+        "imputed_fraction": 0.0,
+        "missing_fraction": 1.0
+      },
+      "stages": {
+        "observed_fraction": 0.0,
+        "imputed_fraction": 0.0,
+        "missing_fraction": 1.0
+      },
+      "opacity": {
+        "observed_fraction": 0.0,
+        "imputed_fraction": 0.0,
+        "missing_fraction": 1.0
+      }
+    },
+    "by_stratum": {
+      "low": {
+        "n": 0,
+        "mean_v_obs": null,
+        "v_obs_ci": [
+          null,
+          null
+        ],
+        "pass_at_1": null,
+        "pass_hat_k": null,
+        "provisional_v_star": {
+          "value": null,
+          "source": "missing",
+          "confidence": "none",
+          "method": "equilibrium_validity",
+          "weight_source": "none",
+          "notes": "decay proxies missing; V* not computed (never aliased to mean_v_obs)"
+        },
+        "review_lane": "insufficient-evidence"
+      },
+      "medium": {
+        "n": 0,
+        "mean_v_obs": null,
+        "v_obs_ci": [
+          null,
+          null
+        ],
+        "pass_at_1": null,
+        "pass_hat_k": null,
+        "provisional_v_star": {
+          "value": null,
+          "source": "missing",
+          "confidence": "none",
+          "method": "equilibrium_validity",
+          "weight_source": "none",
+          "notes": "decay proxies missing; V* not computed (never aliased to mean_v_obs)"
+        },
+        "review_lane": "insufficient-evidence"
+      },
+      "high": {
+        "n": 0,
+        "mean_v_obs": null,
+        "v_obs_ci": [
+          null,
+          null
+        ],
+        "pass_at_1": null,
+        "pass_hat_k": null,
+        "provisional_v_star": {
+          "value": null,
+          "source": "missing",
+          "confidence": "none",
+          "method": "equilibrium_validity",
+          "weight_source": "none",
+          "notes": "decay proxies missing; V* not computed (never aliased to mean_v_obs)"
+        },
+        "review_lane": "insufficient-evidence"
+      }
+    },
+    "review_policy": {
+      "human_review_never_removed": true,
+      "status": "provisional_thresholds_only",
+      "lanes": {
+        "deep": "major / high-risk / low measured trust",
+        "high_level": "medium trust and medium task risk",
+        "minimal": "small low-risk work with high measured trust (nonzero)"
+      },
+      "notes": "by_stratum.review_lane values are mechanical V_obs thresholds only. AI diagnosis confirms or overrides using task risk and evidence quality.",
+      "note": "Numeric lane hints below are mechanical thresholds on mean V_obs. AI diagnosis should confirm or override using task risk and evidence quality.",
+      "mechanical_lanes_by_stratum": {
+        "low": "insufficient-evidence",
+        "medium": "insufficient-evidence",
+        "high": "insufficient-evidence"
+      }
+    },
+    "claim_warnings": [
+      "formula v1.4 evidence_status=simulation-calibrated",
+      "placeholder weights are not Modus-fitted factory calibration",
+      "human review is never removed; lanes scale depth only",
+      "no non-synthetic run records found; report is structure-only / observe-level",
+      "completion_guard_hook effects are simulation-only until live telemetry",
+      "layer diagnosis and final review policy are AI-owned; run `python -m framework evidence` then validity-diagnose skill"
+    ]
+  },
+  "measurement_gaps": [
+    "automation: no enabled fix agent declared in intake"
+  ],
+  "decay_proxy_definitions": {
+    "entropy": {
+      "construct": "Contextual entropy (Hc): thrash / failed tools / saturated context",
+      "telemetry": "Agent token use + failed/total tool calls, or qualitative thrash notes",
+      "normalization": "entropy_proxy(T_cur, T_max, fail, total) \u2192 [0,1]",
+      "missing_behavior": "Impute 0.5 with confidence=low; mark gap",
+      "confidence_rule": "high if tokens+tools observed; low if imputed",
+      "layer": "harness",
+      "maps_to_metric": "Hc"
+    },
+    "opacity": {
+      "construct": "Change opacity (O): hard-to-review footprint of the deliverable",
+      "telemetry": "Diff/patch size, spread, complexity \u2014 any VCS or change manifest",
+      "normalization": "opacity_proxy(...) soft-saturated \u2192 [0,1]",
+      "missing_behavior": "Impute from file/count alone if available",
+      "confidence_rule": "high with full change stats; medium with size only",
+      "layer": "graph",
+      "maps_to_metric": "O"
+    },
+    "blast_radius": {
+      "construct": "Blast radius (Cb): how widely a mistake can propagate",
+      "telemetry": "Dependency/impact reach, or declared shared/public/prod surface",
+      "normalization": "impacted / total when graph exists; else declared [0,1]",
+      "missing_behavior": "Declare missing; do not invent coupling",
+      "confidence_rule": "high with graph; medium with declared blast; none if absent",
+      "layer": "harness",
+      "maps_to_metric": "Cb"
+    },
+    "spec_ambiguity": {
+      "construct": "Specification ambiguity (\u03c3spec): unclear/contested done criteria",
+      "telemetry": "Plan disagreement, or raw vs refined task contract",
+      "normalization": "clip to [0,1]",
+      "missing_behavior": "Use raw/refined proxy at medium confidence",
+      "confidence_rule": "high with multi-plan similarity; medium with label/proxy",
+      "layer": "graph",
+      "maps_to_metric": "sigma_spec"
+    }
+  },
+  "factors_by_layer": {
+    "harness": [],
+    "loop": [],
+    "graph": [],
+    "unknown": []
+  },
+  "run_summary": {
+    "n_records": 0,
+    "n_synthetic": 0,
+    "strata_present": [],
+    "arms_present": []
+  },
+  "intervention_catalog_path": "/Users/eprabhu/Desktop/Projects/Autonomous-Agent(Research)/framework/catalog/interventions.json",
+  "diagnosis_instructions": "You are diagnosing an AI-native delivery setup (issue \u2192 implement \u2192 QA \u2192 repair \u2192 human PR review).\n\nUse ONLY the evidence pack JSON. Do not invent telemetry.\n\nProduce:\n1. weakest_layer: harness | loop | graph | unknown (with confidence high|medium|low)\n2. rationale: cite specific gaps, stratum outcomes, and missing evidence\n3. recommended_controls: ordered list from the intervention catalog ids / factor names\n4. review_policy_suggestion: deep / high-level / minimal by stratum (human review never removed)\n5. next_actions: what CLI/automation steps to run after human approval\n6. open_questions: what evidence is still missing\n\nHard rules:\n- Scripts do not own the diagnosis; you do.\n- Prefer instrumentation when evidence is thin.\n- completion_guard_hook is simulation-only until live telemetry exists.\n- Apply fixes only after human approval, using paths from validity.layout.json.\n\n\nIntake mode: automations and PRs may be user-declared. Trust console excerpts when present. Map each PR surprise to a decay pressure or missing recovery control. Teach the team how to improve the next PR body using teaching.how_to_make_prs_better_with_ai.",
+  "claim_warnings": [
+    "formula v1.4 evidence_status=simulation-calibrated",
+    "placeholder weights are not Modus-fitted factory calibration",
+    "human review is never removed; lanes scale depth only",
+    "no non-synthetic run records found; report is structure-only / observe-level",
+    "completion_guard_hook effects are simulation-only until live telemetry",
+    "layer diagnosis and final review policy are AI-owned; run `python -m framework evidence` then validity-diagnose skill"
+  ],
+  "intake": {
+    "schema_version": "1.0.0",
+    "repo": {
+      "owner": "trimble-oss",
+      "name": "modus-wc-2.0",
+      "default_branch": "main",
+      "url": "https://github.com/trimble-oss/modus-wc-2.0"
+    },
+    "automations": [
+      {
+        "name": "Dev Agent",
+        "role": "dev",
+        "trigger": "issue comment /approve (Me); PR /ask,/refine (Me); label qa-failed",
+        "repo_scope": "trimble-oss/modus-wc-2.0",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "opens PR, posts Routing block, adds routing label; never claims QA passed",
+        "repair_cap": null,
+        "instructions_summary": "Source: harness/AUTOMATION-PROMPTS.md and harness/console-paste/dev-append.txt",
+        "enabled": true
+      },
+      {
+        "name": "QA Agent",
+        "role": "qa",
+        "trigger": "label added qa-full / qa-skip / qa-rerun (not PR opened)",
+        "repo_scope": "trimble-oss/modus-wc-2.0",
+        "tools_mcp": [
+          "github",
+          "playwright"
+        ],
+        "stop_rule": "one verdict: ## QA PASSED / FAILED / SKIPPED / BLOCKED",
+        "repair_cap": null,
+        "instructions_summary": "Source: harness/console-paste/qa-replace-steps.txt",
+        "enabled": true
+      },
+      {
+        "name": "Fix Agent",
+        "role": "fix",
+        "trigger": "inactive; qa-failed is handled by Dev",
+        "repo_scope": "trimble-oss/modus-wc-2.0",
+        "tools_mcp": [
+          "github"
+        ],
+        "stop_rule": "max 3 iterations then needs-human",
+        "repair_cap": 3,
+        "instructions_summary": "Source: harness/console-paste/fix-append.txt; CONSOLE-TRIGGERS.md says Inactive",
+        "enabled": false
+      }
+    ],
+    "setup_declared": {
+      "has_rules": true,
+      "has_mcp": true,
+      "has_hooks": true,
+      "has_ci_gate": true,
+      "has_review_bot": true,
+      "label_handoff": true,
+      "human_review_always": true,
+      "notes": "Rules, hooks and label router verified in origin/main. Automation definitions come from harness/ docs in this repo, not read from the console."
+    },
+    "prs": [
+      {
+        "url_or_number": "https://github.com/trimble-oss/modus-wc-2.0/pull/1544",
+        "title": "Modal: Fix show code for hidden scrollbar story",
+        "linked_issue": "#1543",
+        "labels": [
+          "bug"
+        ],
+        "ci_status": "pass",
+        "files_changed": 2,
+        "lines_changed": 401,
+        "agent_claimed_done": false,
+        "qa_comments_summary": "Human-authored. Copilot review commented one finding, fixed by Copilot Autofix; human approved 'Moving to QA'; tester commented 'Testing completed and ready to merge'. Merged 2026-09-29. No Routing or QA-verdict comments.",
+        "fix_iterations": 0,
+        "human_review_notes": "Approved by ElishaSamPeterPrabhu after one Copilot finding",
+        "formula_signals": {
+          "recovery_seen": [
+            "ci_gate",
+            "review_bot"
+          ]
+        }
+      },
+      {
+        "url_or_number": "https://github.com/trimble-oss/modus-wc-2.0/pull/1562",
+        "title": "Tooltip:Fix Shadow Dom Story",
+        "linked_issue": "#1557",
+        "labels": [
+          "bug"
+        ],
+        "ci_status": "pass",
+        "files_changed": 1,
+        "lines_changed": 102,
+        "agent_claimed_done": false,
+        "qa_comments_summary": "Human-authored. Copilot reviewed, author pushed 'Fix Review comments', human approved 'Moving to QA'. Open, no Routing or QA-verdict comments.",
+        "fix_iterations": 0,
+        "human_review_notes": "Approved after one review-fix commit",
+        "formula_signals": {
+          "recovery_seen": [
+            "ci_gate",
+            "review_bot"
+          ]
+        }
+      },
+      {
+        "url_or_number": "https://github.com/trimble-oss/modus-wc-2.0/pull/1565",
+        "title": "Tooltip: Fix dismissEscape event in storybook",
+        "linked_issue": "#1555",
+        "labels": [
+          "bug"
+        ],
+        "ci_status": "pass",
+        "files_changed": 1,
+        "lines_changed": 10,
+        "agent_claimed_done": false,
+        "qa_comments_summary": "Human-authored. Copilot flagged that runtime focus-containment behavior required by #1555 is still unimplemented; human approved 'Moving to QA' on the same commit. Open.",
+        "fix_iterations": 0,
+        "human_review_notes": "Approved while an open Copilot finding remained",
+        "what_failed_or_surprised": "Copilot says the issue's runtime behavior is not implemented; PR only fixes Storybook logging",
+        "formula_signals": {
+          "recovery_seen": [
+            "ci_gate",
+            "review_bot"
+          ]
+        }
+      }
+    ],
+    "goals": [
+      "Test workflow-measure-handoff and the intake/score CLI on real official PRs",
+      "Disclose provenance for every number"
+    ],
+    "mode": "user_provided_online_setup"
+  },
+  "intake_pr_records": [
+    {
+      "run_id": "intake-pr-0",
+      "record_kind": "intake_pseudo",
+      "task": "Modal: Fix show code for hidden scrollbar story",
+      "arm": "intake",
+      "stratum": "medium",
+      "synthetic": false,
+      "source": "user_intake",
+      "final_pass": true,
+      "final_v_obs": 1.0,
+      "fix_iterations": 0,
+      "opacity": 0.300625,
+      "decay_proxies": {
+        "opacity": {
+          "value": 0.300625,
+          "source": "imputed",
+          "confidence": "low"
+        }
+      },
+      "factor_activity": {
+        "ci_gate": 1.0,
+        "review_bot": 1.0
+      },
+      "labels": [
+        "bug"
+      ],
+      "pr_url": "https://github.com/trimble-oss/modus-wc-2.0/pull/1544"
+    },
+    {
+      "run_id": "intake-pr-1",
+      "record_kind": "intake_pseudo",
+      "task": "Tooltip:Fix Shadow Dom Story",
+      "arm": "intake",
+      "stratum": "medium",
+      "synthetic": false,
+      "source": "user_intake",
+      "final_pass": true,
+      "final_v_obs": 1.0,
+      "fix_iterations": 0,
+      "opacity": 0.08875,
+      "decay_proxies": {
+        "opacity": {
+          "value": 0.08875,
+          "source": "imputed",
+          "confidence": "low"
+        }
+      },
+      "factor_activity": {
+        "ci_gate": 1.0,
+        "review_bot": 1.0
+      },
+      "labels": [
+        "bug"
+      ],
+      "pr_url": "https://github.com/trimble-oss/modus-wc-2.0/pull/1562"
+    },
+    {
+      "run_id": "intake-pr-2",
+      "record_kind": "intake_pseudo",
+      "task": "Tooltip: Fix dismissEscape event in storybook",
+      "arm": "intake",
+      "stratum": "medium",
+      "synthetic": false,
+      "source": "user_intake",
+      "final_pass": true,
+      "final_v_obs": 1.0,
+      "fix_iterations": 0,
+      "opacity": 0.03125,
+      "decay_proxies": {
+        "opacity": {
+          "value": 0.03125,
+          "source": "imputed",
+          "confidence": "low"
+        }
+      },
+      "factor_activity": {
+        "ci_gate": 1.0,
+        "review_bot": 1.0
+      },
+      "labels": [
+        "bug"
+      ],
+      "pr_url": "https://github.com/trimble-oss/modus-wc-2.0/pull/1565"
+    }
+  ],
+  "teaching": {
+    "why_intake": "Cursor Automations are configured in the console and are not fully readable via API for listing definitions. Offline git inspect cannot see triggers/instructions. Paste setup + PR evidence here.",
+    "what_we_need_from_setup": [
+      "Automation names and roles (dev / qa / fix / scaffold / review)",
+      "Triggers (comment, label, PR opened, schedule)",
+      "Repo scope and enabled tools/MCP",
+      "Stop rules and repair caps (when may the agent say done?)",
+      "Whether human review is always required",
+      "Declared rules / hooks / CI / review bot (yes/no is enough)"
+    ],
+    "what_we_need_from_each_pr": [
+      "PR URL/number, title, linked issue",
+      "Acceptance criteria (from issue or PR checklist)",
+      "Labels and CI status",
+      "QA/fix comments summary and repair iteration count",
+      "Diff size (files/lines) and whether agent claimed done early",
+      "What failed or surprised the human reviewer",
+      "Optional formula signals: entropy, opacity, blast radius, spec ambiguity, recovery seen"
+    ],
+    "how_to_make_prs_better_with_ai": [
+      "Ask AI to fill the PR body from the issue AC using the formula PR template",
+      "Require AC checklist + evidence links (tests, QA comment, screenshots)",
+      "State stratum guess (low/medium/high) and blast-radius note",
+      "Never claim done without acceptance + tests + QA evidence",
+      "After human review, ask AI to map review comments to R/D gaps and one intervention"
+    ],
+    "pr_template_path": "framework/templates/intake/pr-body-formula.md",
+    "questionnaire_path": "framework/templates/intake/SETUP-QUESTIONNAIRE.md"
+  },
+  "online_automation_status": {
+    "console_api_list": false,
+    "method": "user_intake_plus_optional_offline_git_inspect",
+    "note": "There is no Automations Management API to list definitions. Use Cloud Agents API only for launching/monitoring runs, not for reading automation config."
+  }
+}

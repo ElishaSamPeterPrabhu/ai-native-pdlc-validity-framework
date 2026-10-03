@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-01T17:56:22.709594+00:00",
+  "formula_version": "v1.4",
+  "repo": {
+    "owner": "trimble-oss",
+    "name": "modus-wc-2.0",
+    "default_branch": "main",
+    "url": "https://github.com/trimble-oss/modus-wc-2.0"
+  },
+  "scoring": {
+    "scoring_method": "formula_equilibrium",
+    "evidence_status": "simulation-calibrated",
+    "formula_used": true,
+    "weight_source": "placeholder"
+  },
+  "runs": [],
+  "intake_prs": [
+    {
+      "pr": "https://github.com/trimble-oss/modus-wc-2.0/pull/1544",
+      "record_kind": "intake_pseudo",
+      "R": {
+        "value": 0.2,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "recovery_rate_from_intake_signals",
+        "weight_source": "placeholder"
+      },
+      "D": {
+        "value": 0.0875,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "decay_rate_hybrid_from_intake",
+        "weight_source": "placeholder"
+      },
+      "V_star": {
+        "value": 0.6956,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "equilibrium_validity",
+        "weight_source": "placeholder",
+        "notes": "intake-derived; not live telemetry"
+      },
+      "decay_proxies": {
+        "entropy": {
+          "value": 0.5,
+          "source": "imputed",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no telemetry; policy default"
+        },
+        "opacity": {
+          "value": 0.2505,
+          "source": "observed",
+          "confidence": "medium",
+          "method": "record_proxy",
+          "notes": "soft-saturated from lines/files changed"
+        },
+        "blast_radius": {
+          "value": 0.2,
+          "source": "imputed",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no coupling evidence; catalog declares this missing \u2014 low default used for directional score only"
+        },
+        "spec_ambiguity": {
+          "value": 0.5,
+          "source": "heuristic",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no acceptance criteria provided"
+        }
+      },
+      "recovery_activities": {
+        "ci_gate": 1.0,
+        "review_bot": 1.0
+      },
+      "recovery_assumed": false,
+      "defaulted_inputs": [
+        "entropy",
+        "blast_radius"
+      ],
+      "missing_inputs": [],
+      "user_signal_provenance": {}
+    },
+    {
+      "pr": "https://github.com/trimble-oss/modus-wc-2.0/pull/1562",
+      "record_kind": "intake_pseudo",
+      "R": {
+        "value": 0.2,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "recovery_rate_from_intake_signals",
+        "weight_source": "placeholder"
+      },
+      "D": {
+        "value": 0.0803,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "decay_rate_hybrid_from_intake",
+        "weight_source": "placeholder"
+      },
+      "V_star": {
+        "value": 0.7136,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "equilibrium_validity",
+        "weight_source": "placeholder",
+        "notes": "intake-derived; not live telemetry"
+      },
+      "decay_proxies": {
+        "entropy": {
+          "value": 0.5,
+          "source": "imputed",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no telemetry; policy default"
+        },
+        "opacity": {
+          "value": 0.1055,
+          "source": "observed",
+          "confidence": "medium",
+          "method": "record_proxy",
+          "notes": "soft-saturated from lines/files changed"
+        },
+        "blast_radius": {
+          "value": 0.2,
+          "source": "imputed",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no coupling evidence; catalog declares this missing \u2014 low default used for directional score only"
+        },
+        "spec_ambiguity": {
+          "value": 0.5,
+          "source": "heuristic",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no acceptance criteria provided"
+        }
+      },
+      "recovery_activities": {
+        "ci_gate": 1.0,
+        "review_bot": 1.0
+      },
+      "recovery_assumed": false,
+      "defaulted_inputs": [
+        "entropy",
+        "blast_radius"
+      ],
+      "missing_inputs": [],
+      "user_signal_provenance": {}
+    },
+    {
+      "pr": "https://github.com/trimble-oss/modus-wc-2.0/pull/1565",
+      "record_kind": "intake_pseudo",
+      "R": {
+        "value": 0.2,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "recovery_rate_from_intake_signals",
+        "weight_source": "placeholder"
+      },
+      "D": {
+        "value": 0.0778,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "decay_rate_hybrid_from_intake",
+        "weight_source": "placeholder"
+      },
+      "V_star": {
+        "value": 0.7199,
+        "source": "heuristic",
+        "confidence": "low",
+        "method": "equilibrium_validity",
+        "weight_source": "placeholder",
+        "notes": "intake-derived; not live telemetry"
+      },
+      "decay_proxies": {
+        "entropy": {
+          "value": 0.5,
+          "source": "imputed",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no telemetry; policy default"
+        },
+        "opacity": {
+          "value": 0.056,
+          "source": "observed",
+          "confidence": "medium",
+          "method": "record_proxy",
+          "notes": "soft-saturated from lines/files changed"
+        },
+        "blast_radius": {
+          "value": 0.2,
+          "source": "imputed",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no coupling evidence; catalog declares this missing \u2014 low default used for directional score only"
+        },
+        "spec_ambiguity": {
+          "value": 0.5,
+          "source": "heuristic",
+          "confidence": "low",
+          "method": "record_proxy",
+          "notes": "no acceptance criteria provided"
+        }
+      },
+      "recovery_activities": {
+        "ci_gate": 1.0,
+        "review_bot": 1.0
+      },
+      "recovery_assumed": false,
+      "defaulted_inputs": [
+        "entropy",
+        "blast_radius"
+      ],
+      "missing_inputs": [],
+      "user_signal_provenance": {}
+    }
+  ],
+  "aggregate": {
+    "V_star": {
+      "value": 0.7097,
+      "source": "observed",
+      "confidence": "medium",
+      "method": "mean_equilibrium_validity",
+      "weight_source": "placeholder"
+    },
+    "n_scored": 3
+  },
+  "claim_warnings": [
+    "formula v1.4 weight_source=placeholder (not repo-fitted)",
+    "AI owns metric judgments; CLI owns R/D/V* numbers here",
+    "Do not treat intake PR scores as live harness telemetry",
+    "one or more decay inputs were policy defaults (see per-record defaulted_inputs); disclose before citing V*"
+  ]
+}

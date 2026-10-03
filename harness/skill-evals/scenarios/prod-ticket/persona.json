@@ -1,0 +1,10 @@
+{
+  "role": "Product owner for the Modus design system pilot (fork ElishaSamPeterPrabhu/modus-wc-2.0)",
+  "answers": [
+    "I want product to issue, not code. Our input is meeting notes: Gemini notes arrive in Gmail and Google Calendar after design reviews. Nobody should have to copy them by hand.",
+    "An agent should read the notes and put every candidate item into a Google Sheet review ledger, never straight into GitHub. Each row gets a classification: repo-work, design-work, process/meta, decision-record or already-tracked, plus a status: needs-review first, then pending, clarification, approved, rejected or failed. Rows need an idempotency key so re-running on the same meeting does not duplicate.",
+    "Humans review in the sheet. A review round lets the agent answer questions in a cursorComment column only. Only when I mark a row approved does an approve round create the GitHub issue (issue scaffolding) and mark it created in an Issues tab. Before drafting an issue for component work it must check Modus component capability and cite evidence, or ask for clarification.",
+    "The intake agent must never create issues itself. Only I approve rows. Agents must not edit .cursor/rules, hooks or .github workflows without approval. We run it with Cursor Automations plus an Apps Script webhook on the sheet."
+  ],
+  "finalize": "That is everything. Write data/repo-profile.json, data/process-map.json, data/workflow-design.json and paste-ready automation configs under data/automations/ (one .md per agent or round). Do not write into .cursor/rules, .cursor/hooks, or .github; I will install them myself."
+}

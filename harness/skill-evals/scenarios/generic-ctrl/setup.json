@@ -1,0 +1,21 @@
+{
+  "id": "generic-ctrl",
+  "flow": "issue_to_pr",
+  "repo_label": "Autonomous-Agent(Research)",
+  "source": {
+    "path_env": "RESEARCH_REPO",
+    "default_path": ".",
+    "ref": "15c2ab056c36548d88b22f0bdcfd4e0da655d66f"
+  },
+  "held_out": [
+    "starter-kit",
+    ".cursor/skills/workflow-*",
+    ".cursor/rules/workflow-*",
+    "docs/hackathon",
+    "harness/skill-evals"
+  ],
+  "ground_truth": [
+    ".github/workflows/ci.yml",
+    "pyproject.toml"
+  ]
+}

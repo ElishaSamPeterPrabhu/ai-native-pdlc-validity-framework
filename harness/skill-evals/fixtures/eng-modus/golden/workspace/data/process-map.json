@@ -1,0 +1,10 @@
+{
+  "stages": [
+    {"name": "issue", "owner": "lead", "tool": "github"},
+    {"name": "dev", "owner": "agent", "tool": "cursor-automations"},
+    {"name": "qa", "owner": "agent", "tool": "cursor-automations"},
+    {"name": "merge", "owner": "human", "tool": "github"}
+  ],
+  "approvers": {"start": "Me", "merge": "human maintainer"},
+  "platform": "cursor-automations"
+}

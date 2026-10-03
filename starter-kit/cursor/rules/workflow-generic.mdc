@@ -14,9 +14,11 @@ adding them there first.
 
 - Nothing starts implementation without an explicit human signal (`/approve`, a
   label added by a human, or an approved ledger row).
-- Follow-up triggers (`/ask`, `/clarify`, `/refine`) fire on comments **by Me /
-  allowlisted humans only**, never Anyone. The single exception is the QA wake on
-  "PR opened" by the bot account.
+- Every comment trigger, on any agent (`/approve`, `/ask`, `/clarify`, `/refine`,
+  QA or Fix handoffs), fires **by Me / allowlisted humans only**, never Anyone.
+- QA and Fix wake on **label added** (`qa-full`, `qa-skip`, `qa-rerun`,
+  `qa-failed`), never on "PR opened". The label router turns agent comments into
+  labels, so no agent needs an Anyone trigger.
 - Merges are always human. No automation merges, force-pushes, or deletes branches.
 - Builder skills propose files; a human approves before rules, hooks, workflows,
   or automations are written or installed.

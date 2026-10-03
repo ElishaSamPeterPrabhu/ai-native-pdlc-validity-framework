@@ -41,15 +41,26 @@ description: >-
 {
   "profile": "frontend",
   "stages": [
-    {"id": "dev", "trigger": "issue_comment /approve by Me", "agent": "Dev",
-     "gate": ["npm test", "npm run lint"], "exit_signals": ["PR opened"],
-     "human_checkpoint": "", "layer": "harness"}
+    {"id": "dev", "flow": "issue_to_pr", "trigger": "issue_comment /approve by Me",
+     "agent": "Dev", "gate": ["npm test", "npm run lint"],
+     "exit_signals": ["Routing: qa-full", "Routing: qa-skip"],
+     "human_checkpoint": "", "layer": "harness"},
+    {"id": "intake", "flow": "product_to_issue", "trigger": "schedule: new meeting notes",
+     "agent": "meeting-review-intake", "gate": [], "exit_signals": ["needs-review"],
+     "human_checkpoint": "row review in the ledger", "layer": "harness"}
   ],
   "signals": "starter-kit/signal-contract.md",
   "risk_policy": {"needs_human_paths": []},
   "measurement": {"monitor_repo": "owner/name"}
 }
 ```
+
+   Shape rules (validated by `framework/schemas/workflow-design.schema.json`):
+   - Every stage has `id`, `flow` (`product_to_issue` or `issue_to_pr`), and
+     `exit_signals` (array of exact contract strings).
+   - `trigger`, `human_checkpoint` are plain strings; `agent` is a string or null.
+   - `signals` is the **path** to the signal contract, not an inline copy. Put
+     per-stage signals in `exit_signals`.
 
 7. Show the design as a short mermaid flowchart plus a stage table, get approval,
    then hand off to `workflow-setup-cursor` or `workflow-setup-other`.

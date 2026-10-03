@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trimble.local/framework/schemas/repo-profile.schema.json",
+  "title": "RepoProfile",
+  "description": "Written by the workflow-discover skill.",
+  "type": "object",
+  "required": ["repo", "profile", "stack", "commands", "ci", "agent_surface", "gaps"],
+  "properties": {
+    "repo": { "type": "string" },
+    "profile": { "enum": ["generic", "frontend"] },
+    "stack": { "type": "array", "items": { "type": "string" } },
+    "commands": {
+      "type": "object",
+      "required": ["test", "lint"],
+      "properties": {
+        "build": { "type": "string" },
+        "test": { "type": "string" },
+        "lint": { "type": "string" },
+        "preview": { "type": "string" }
+      }
+    },
+    "ci": {
+      "type": "object",
+      "required": ["workflows"],
+      "properties": {
+        "workflows": { "type": "array", "items": { "type": "string" } },
+        "required_checks": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "agent_surface": {
+      "type": "object",
+      "properties": {
+        "rules": { "type": "array", "items": { "type": "string" } },
+        "hooks": { "type": "boolean" },
+        "mcp": { "type": "array", "items": { "type": "string" } },
+        "skills": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ownership": { "type": "object" },
+    "graph": {
+      "type": "object",
+      "properties": {
+        "present": { "type": "boolean" },
+        "path": { "type": "string" }
+      }
+    },
+    "design_sources": { "type": "array" },
+    "tracker": { "type": "object" },
+    "gaps": { "type": "array", "items": { "type": "string" } }
+  }
+}

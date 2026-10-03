@@ -1,0 +1,10 @@
+{
+  "profile": "frontend",
+  "stages": [
+    {"id": "dev", "flow": "issue_to_pr", "layer": "harness", "agent": "dev", "exit_signals": ["Routing: qa-full", "Routing: qa-skip"]},
+    {"id": "qa", "flow": "issue_to_pr", "layer": "loop", "agent": "qa", "exit_signals": ["## QA PASSED", "## QA FAILED", "## QA BLOCKED", "## QA SKIPPED"]},
+    {"id": "merge", "flow": "issue_to_pr", "layer": "graph", "agent": null, "exit_signals": ["merged by human"]}
+  ],
+  "impact": "docs/component-graph reverseImpact depth 1",
+  "policy": "Humans merge; agents never merge."
+}

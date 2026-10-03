@@ -1,0 +1,15 @@
+{
+  "repo": "trimble-oss/modus-wc-2.0",
+  "profile": "frontend",
+  "stack": ["stencil", "typescript", "storybook", "tailwind"],
+  "commands": {
+    "build": "npm run build",
+    "test": "npm test",
+    "lint": "npm run lint",
+    "pre_test": ["npm run tailwind:build", "npm run embed:css", "npm run embed:component-css"]
+  },
+  "ci": {"workflows": [".github/workflows/lint.yml", ".github/workflows/unit-tests.yml"]},
+  "agent_surface": {"rules": [".cursor/rules/architecture.mdc", ".cursor/rules/code-guidelines.mdc"], "hooks": false, "mcp": []},
+  "component_graph": "docs/component-graph/component-graph.json",
+  "gaps": ["no label router workflow", "no hooks"]
+}

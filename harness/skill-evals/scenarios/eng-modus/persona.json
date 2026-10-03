@@ -1,0 +1,10 @@
+{
+  "role": "Design-system engineering lead for trimble-oss/modus-wc-2.0",
+  "answers": [
+    "Work starts from a GitHub issue. Only I (the repo owner account, never Anyone) comment /approve on the issue to start Dev. /ask on an issue or PR is a question, /refine on a PR is a change request. Issues usually link a Figma frame or a modus.trimble.com Blueprint page as the design source.",
+    "Dev implements, runs npm run tailwind:build, npm run embed:css, npm run embed:component-css, npm test and npm run lint, opens the PR, then posts a PR conversation comment with Routing: qa-full or Routing: qa-skip. qa-skip only when every file is .scss, .tailwind.ts, .stories.ts or docs/.md. Routing lines must be PR conversation comments, not review bodies, because review events were not delivered reliably.",
+    "QA must run only when a routing label is added (qa-full, qa-rerun, qa-skip), never on PR opened. A GitHub Action turns the comment into the label and removes then re-adds it if already present. npm green is a gate, not a verdict: QA must screenshot Storybook and compare against the Figma or Blueprint source, or main Storybook when there is no source. Verdicts are ## QA PASSED, ## QA FAILED, ## QA BLOCKED, ## QA SKIPPED. Use docs/component-graph reverseImpact depth 1 to pick affected components.",
+    "We do not want a separate Fix agent: on qa-failed, Dev repairs only what ## QA FAILED lists, comments Fix applied: and QA-rerun: add. Cap at 3 iterations, then Max iterations reached and needs-human. Humans always merge; agents never merge. Agents must not edit .cursor/rules, hooks or .github workflows without my approval. Platform: Cursor Automations."
+  ],
+  "finalize": "That is everything. Write data/repo-profile.json, data/process-map.json, data/workflow-design.json and paste-ready automation configs under data/automations/ (one .md per agent, plus the label router workflow as data/automations/label-router.yml). Do not write into .cursor/rules, .cursor/hooks, or .github; I will install them myself."
+}

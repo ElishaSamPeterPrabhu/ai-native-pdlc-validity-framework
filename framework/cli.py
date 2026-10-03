@@ -13,6 +13,8 @@ Commands:
   report    — setup-validity profile aggregates by task class
   registry  — export portable factor registry JSON
   validate  — run local validation suite against baselines
+  init-kit  — install the bundled workflow-builder kit (skills, rules, templates)
+  check-kit — check generated Dev/QA/Fix files against the eval safety rules
 """
 
 from __future__ import annotations
@@ -25,6 +27,9 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
+
+from framework.kit import install_kit  # noqa: E402
+from framework.kitcheck import check_files, collect_files, has_critical_failure  # noqa: E402
 
 
 def _repo(args: argparse.Namespace) -> Path:
@@ -401,6 +406,52 @@ def cmd_validate(args: argparse.Namespace) -> int:
     return 0 if result["summary"]["ok"] else 1
 
 
+def cmd_init_kit(args: argparse.Namespace) -> int:
+    repo = _repo(args)
+    try:
+        actions = install_kit(repo, force=args.force, dry_run=args.dry_run)
+    except FileNotFoundError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    for a in actions:
+        print(f"{a.status:<10} {a.destination}")
+    copied = sum(1 for a in actions if a.status in ("copied", "would-copy"))
+    skipped = sum(1 for a in actions if a.status == "skipped")
+    print(f"{copied} file(s) {'would be ' if args.dry_run else ''}written, {skipped} existing file(s) left as-is")
+    if skipped and not args.force:
+        print("use --force to overwrite existing files")
+    print("next: ask Cursor 'use workflow-builder'")
+    return 0
+
+
+def cmd_check_kit(args: argparse.Namespace) -> int:
+    repo = _repo(args)
+    if args.path:
+        target = Path(args.path)
+        target = target if target.is_absolute() else repo / target
+    else:
+        target = _layout_for(args).resolve(repo, "data_dir") or (repo / "data")
+        target = target / "automations"
+    files = collect_files(target)
+    if not files:
+        print(f"no automation files found under {target}")
+        print("run the workflow builder first, or pass --path to your Dev/QA/Fix files")
+        return 2
+    findings = check_files(files)
+    if args.json:
+        print(json.dumps([f.__dict__ for f in findings], indent=2))
+    else:
+        print(f"checked {len(files)} file(s) under {target}")
+        for f in findings:
+            tag = "PASS" if f.passed else ("FAIL" if f.critical else "WARN")
+            print(f"  {tag}  {f.rule_id}: {f.detail}")
+        print(
+            "rules mirror the skill-eval checks (replayed persona, 3 runs per arm); "
+            "they read file text and do not prove an automation behaves correctly"
+        )
+    return 1 if has_critical_failure(findings) else 0
+
+
 def _add_repo_layout_flags(s: argparse.ArgumentParser) -> None:
     s.add_argument("--repo", default=".", help="path to repository checkout")
     s.add_argument(
@@ -542,6 +593,20 @@ def build_parser() -> argparse.ArgumentParser:
     _add_repo_layout_flags(s)
     s.add_argument("--out", default="data/validation")
     s.set_defaults(func=cmd_validate)
+
+    s = sub.add_parser("init-kit", help="Install the bundled workflow-builder kit into a repo")
+    s.add_argument("--repo", default=".", help="path to repository checkout")
+    s.add_argument("--force", action="store_true", help="overwrite files that already exist")
+    s.add_argument("--dry-run", action="store_true", help="list what would be written")
+    s.set_defaults(func=cmd_init_kit)
+
+    s = sub.add_parser(
+        "check-kit", help="Check generated Dev/QA/Fix files against the eval safety rules"
+    )
+    _add_repo_layout_flags(s)
+    s.add_argument("--path", default="", help="folder of automation files (default: <data_dir>/automations)")
+    s.add_argument("--json", action="store_true", help="print findings as JSON")
+    s.set_defaults(func=cmd_check_kit)
 
     return p
 

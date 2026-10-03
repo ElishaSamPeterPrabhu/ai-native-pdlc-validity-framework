@@ -30,17 +30,23 @@ from `repo-profile.json` so the human mostly confirms. Skip anything already kno
 ```json
 {
   "stages": [
-    {"name": "intake", "today": "", "owner": "", "tool": "", "pain": ""}
+    {"name": "intake", "today": "PM copies meeting notes", "owner": "PM", "tool": "Google Sheets", "pain": "manual"}
   ],
-  "ready_definition": [],
-  "agent_scope": {"take": [], "never": []},
-  "evidence_for_trust": [],
-  "approvers": {"start": "", "review": "", "merge": ""},
+  "ready_definition": ["acceptance criteria present"],
+  "agent_scope": {"take": ["docs fixes"], "never": ["merge"]},
+  "evidence_for_trust": ["QA screenshots"],
+  "approvers": {"start": "lead", "review": "lead", "merge": "maintainer"},
   "risk_areas": [],
-  "channels": [],
-  "platform": "cursor-automations | github-actions | other"
+  "channels": ["GitHub"],
+  "platform": "cursor-automations",
+  "platform_notes": "Apps Script webhook triggers ledger rounds"
 }
 ```
+
+Shape rules (validated by `framework/schemas/process-map.schema.json`):
+- `platform` is exactly one of `cursor-automations`, `github-actions`, `other`.
+  Put extra orchestration detail in the `platform_notes` string, not in `platform`.
+- Every stage has a `name`; stage fields and `approvers.*` are strings.
 
 Read the map back to the human in plain sentences and confirm before handing off to
 `workflow-design`.
