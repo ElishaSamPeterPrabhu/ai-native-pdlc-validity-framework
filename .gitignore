@@ -22,3 +22,7 @@ node_modules/
 
 # Raw skill-eval runs (transcripts, workspaces); keep only reports
 data/skill-evals/runs*/
+
+# Video raw recordings and renders
+docs/hackathon/video/raw/
+docs/hackathon/video/renders/
